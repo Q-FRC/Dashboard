@@ -15,6 +15,7 @@
 # Bool Widgets
 - Edit checkbox size
 - Edit true/false colors
+- Use existing data in widget edit dialogs
 
 # Field2d
 - Exactly as in Shuffleboard.
