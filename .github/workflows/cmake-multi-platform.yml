@@ -1,75 +1,414 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
+name: Build
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_call:
+    inputs:
+      build_type:
+        description: Type of build (Debug, Release, RelWithDebInfo, MinSizeRel)
+        type: string
+        default: Debug
+    secrets:
+      SPARKLE_ED25519_KEY:
+        description: Private key for signing Sparkle updates
+        required: false
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - os: ubuntu-20.04
+            qt_ver: 5
+
+          - os: ubuntu-20.04
+            qt_ver: 6
+            qt_host: linux
+            qt_version: '6.2.4'
+            qt_modules: 'qt5compat qtimageformats qtcharts'
+
+          - os: windows-2022
+            name: "Windows-Legacy"
+            msystem: mingw64
+            qt_ver: 5
+
+          - os: windows-2022
+            name: "Windows"
+            msystem: mingw64
+            qt_ver: 6
+
+          - os: macos-12
+            name: macOS
+            macosx_deployment_target: 10.15
+            qt_ver: 6
+            qt_host: mac
+            qt_version: '6.3.0'
+            qt_modules: 'qt5compat qtimageformats qtcharts'
+
+          - os: macos-12
+            name: macOS-Legacy
+            macosx_deployment_target: 10.13
+            qt_ver: 5
+            qt_host: mac
+            qt_version: '5.15.2'
+            qt_modules: 'qtcharts'
+
     runs-on: ${{ matrix.os }}
 
-    strategy:
-      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
-      fail-fast: false
-
-      # Set up a matrix to run the following 3 configurations:
-      # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
-      # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
-      # 3. <Linux, Release, latest Clang compiler toolchain on the default runner image, default generator>
-      #
-      # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        build_type: [Release]
-        c_compiler: [gcc, clang, cl]
-        include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
-        exclude:
-          - os: windows-latest
-            c_compiler: gcc
-          - os: windows-latest
-            c_compiler: clang
-          - os: ubuntu-latest
-            c_compiler: cl
+    env:
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macosx_deployment_target }}
+      INSTALL_DIR: "install"
+      INSTALL_PORTABLE_DIR: "install-portable"
+      INSTALL_APPIMAGE_DIR: "install-appdir"
+      BUILD_DIR: "build"
+      CCACHE_VAR: ""
 
     steps:
-    - uses: actions/checkout@v3
+      ##
+      # PREPARE
+      ##
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
 
-    - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      id: strings
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+      - name: Initialize CodeQL
+        if: runner.os == 'Linux' && matrix.qt_ver == 6
+        uses: github/codeql-action/init@v2
+        with:
+          config-file: ./.github/codeql/codeql-config.yml
+          queries: security-and-quality
+          languages: cpp, java
 
-    - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}
+      - name: 'Setup MSYS2'
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: >-
+            git
+          pacboy: >-
+            toolchain:p
+            cmake:p
+            extra-cmake-modules:p
+            ninja:p
+            qt${{ matrix.qt_ver }}-base:p
+            qt${{ matrix.qt_ver }}-svg:p
+            qt${{ matrix.qt_ver }}-imageformats:p
+            qt${{ matrix.qt_ver }}-charts:p
+            quazip-qt${{ matrix.qt_ver }}:p
+            ccache:p
+            nsis:p
+            ${{ matrix.qt_ver == 6 && 'qt6-5compat:p' || '' }}
 
-    - name: Build
-      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      - name: Setup ccache
+        if: runner.os != 'Windows' && inputs.build_type == 'Debug'
+        uses: hendrikmuhs/ccache-action@v1.2.1
+        with:
+          key: ${{ matrix.os }}-qt${{ matrix.qt_ver }}
 
-    # - name: Test
-      # working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      # run: ctest --build-config ${{ matrix.build_type }}
+      - name: Setup ccache (Windows)
+        if: runner.os == 'Windows' && inputs.build_type == 'Debug'
+        shell: msys2 {0}
+        run: |
+          ccache --set-config=cache_dir='${{ github.workspace }}\.ccache'
+          ccache --set-config=max_size='500M'
+          ccache --set-config=compression=true
+          ccache -p  # Show config
+          ccache -z  # Zero stats
+
+      - name: Use ccache on Debug builds only
+        if: inputs.build_type == 'Debug'
+        shell: bash
+        run: |
+          echo "CCACHE_VAR=ccache" >> $GITHUB_ENV
+
+      - name: Retrieve ccache cache (Windows)
+        if: runner.os == 'Windows' && inputs.build_type == 'Debug'
+        uses: actions/cache@v3.0.2
+        with:
+          path: '${{ github.workspace }}\.ccache'
+          key: ${{ matrix.os }}-qt${{ matrix.qt_ver }}
+          restore-keys: |
+              ${{ matrix.os }}-qt${{ matrix.qt_ver }}
+
+      - name: Set short version
+        shell: bash
+        run: |
+          ver_short=`git rev-parse --short HEAD`
+          echo "VERSION=$ver_short" >> $GITHUB_ENV
+
+      - name: Install Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install ninja-build extra-cmake-modules scdoc
+
+      - name: Install Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install ninja extra-cmake-modules
+
+      - name: Install Qt (Linux)
+        if: runner.os == 'Linux' && matrix.qt_ver != 6
+        run: |
+          sudo apt-get -y install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libqt5core5a libqt5network5 libqt5gui5 libqt5charts5-dev
+
+      - name: Install Qt (macOS and AppImage)
+        if: runner.os == 'Linux' && matrix.qt_ver == 6 || runner.os == 'macOS'
+        uses: jurplel/install-qt-action@v3
+        with:
+           version: ${{ matrix.qt_version }}
+           host: ${{ matrix.qt_host }}
+           target: 'desktop'
+           modules: ${{ matrix.qt_modules }}
+           cache: true
+           cache-key-prefix: ${{ matrix.qt_host }}-${{ matrix.qt_version }}-"${{ matrix.qt_modules }}"-qt_cache
+
+      - name: Prepare AppImage (Linux)
+        if: runner.os == 'Linux' && matrix.qt_ver != 5
+        run: |
+          wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+          wget "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage"
+          wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
+
+          ${{ github.workspace }}/.github/scripts/prepare_JREs.sh
+
+      ##
+      # CONFIGURE
+      ##
+
+      - name: Configure CMake (macOS)
+        if: runner.os == 'macOS' && matrix.qt_ver == 6
+        run: |
+          cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=${{ env.INSTALL_DIR }} -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DENABLE_LTO=ON -DCMAKE_C_COMPILER_LAUNCHER=${{ env.CCACHE_VAR }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ env.CCACHE_VAR }} -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -G Ninja
+
+      - name: Configure CMake (macOS-Legacy)
+        if: runner.os == 'macOS' && matrix.qt_ver == 5
+        run: |
+          cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=${{ env.INSTALL_DIR }} -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DENABLE_LTO=ON -DCMAKE_C_COMPILER_LAUNCHER=${{ env.CCACHE_VAR }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ env.CCACHE_VAR }} -DMACOSX_SPARKLE_UPDATE_PUBLIC_KEY="" -DMACOSX_SPARKLE_UPDATE_FEED_URL="" -G Ninja
+
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=${{ env.INSTALL_DIR }} -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DENABLE_LTO=ON -DCMAKE_C_COMPILER_LAUNCHER=${{ env.CCACHE_VAR }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ env.CCACHE_VAR }} -G Ninja
+
+      - name: Configure CMake (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DENABLE_LTO=ON -DCMAKE_C_COMPILER_LAUNCHER=${{ env.CCACHE_VAR }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ env.CCACHE_VAR }} -G Ninja
+
+      ##
+      # BUILD
+      ##
+
+      - name: Build
+        if: runner.os != 'Windows'
+        run: |
+          cmake --build ${{ env.BUILD_DIR }}
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          cmake --build ${{ env.BUILD_DIR }}
+
+      ##
+      # TEST
+      ##
+
+      - name: Test
+        if: runner.os != 'Windows'
+        run: |
+          ctest --test-dir build --output-on-failure
+
+      - name: Test (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          ctest --test-dir build --output-on-failure
+
+      ##
+      # CODE SCAN
+      ##
+
+      - name: Perform CodeQL Analysis
+        if: runner.os == 'Linux' && matrix.qt_ver == 6
+        uses: github/codeql-action/analyze@v2
+
+      ##
+      # PACKAGE BUILDS
+      ##
+
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          cmake --install ${{ env.BUILD_DIR }}
+
+          cd ${{ env.INSTALL_DIR }}
+          chmod +x "PolyMC.app/Contents/MacOS/polymc"
+          sudo codesign --sign - --deep --force --entitlements "../program_info/App.entitlements" --options runtime "PolyMC.app/Contents/MacOS/polymc"
+          tar -czf ../PolyMC.tar.gz *
+
+      - name: Make Sparkle signature (macOS)
+        if: matrix.name == 'macOS'
+        run: |
+          if [ '${{ secrets.SPARKLE_ED25519_KEY }}' != '' ]; then
+            brew install openssl@3
+            echo '${{ secrets.SPARKLE_ED25519_KEY }}' > ed25519-priv.pem
+            signature=$(/usr/local/opt/openssl@3/bin/openssl pkeyutl -sign -rawin -in ${{ github.workspace }}/PolyMC.tar.gz -inkey ed25519-priv.pem | openssl base64 | tr -d \\n)
+            rm ed25519-priv.pem
+            cat >> $GITHUB_STEP_SUMMARY << EOF
+          ### Artifact Information :information_source:
+          - :memo: Sparkle Signature (ed25519): \`$signature\`
+          EOF
+          else
+            cat >> $GITHUB_STEP_SUMMARY << EOF
+          ### Artifact Information :information_source:
+          - :warning: Sparkle Signature (ed25519): No private key available (likely a pull request or fork)
+          EOF
+          fi
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          cmake --install ${{ env.BUILD_DIR }}
+
+          cd ${{ env.INSTALL_DIR }}
+          if [ "${{ matrix.qt_ver }}" == "5" ]; then
+            cp /mingw64/bin/libcrypto-3-x64.dll /mingw64/bin/libssl-3-x64.dll ./
+          fi
+
+      - name: Package (Windows, portable)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          cp -r ${{ env.INSTALL_DIR }} ${{ env.INSTALL_PORTABLE_DIR }}  # cmake install on Windows is slow, let's just copy instead
+          cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_PORTABLE_DIR }} --component portable
+
+      - name: Package (Windows, installer)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          cd ${{ env.INSTALL_DIR }}
+          makensis -NOCD "${{ github.workspace }}/${{ env.BUILD_DIR }}/program_info/win_install.nsi"
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }}
+
+          cd ${{ env.INSTALL_DIR }}
+          tar --owner root --group root -czf ../PolyMC.tar.gz *
+
+      - name: Package (Linux, portable)
+        if: runner.os == 'Linux'
+        run: |
+          cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_PORTABLE_DIR }}
+          cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_PORTABLE_DIR }} --component portable
+
+          cd ${{ env.INSTALL_PORTABLE_DIR }}
+          tar -czf ../PolyMC-portable.tar.gz *
+
+      - name: Package AppImage (Linux)
+        if: runner.os == 'Linux' && matrix.qt_ver != 5
+        shell: bash
+        run: |
+          cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_APPIMAGE_DIR }}/usr
+
+          export OUTPUT="PolyMC-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage"
+
+          chmod +x linuxdeploy-*.AppImage
+
+          mkdir -p ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/jvm/java-{8,17}-openjdk
+          mkdir -p ${{ env.INSTALL_APPIMAGE_DIR }}/usr/plugins/iconengines
+
+          cp -r ${{ github.workspace }}/JREs/jre8/* ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/jvm/java-8-openjdk
+
+          cp -r ${{ github.workspace }}/JREs/jre17/* ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/jvm/java-17-openjdk
+
+          cp -r /home/runner/work/PolyMC/Qt/${{ matrix.qt_version }}/gcc_64/plugins/iconengines/* ${{ env.INSTALL_APPIMAGE_DIR }}/usr/plugins/iconengines
+
+          cp /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
+          cp /usr/lib/x86_64-linux-gnu/libssl.so.1.1 ${{ env.INSTALL_APPIMAGE_DIR }}//usr/lib/
+
+          LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib"
+          LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/jvm/java-8-openjdk/lib/amd64/server"
+          LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/jvm/java-8-openjdk/lib/amd64"
+          LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/jvm/java-17-openjdk/lib/server"
+          LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/jvm/java-17-openjdk/lib"
+          export LD_LIBRARY_PATH
+
+          ./linuxdeploy-x86_64.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt -i ${{ env.INSTALL_APPIMAGE_DIR }}/usr/share/icons/hicolor/scalable/apps/org.polymc.PolyMC.svg
+
+      ##
+      # UPLOAD BUILDS
+      ##
+
+      - name: Upload binary tarball (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ matrix.name }}-${{ env.VERSION }}-${{ inputs.build_type }}
+          path: PolyMC.tar.gz
+
+      - name: Upload binary zip (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ matrix.name }}-${{ env.VERSION }}-${{ inputs.build_type }}
+          path: ${{ env.INSTALL_DIR }}/**
+
+      - name: Upload binary zip (Windows, portable)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ matrix.name }}-Portable-${{ env.VERSION }}-${{ inputs.build_type }}
+          path: ${{ env.INSTALL_PORTABLE_DIR }}/**
+
+      - name: Upload installer (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ matrix.name }}-Setup-${{ env.VERSION }}-${{ inputs.build_type }}
+          path: PolyMC-Setup.exe
+
+      - name: Upload binary tarball (Linux, Qt 5)
+        if: runner.os == 'Linux' && matrix.qt_ver != 6
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}
+          path: PolyMC.tar.gz
+
+      - name: Upload binary tarball (Linux, portable, Qt 5)
+        if: runner.os == 'Linux' && matrix.qt_ver != 6
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ runner.os }}-Portable-${{ env.VERSION }}-${{ inputs.build_type }}
+          path: PolyMC-portable.tar.gz
+
+      - name: Upload binary tarball (Linux, Qt 6)
+        if: runner.os == 'Linux' && matrix.qt_ver !=5
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ runner.os }}-Qt6-${{ env.VERSION }}-${{ inputs.build_type }}
+          path: PolyMC.tar.gz
+
+      - name: Upload binary tarball (Linux, portable, Qt 6)
+        if: runner.os == 'Linux' && matrix.qt_ver != 5
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ runner.os }}-Qt6-Portable-${{ env.VERSION }}-${{ inputs.build_type }}
+          path: PolyMC-portable.tar.gz
+
+      - name: Upload AppImage (Linux)
+        if: runner.os == 'Linux' && matrix.qt_ver != 5
+        uses: actions/upload-artifact@v3
+        with:
+          name: PolyMC-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
+          path: PolyMC-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
