@@ -16,11 +16,22 @@ BooleanCheckboxWidget::BooleanCheckboxWidget(const QString &title, const bool &d
 
     connect(m_checkbox, &QCheckBox::stateChanged, this, [this](int state) {
         m_entry->SetBoolean(state == Qt::Checked);
+        m_value = state == Qt::Checked;
     });
 }
 
 BooleanCheckboxWidget::~BooleanCheckboxWidget() {
     TopicStore::unsubscribe(m_entry, this);
+}
+
+int BooleanCheckboxWidget::checkboxSize() {
+    return m_checkboxSize;
+}
+
+void BooleanCheckboxWidget::setCheckboxSize(int size) {
+    m_checkboxSize = size;
+
+    m_checkbox->setStyleSheet(QString("QCheckBox::indicator:unchecked { width: %1px; height: %1px; } QCheckBox::indicator:checked { width: %1px; height: %1px; }").arg(size));
 }
 
 QJsonObject BooleanCheckboxWidget::saveObject() {
