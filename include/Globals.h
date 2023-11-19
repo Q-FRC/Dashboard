@@ -54,7 +54,6 @@ extern ServerData server;
 
 extern TypeStore *typeStore;
 
-extern QMap<WidgetTypes, QString> widgetTypeDisplayNames;
 extern QMap<TopicTypes, QString> topicTypeDisplayNames;
 
 extern QStringList ntTopics;

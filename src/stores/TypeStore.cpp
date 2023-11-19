@@ -7,8 +7,9 @@
 TypeStore::TypeStore(QWidget *parent) : QObject(parent)
 {}
 
-void TypeStore::registerType(TopicTypes topicType, WidgetTypes widgetType) {
+void TypeStore::registerType(TopicTypes topicType, WidgetTypes widgetType, QString displayName) {
     m_typeWidgetMap.insert(topicType, widgetType);
+    m_widgetNameMap.insert(widgetType, displayName);
 }
 
 QList<QAction *> TypeStore::generateActionsForType(TopicTypes type, std::string ntTopic) {
@@ -16,7 +17,7 @@ QList<QAction *> TypeStore::generateActionsForType(TopicTypes type, std::string 
 
     QList<WidgetTypes> widgetTypes = m_typeWidgetMap.values(type);
     for (WidgetTypes widgetType : widgetTypes) {
-        QString displayName = Globals::widgetTypeDisplayNames.value(widgetType);
+        QString displayName = widgetDisplayName(widgetType);
 
         QAction *action = new QAction(displayName);
 
@@ -45,6 +46,10 @@ QMenu *TypeStore::generateMenuForType(TopicTypes type, std::string ntTopic) {
     menu->addActions(generateActionsForType(type, ntTopic));
 
     return menu;
+}
+
+QString TypeStore::widgetDisplayName(WidgetTypes type) {
+    return m_widgetNameMap.value(type, "");
 }
 
 void TypeStore::emitWidget(BaseWidget *widget, WidgetData data) {

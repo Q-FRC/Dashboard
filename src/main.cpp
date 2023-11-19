@@ -10,7 +10,7 @@
 
 TypeStore *Globals::typeStore = new TypeStore;
 
-#define REGISTER_TYPE(topic, widget) Globals::typeStore->registerType(topic, widget);
+#define REGISTER_TYPE(topic, widget, name) Globals::typeStore->registerType(topic, widget, name);
 
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
@@ -18,16 +18,16 @@ int main(int argc, char **argv) {
     Globals::inst.StartClient4("QFRCDashboard");
     Globals::inst.SetServer(Globals::server.server.c_str(), NT_DEFAULT_PORT4);
 
-    REGISTER_TYPE(TopicTypes::Boolean, WidgetTypes::BooleanCheckbox)
-    REGISTER_TYPE(TopicTypes::Boolean, WidgetTypes::BooleanDisplay)
+    REGISTER_TYPE(TopicTypes::Boolean, WidgetTypes::BooleanCheckbox, "Checkbox")
+    REGISTER_TYPE(TopicTypes::Boolean, WidgetTypes::BooleanDisplay, "Color Display")
 
-    REGISTER_TYPE(TopicTypes::Double, WidgetTypes::DoubleDial)
-    REGISTER_TYPE(TopicTypes::Double, WidgetTypes::DoubleDisplay)
+    REGISTER_TYPE(TopicTypes::Double, WidgetTypes::DoubleDial, "Dial")
+    REGISTER_TYPE(TopicTypes::Double, WidgetTypes::DoubleDisplay, "Double Display")
 
-    REGISTER_TYPE(TopicTypes::String, WidgetTypes::StringDisplay)
-    REGISTER_TYPE(TopicTypes::String, WidgetTypes::EnumWidget)
+    REGISTER_TYPE(TopicTypes::String, WidgetTypes::StringDisplay, "Text Display")
+    REGISTER_TYPE(TopicTypes::String, WidgetTypes::EnumWidget, "Enum");
 
-    REGISTER_TYPE(TopicTypes::SendableChooser, WidgetTypes::SendableChooser)
+    REGISTER_TYPE(TopicTypes::SendableChooser, WidgetTypes::SendableChooser, "Sendable Chooser");
 
     MainWindow *window = new MainWindow();
 

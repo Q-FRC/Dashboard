@@ -12,17 +12,6 @@ QMap<TopicTypes, QString> Globals::topicTypeDisplayNames = {
     {TopicTypes::Boolean, "Boolean"}
 };
 
-QMap<WidgetTypes, QString> Globals::widgetTypeDisplayNames = {
-    {WidgetTypes::BooleanCheckbox, "Checkbox"},
-    {WidgetTypes::BooleanDisplay, "Color Display"},
-    {WidgetTypes::StringDisplay, "Text Display"},
-    {WidgetTypes::DoubleDisplay, "Double Display"},
-    {WidgetTypes::DoubleDial, "Dial"},
-    {WidgetTypes::SendableChooser, "Sendable Chooser"},
-    {WidgetTypes::CameraView, "Camera View"},
-    {WidgetTypes::EnumWidget, "Enum"}
-};
-
 QStringList Globals::ntTopics{};
 QMap<QString, TopicTypes> Globals::availableTopics;
 
