@@ -80,4 +80,5 @@ void FilterStore::sortTopic(QString topic) {
     }
 
     entry.Unpublish();
+    typeEntry.Unpublish();
 }
