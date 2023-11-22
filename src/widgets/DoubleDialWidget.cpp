@@ -19,7 +19,6 @@ DoubleDialWidget::DoubleDialWidget(const QString &title, const double &defaultVa
 
     connect(m_dial, &BetterDial::sliderMoved, this, [this](int position) {
         m_entry->SetDouble(position / 100.);
-        m_value = position / 100.;
         m_text->setText(QString::number(position / 100.));
     });
 }

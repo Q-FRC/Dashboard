@@ -25,7 +25,13 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *su
 
     Globals::inst.AddListener(entry->GetTopic(), nt::EventFlags::kValueAll, [entry, subscriber](const nt::Event &event) {
         nt::Value value = entry->GetValue();
-        if (value.IsValid()) subscriber->setValue(entry->GetValue());
+
+        // ensure thread-safety
+        if (value.IsValid())
+            QMetaObject::invokeMethod(subscriber, [subscriber, value] {
+                subscriber->setValue(value);
+                subscriber->update();
+            }); // QMetaObject and its consequences have been a disaster for the human race
     });
     return topicEntryMap.value(ntTopic);
     // TODO: account for multi-topic subscriptions
