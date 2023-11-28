@@ -48,12 +48,10 @@ void FieldWidget::setImage(Globals::File image) {
     m_image = image;
     QImage qimage(m_image.fileName);
 
-    qDebug() << "ratio";
     double ratio = qMin(
         (double) this->height() / qimage.height(),
         (double) this->width() / qimage.width());
 
-    qDebug() << "Scald" << ratio;
     QImage scaled = qimage.scaledToWidth(ratio * qimage.width());
 
     m_imageLabel->setPixmap(QPixmap::fromImage(scaled));
@@ -98,7 +96,7 @@ BaseWidget *FieldWidget::fromJson(QJsonObject obj) {
 
     widget->setRobotWidth(obj.value("robotWidth").toDouble(0.));
     widget->setRobotLength(obj.value("robotLength").toDouble(0.));
-    widget->setImage(Globals::File{obj.value("image").toString(":/images/2023-field.png")});
+    widget->setImage(Globals::File{obj.value("image").toString(":/2023Field.png")});
 
     return widget;
 }

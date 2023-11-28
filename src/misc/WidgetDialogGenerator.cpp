@@ -118,7 +118,6 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, bool isResize, 
             Getter getter = iter.value();
 
             property.write(m_widget, getter());
-//            qDebug() << property.name() << getter();
         }
 
         emit widgetReady(m_widget, widgetData);
@@ -315,7 +314,6 @@ QWidget *WidgetDialogGenerator::fileProperty(QMetaProperty property) {
         QVariant value;
 
         if (switchBox->isChecked()) {
-            qDebug() << "bruh";
             value.setValue(Globals::File{":/" + builtinBox->currentText()});
         } else {
             value.setValue(Globals::File{customEdit->text()});

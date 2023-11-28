@@ -13,6 +13,7 @@
 #include "widgets/IntegerDisplayWidget.h"
 #include "widgets/IntegerDialWidget.h"
 #include "widgets/FieldWidget.h"
+#include "widgets/SendableFieldWidget.h"
 
 #include "misc/WidgetDialogGenerator.h"
 
@@ -159,6 +160,7 @@ std::pair<BaseWidget *, WidgetData> BaseWidget::fromJson(QJsonObject obj, int ta
     REGISTER_WIDGET_TYPE(WidgetTypes::IntegerDial, IntegerDialWidget)
 
     REGISTER_WIDGET_TYPE(WidgetTypes::Field, FieldWidget)
+    REGISTER_WIDGET_TYPE(WidgetTypes::SendableField, SendableFieldWidget)
 
     // implicit-condition: StringDisplay
     { // else

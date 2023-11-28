@@ -310,6 +310,7 @@ void MainWindow::relay() {
 void MainWindow::newWidget(BaseWidget *widget, WidgetData data) {
     data.tabIdx = m_centralWidget->currentIndex();
     m_widgets.insert(widget, data);
+    relay();
 }
 
 // NT Settings
@@ -451,6 +452,7 @@ void MainWindow::closeTab() {
             }
         }
     }
+    relay();
 }
 
 // New Widget
