@@ -128,6 +128,11 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow() {}
 
+void MainWindow::update() {
+    QMainWindow::update();
+    setWindowTitle("QFRCDashboard (" + QString::fromStdString(Globals::server.server) + ") - " + (Globals::inst.IsConnected() ? "" : "Not ") + "Connected");
+}
+
 /* File I/O */
 
 QJsonDocument MainWindow::saveObject() {
@@ -298,9 +303,7 @@ void MainWindow::relay() {
         }
     }
 
-    repaint();
-
-    setWindowTitle("QFRCDashboard (" + QString::fromStdString(Globals::server.server) + ") - " + (Globals::inst.IsConnected() ? "" : "Not ") + "Connected");
+    update();
 }
 
 /* Slots */

@@ -34,7 +34,7 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *su
             }); // QMetaObject and its consequences have been a disaster for the human race
     });
     return topicEntryMap.value(ntTopic);
-    // TODO: account for multi-topic subscriptions
+    // TODO: account for multi-topic subscriptions and sendables
 }
 
 void TopicStore::unsubscribe(std::string ntTopic, BaseWidget *subscriber) {

@@ -53,6 +53,8 @@ public:
     MainWindow();
     virtual ~MainWindow();
 
+    void update();
+
     // File I/O
     QJsonDocument saveObject();
     void loadObject(const QJsonDocument &doc);

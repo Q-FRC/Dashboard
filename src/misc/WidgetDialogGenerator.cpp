@@ -12,6 +12,9 @@
 #include <QPushButton>
 #include <QTableWidgetItem>
 #include <QComboBox>
+#include <QDir>
+#include <QCheckBox>
+#include <QFileDialog>
 
 bool operator<(QMetaProperty a, QMetaProperty b) {
     return a.name() < a.name();
@@ -77,6 +80,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, bool isResize, 
         PROPERTY_FUNCTION(QMetaType::QVariantMap, mapProperty)
         PROPERTY_FUNCTION(QMetaType::QBitmap, bitmapProperty)
         PROPERTY_FUNCTION(QMetaType::QImage, imageProperty)
+        PROPERTY_FUNCTION(CustomMetaTypes::File, fileProperty)
         PROPERTY_FUNCTION(QMetaType::QFont, fontProperty)
         PROPERTY_FUNCTION(QMetaType::QString, stringProperty)
         PROPERTY_FUNCTION(QMetaType::QUrl, stringProperty)
@@ -114,6 +118,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, bool isResize, 
             Getter getter = iter.value();
 
             property.write(m_widget, getter());
+//            qDebug() << property.name() << getter();
         }
 
         emit widgetReady(m_widget, widgetData);
@@ -257,6 +262,71 @@ QWidget *WidgetDialogGenerator::bitmapProperty(QMetaProperty property) {
 QWidget *WidgetDialogGenerator::imageProperty(QMetaProperty property) {
     qCritical() << "Not implemented";
     return nullptr;
+}
+
+QWidget *WidgetDialogGenerator::fileProperty(QMetaProperty property) {
+    QWidget *layoutWidget = new QWidget(this);
+    QComboBox *builtinBox = new QComboBox(this);
+
+    QString value = property.read(m_widget).value<Globals::File>().fileName;
+
+    for(const QString &image : QDir(":").entryList())
+    {
+        builtinBox->addItem(image);
+    }
+
+    QLineEdit *customEdit = new QLineEdit(this);
+    QPushButton *fileButton = new QPushButton("Select File...", this);
+
+    connect(fileButton, &QPushButton::clicked, this, [customEdit, this] {
+        QString file = QFileDialog::getOpenFileName(this, "Open Image File", QDir::homePath(), "Images (*.png *.xpm *.jpg *.jpeg *.bmp)");
+        customEdit->setText(file);
+    });
+
+    QCheckBox *switchBox = new QCheckBox("Use Built-In?", this);
+    switchBox->setChecked(value.startsWith(":"));
+
+    // TODO: relay each time
+    builtinBox->setHidden(false);
+    customEdit->setHidden(true);
+    fileButton->setHidden(true);
+
+    connect(switchBox, &QCheckBox::toggled, this, [builtinBox, customEdit, fileButton, this](bool checked) {
+        if (checked) {
+            builtinBox->setHidden(false);
+            customEdit->setHidden(true);
+            fileButton->setHidden(true);
+        } else {
+            builtinBox->setHidden(true);
+            customEdit->setHidden(false);
+            fileButton->setHidden(false);
+        }
+    });
+
+    QHBoxLayout *layout = new QHBoxLayout(layoutWidget);
+
+    layout->insertWidget(0, customEdit, 1);
+    layout->insertWidget(1, fileButton, 1);
+
+    layout->insertWidget(0, builtinBox, 1);
+    layout->insertWidget(2, switchBox, 1);
+
+    Getter func = [builtinBox, customEdit, switchBox]() -> QVariant {
+        QVariant value;
+
+        if (switchBox->isChecked()) {
+            qDebug() << "bruh";
+            value.setValue(Globals::File{":/" + builtinBox->currentText()});
+        } else {
+            value.setValue(Globals::File{customEdit->text()});
+        }
+
+        return value;
+    };
+
+    bindMetaProperty(property, func);
+
+    return layoutWidget;
 }
 
 QWidget *WidgetDialogGenerator::fontProperty(QMetaProperty property) {
