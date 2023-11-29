@@ -130,7 +130,15 @@ MainWindow::~MainWindow() {}
 
 void MainWindow::update() {
     QMainWindow::update();
-    setWindowTitle("QFRCDashboard (" + QString::fromStdString(Globals::server.server) + ") - " + (Globals::inst.IsConnected() ? "" : "Not ") + "Connected");
+
+    QMapIterator<BaseWidget *, WidgetData> iterator(m_widgets);
+
+    while (iterator.hasNext())
+    {
+        iterator.next();
+
+        iterator.key()->update();
+    }
 }
 
 /* File I/O */
@@ -263,6 +271,11 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
     }
 }
 
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    update();
+}
+
 QMap<BaseWidget *, WidgetData> MainWindow::widgetsForTab(int tabIdx) {
     QMap<BaseWidget *, WidgetData> map{};
 
@@ -350,14 +363,13 @@ void MainWindow::setNtSettings(ServerData data) {
 // File Actions
 void MainWindow::save() {
     if (m_filename.isEmpty()) {
-        m_filename = QFileDialog::getSaveFileName(
-            this, "Save File", QDir::homePath(), "JSON Files (*.json);;All Files (*)");
+        return saveAs();
     }
 
     QFile file(m_filename);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::critical(this, "Save Failed!", "Failed to open file for writing."
+        QMessageBox::critical(this, "Save Failed!", "Failed to open file for writing. "
                                                     "Directory may not exist or may be read-only.",
                               QMessageBox::StandardButton::Ok);
         return;
@@ -373,7 +385,7 @@ void MainWindow::saveAs() {
         this, "Save File", QDir::homePath(), "JSON Files (*.json);;All Files (*)"));
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::critical(this, "Save Failed!", "Failed to open file for writing."
+        QMessageBox::critical(this, "Save Failed!", "Failed to open file for writing. "
                                                     "Directory may not exist or may be read-only.",
                               QMessageBox::StandardButton::Ok);
         return;

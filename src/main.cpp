@@ -19,6 +19,17 @@ int main(int argc, char **argv) {
     app.setOrganizationName("binex-dsk");
     app.setApplicationName("QFRCDashboard");
 
+    MainWindow *window = new MainWindow();
+    window->show();
+
+    Globals::inst.AddConnectionListener(true, [window] (const nt::Event &event) {
+        bool connected = event.Is(nt::EventFlags::kConnected);
+
+        QMetaObject::invokeMethod(window, [window, connected] {
+            window->setWindowTitle("QFRCDashboard (" + QString::fromStdString(Globals::server.server) + ") - " + (connected ? "" : "Not ") + "Connected");
+        });
+    });
+
     Globals::inst.StartClient4("QFRCDashboard");
     Globals::inst.SetServer(Globals::server.server.c_str(), NT_DEFAULT_PORT4);
 
@@ -63,10 +74,6 @@ int main(int argc, char **argv) {
     REGISTER_TYPE(TopicTypes::Field2d, WidgetTypes::SendableField, "Field2d");
 
 #undef REGISTER_TYPE
-
-    MainWindow *window = new MainWindow();
-
-    window->show();
 
     QSettings settings(&app);
 

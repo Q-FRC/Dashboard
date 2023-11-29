@@ -42,6 +42,7 @@ set(PROJECT_SOURCES
         src/misc/WidgetDialogGenerator.cpp
         src/misc/ShapedFrame.cpp
         src/misc/BetterDial.cpp
+        src/misc/FieldImage.cpp
 
         src/stores/TopicStore.cpp
         src/stores/TypeStore.cpp
@@ -73,6 +74,7 @@ set(PROJECT_SOURCES
         include/misc/WidgetDialogGenerator.h
         include/misc/ShapedFrame.h
         include/misc/BetterDial.h
+        include/misc/FieldImage.h
 
         include/stores/TopicStore.h
         include/stores/TypeStore.h

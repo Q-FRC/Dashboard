@@ -44,6 +44,7 @@ private:
     QString m_filename{};
 
     void mousePressEvent(QMouseEvent *event);
+    void resizeEvent(QResizeEvent *event);
 
     QMap<BaseWidget *, WidgetData> widgetsForTab(int tabIdx);
 

@@ -2,8 +2,7 @@
 
 #include "widgets/BaseWidget.h"
 
-extern double FieldWidth;
-extern double FieldLength;
+#include "misc/FieldImage.h"
 
 class FieldWidget : public BaseWidget
 {
@@ -17,7 +16,7 @@ class FieldWidget : public BaseWidget
 protected:
     std::vector<double> m_value{};
 
-    QLabel *m_imageLabel;
+    FieldImage *m_imageLabel;
     Globals::File m_image;
 
     double m_width;
@@ -34,8 +33,6 @@ public:
 
     Globals::File &image();
     void setImage(Globals::File image);
-
-//    void paintEvent(QPaintEvent *event) override;
 
     void setValue(const nt::Value &value) override;
 

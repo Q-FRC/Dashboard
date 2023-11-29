@@ -265,6 +265,8 @@ QWidget *WidgetDialogGenerator::imageProperty(QMetaProperty property) {
 
 QWidget *WidgetDialogGenerator::fileProperty(QMetaProperty property) {
     QWidget *layoutWidget = new QWidget(this);
+    QHBoxLayout *layout = new QHBoxLayout(layoutWidget);
+
     QComboBox *builtinBox = new QComboBox(this);
 
     QString value = property.read(m_widget).value<Globals::File>().fileName;
@@ -285,30 +287,42 @@ QWidget *WidgetDialogGenerator::fileProperty(QMetaProperty property) {
     QCheckBox *switchBox = new QCheckBox("Use Built-In?", this);
     switchBox->setChecked(value.startsWith(":"));
 
-    // TODO: relay each time
-    builtinBox->setHidden(false);
-    customEdit->setHidden(true);
-    fileButton->setHidden(true);
+    if (switchBox->isChecked()) {
+        builtinBox->setCurrentText(value.mid(2));
+    } else {
+        customEdit->setText(value);
+    }
 
-    connect(switchBox, &QCheckBox::toggled, this, [builtinBox, customEdit, fileButton, this](bool checked) {
+    // re-lay each time for a smooth transition
+    auto updateLayout = [builtinBox, customEdit, fileButton, switchBox, layout, this](bool checked) {
+        layout->removeWidget(switchBox);
         if (checked) {
-            builtinBox->setHidden(false);
-            customEdit->setHidden(true);
-            fileButton->setHidden(true);
+            layout->removeWidget(customEdit);
+            layout->removeWidget(fileButton);
+
+            customEdit->hide();
+            fileButton->hide();
+
+            layout->addWidget(builtinBox, 1);
+
+            builtinBox->show();
         } else {
-            builtinBox->setHidden(true);
-            customEdit->setHidden(false);
-            fileButton->setHidden(false);
+            layout->removeWidget(builtinBox);
+
+            builtinBox->hide();
+
+            layout->addWidget(customEdit, 1);
+            layout->addWidget(fileButton, 1);
+
+            customEdit->show();
+            fileButton->show();
         }
-    });
+        layout->addWidget(switchBox, 1);
+    };
 
-    QHBoxLayout *layout = new QHBoxLayout(layoutWidget);
+    updateLayout(switchBox->isChecked());
 
-    layout->insertWidget(0, customEdit, 1);
-    layout->insertWidget(1, fileButton, 1);
-
-    layout->insertWidget(0, builtinBox, 1);
-    layout->insertWidget(2, switchBox, 1);
+    connect(switchBox, &QCheckBox::toggled, this, updateLayout);
 
     Getter func = [builtinBox, customEdit, switchBox]() -> QVariant {
         QVariant value;

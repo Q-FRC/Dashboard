@@ -1,9 +1,9 @@
 #include "widgets/FieldWidget.h"
 
 #include <QJsonArray>
-
-double FieldWidth = 8.2296;
-double FieldLength = 8.2296 * 2.;
+#include <QPaintEvent>
+#include <QPainter>
+#include <QPainterPath>
 
 FieldWidget::FieldWidget(const QString &title, const std::vector<double> &defaultValue, const QString &topic, bool fromSendable)
     : BaseWidget(WidgetTypes::Field, title, topic)
@@ -14,9 +14,7 @@ FieldWidget::FieldWidget(const QString &title, const std::vector<double> &defaul
         setTopic(topic + "/Robot");
     }
 
-    // TODO: specify preset images
-    m_imageLabel = new QLabel(this);
-//    setImage(Globals::File{":/images/2023-field.png"});
+    m_imageLabel = new FieldImage(this);
     m_imageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     m_layout->addWidget(m_imageLabel, 1, 0, 3, 1, Qt::AlignHCenter);
@@ -30,6 +28,7 @@ double FieldWidget::robotWidth() {
 
 void FieldWidget::setRobotWidth(double width) {
     m_width = width;
+    m_imageLabel->setRobotWidth(width);
 }
 
 double FieldWidget::robotLength() {
@@ -38,6 +37,7 @@ double FieldWidget::robotLength() {
 
 void FieldWidget::setRobotLength(double length) {
     m_length = length;
+    m_imageLabel->setRobotLength(length);
 }
 
 Globals::File &FieldWidget::image() {
@@ -46,23 +46,13 @@ Globals::File &FieldWidget::image() {
 
 void FieldWidget::setImage(Globals::File image) {
     m_image = image;
-    QImage qimage(m_image.fileName);
-
-    double ratio = qMin(
-        (double) this->height() / qimage.height(),
-        (double) this->width() / qimage.width());
-
-    QImage scaled = qimage.scaledToWidth(ratio * qimage.width());
-
-    m_imageLabel->setPixmap(QPixmap::fromImage(scaled));
+    m_imageLabel->setImage(image);
 }
-
-//void FieldWidget::paintEvent(QPaintEvent *event) {
-//    BaseWidget::paintEvent(event);
-//}
 
 void FieldWidget::setValue(const nt::Value &value) {
     m_value = decltype(m_value)(value.GetDoubleArray().begin(), value.GetDoubleArray().end());
+
+    m_imageLabel->setValue(m_value);
 }
 
 QJsonObject FieldWidget::saveObject() {
