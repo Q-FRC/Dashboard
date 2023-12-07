@@ -47,6 +47,7 @@ private:
     QPoint m_dragOffset;
     BaseWidget *m_draggedWidget;
     WidgetData m_draggedWidgetData;
+    bool m_dragValid;
 
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -66,6 +67,8 @@ public:
     // File I/O
     QJsonDocument saveObject();
     void loadObject(const QJsonDocument &doc);
+
+    bool positionContainsWidget(int row, int col, int tab);
 
 public slots:
     void newWidget(BaseWidget *widget, WidgetData data);

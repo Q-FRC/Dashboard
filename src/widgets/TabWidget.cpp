@@ -45,11 +45,11 @@ void TabWidget::setMaxSize(const QPoint &maxSize) {
     }
 }
 
-QPoint TabWidget::selectedIndex() {
+WidgetData TabWidget::selectedIndex() {
     return m_selectedIndex;
 }
 
-void TabWidget::setSelectedIndex(const QPoint &selectedIndex) {
+void TabWidget::setSelectedIndex(const WidgetData &selectedIndex) {
     m_selectedIndex = selectedIndex;
     setHasSelection(true);
 }
@@ -60,6 +60,14 @@ bool TabWidget::hasSelection() {
 
 void TabWidget::setHasSelection(const bool &hasSelection) {
     m_hasSelection = hasSelection;
+}
+
+bool TabWidget::isValidSelection() {
+    return m_isValidSelection;
+}
+
+void TabWidget::setValidSelection(const bool &isValidSelection) {
+    m_isValidSelection = isValidSelection;
 }
 
 void TabWidget::paintEvent(QPaintEvent *event) {
@@ -77,7 +85,7 @@ void TabWidget::paintEvent(QPaintEvent *event) {
             QPoint(xPos, height())));
     }
 
-    for (int y = 0; y < m_maxSize.x(); ++y) {
+    for (int y = 0; y < m_maxSize.y(); ++y) {
         double yPos = height() / m_maxSize.y() * y;
         painter.drawLine(QLine(
             QPoint(0, yPos),
@@ -85,20 +93,22 @@ void TabWidget::paintEvent(QPaintEvent *event) {
     }
 
     if (m_hasSelection) {
-        double row = m_selectedIndex.x();
-        double col = m_selectedIndex.y();
+        int row = m_selectedIndex.row;
+        int col = m_selectedIndex.col;
+        int rowSpan = m_selectedIndex.rowSpan;
+        int colSpan = m_selectedIndex.colSpan;
 
         double w = this->width() / m_maxSize.x();
         double h = this->height() / m_maxSize.y();
 
-        double x = w * row;
-        double y = h * col;
+        double x = w * col;
+        double y = h * row;
 
-        pen.setColor(Qt::green);
+        pen.setColor(m_isValidSelection ? Qt::green : Qt::red);
         pen.setWidth(6);
 
         painter.setPen(pen);
         painter.drawRect(QRect(
-            x, y, w, h));
+            x, y, w * colSpan, h * rowSpan));
     }
 }

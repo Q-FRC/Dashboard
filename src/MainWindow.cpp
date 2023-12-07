@@ -241,6 +241,18 @@ void MainWindow::loadObject(const QJsonDocument &doc) {
     relay();
 }
 
+bool MainWindow::positionContainsWidget(int row, int col, int tab) {
+    for (const WidgetData &data : m_widgets.values())
+    {
+        if (data.tabIdx == tab && (data.row <= row && row < data.row + data.rowSpan)
+            && (data.col <= col && col < data.col + data.colSpan)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /* Private Member Functions */
 void MainWindow::mousePressEvent(QMouseEvent *event) {
     BaseWidget *widgetPressed = nullptr;
@@ -298,29 +310,47 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event) {
         return;
 
     m_draggedWidget->move(QPoint(event->position().x(), event->position().y()) - m_dragOffset);
-    TabWidget *tab = m_tabWidgets.at(m_centralWidget->currentIndex());
-    tab->layout()->removeWidget(m_draggedWidget);
-    m_widgets.remove(m_draggedWidget);
 
-    int row = std::floor(event->position().x() / (tab->width() / tab->maxSize().x()));
-    int col = std::floor(event->position().y() / (tab->height() / tab->maxSize().y()));
+    int tabIdx = m_centralWidget->currentIndex();
+    TabWidget *tab = m_tabWidgets.at(tabIdx);
 
-    tab->setSelectedIndex(QPoint(row, col));
+    if (!tab->hasSelection()) {
+        tab->layout()->removeWidget(m_draggedWidget);
+        m_widgets.remove(m_draggedWidget);
+    }
+
+    int col = std::floor(event->position().x() / (tab->width() / tab->maxSize().x()));
+    int row = std::floor(event->position().y() / (tab->height() / tab->maxSize().y()));
+
+    int colSpan = m_draggedWidgetData.colSpan;
+    int rowSpan = m_draggedWidgetData.rowSpan;
+
+    tab->setSelectedIndex(WidgetData{tabIdx, row, col, rowSpan, colSpan});
+
+    tab->setValidSelection(!positionContainsWidget(row, col, tabIdx) &&
+                           (row + rowSpan - 1 < tab->maxSize().x() && (col + colSpan - 1) < tab->maxSize().y()));
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
+    if (m_tabWidgets.empty()) return;
     TabWidget *tab = m_tabWidgets.at(m_centralWidget->currentIndex());
 
     if (!tab->hasSelection()) return;
 
-    WidgetData data = m_draggedWidgetData;
-    QPoint index = tab->selectedIndex();
+    WidgetData data;
+
+    if (tab->isValidSelection()) {
+        data = tab->selectedIndex();
+    } else {
+        data = m_draggedWidgetData;
+    }
 
     m_widgets.insert(m_draggedWidget,
-                     WidgetData{m_centralWidget->currentIndex(), index.y(), index.x(), data.rowSpan, data.colSpan});
+                     data);
     relay();
-
     tab->setHasSelection(false);
+
+    m_draggedWidget = nullptr;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {

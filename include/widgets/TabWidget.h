@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QPoint>
 
+#include "Globals.h"
+
 class TabWidget : public QWidget
 {
     Q_OBJECT
@@ -11,9 +13,10 @@ private:
     QGridLayout *m_layout;
     
     QPoint m_maxSize;
-    QPoint m_selectedIndex;
+    WidgetData m_selectedIndex;
 
     bool m_hasSelection = false;
+    bool m_isValidSelection = true;
 
     void updateSpacers();
 public:
@@ -25,11 +28,14 @@ public:
     QPoint maxSize();
     void setMaxSize(const QPoint &maxSize);
 
-    QPoint selectedIndex();
-    void setSelectedIndex(const QPoint &selectedIndex);
+    WidgetData selectedIndex();
+    void setSelectedIndex(const WidgetData &selectedIndex);
 
     bool hasSelection();
     void setHasSelection(const bool &hasSelection);
+
+    bool isValidSelection();
+    void setValidSelection(const bool &isValidSelection);
 
     void paintEvent(QPaintEvent *event) override;
 };
