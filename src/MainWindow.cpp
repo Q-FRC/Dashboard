@@ -20,6 +20,7 @@
 #include <QApplication>
 #include <QMetaProperty>
 #include <QShortcut>
+#include <QDrag>
 
 MainWindow::MainWindow()
 {
@@ -230,6 +231,7 @@ void MainWindow::loadObject(const QJsonDocument &doc) {
 
             WidgetTypes type = (WidgetTypes) widgetObject.value("widgetType").toInt();
             BaseWidget *widget = BaseWidget::defaultWidgetFromTopic("", type);
+            widget->setParent(this);
             WidgetData data = widget->fromJson(widgetObject, tabIdx);
 
             m_widgets.insert(widget, data);
@@ -278,7 +280,47 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
         });
 
         menu->popup(event->globalPosition().toPoint());
+    } else if (event->button() == Qt::LeftButton && widgetPressed) {
+        m_dragStart = event->position().toPoint();
+        m_draggedWidget = widgetPressed;
+        m_draggedWidgetData = m_widgets.value(widgetPressed);
+        m_draggedWidget->raise();
+
+        m_dragOffset = (event->position() - widgetPressed->pos()).toPoint();
     }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event) {
+    if (!(event->buttons() & Qt::LeftButton) || !m_draggedWidget)
+        return;
+    if ((event->pos() - m_dragStart).manhattanLength()
+        < QApplication::startDragDistance())
+        return;
+
+    m_draggedWidget->move(QPoint(event->position().x(), event->position().y()) - m_dragOffset);
+    TabWidget *tab = m_tabWidgets.at(m_centralWidget->currentIndex());
+    tab->layout()->removeWidget(m_draggedWidget);
+    m_widgets.remove(m_draggedWidget);
+
+    int row = std::floor(event->position().x() / (tab->width() / tab->maxSize().x()));
+    int col = std::floor(event->position().y() / (tab->height() / tab->maxSize().y()));
+
+    tab->setSelectedIndex(QPoint(row, col));
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
+    TabWidget *tab = m_tabWidgets.at(m_centralWidget->currentIndex());
+
+    if (!tab->hasSelection()) return;
+
+    WidgetData data = m_draggedWidgetData;
+    QPoint index = tab->selectedIndex();
+
+    m_widgets.insert(m_draggedWidget,
+                     WidgetData{m_centralWidget->currentIndex(), index.y(), index.x(), data.rowSpan, data.colSpan});
+    relay();
+
+    tab->setHasSelection(false);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
@@ -518,6 +560,7 @@ void MainWindow::newCameraView() {
         }
     } else {
         BaseWidget *widget = BaseWidget::defaultWidgetFromTopic("", WidgetTypes::CameraView);
+        widget->setParent(this);
         WidgetDialogGenerator *dialog = new WidgetDialogGenerator(widget, this);
         dialog->setWindowTitle("New Camera View");
         dialog->open();

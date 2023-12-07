@@ -11,6 +11,9 @@ private:
     QGridLayout *m_layout;
     
     QPoint m_maxSize;
+    QPoint m_selectedIndex;
+
+    bool m_hasSelection = false;
 
     void updateSpacers();
 public:
@@ -19,10 +22,14 @@ public:
 
     QGridLayout *layout();
 
-    bool addWidget(QWidget *widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = Qt::Alignment());
-
     QPoint maxSize();
     void setMaxSize(const QPoint &maxSize);
+
+    QPoint selectedIndex();
+    void setSelectedIndex(const QPoint &selectedIndex);
+
+    bool hasSelection();
+    void setHasSelection(const bool &hasSelection);
 
     void paintEvent(QPaintEvent *event) override;
 };

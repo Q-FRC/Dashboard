@@ -3,13 +3,13 @@
 #include "networktables/NetworkTableEntry.h"
 #include "Globals.h"
 
-#include <QWidget>
+#include <QFrame>
 #include <QLabel>
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QJsonObject>
 
-class BaseWidget : public QWidget
+class BaseWidget : public QFrame
 {
     Q_OBJECT
 

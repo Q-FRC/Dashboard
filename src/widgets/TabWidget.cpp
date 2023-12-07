@@ -45,6 +45,23 @@ void TabWidget::setMaxSize(const QPoint &maxSize) {
     }
 }
 
+QPoint TabWidget::selectedIndex() {
+    return m_selectedIndex;
+}
+
+void TabWidget::setSelectedIndex(const QPoint &selectedIndex) {
+    m_selectedIndex = selectedIndex;
+    setHasSelection(true);
+}
+
+bool TabWidget::hasSelection() {
+    return m_hasSelection;
+}
+
+void TabWidget::setHasSelection(const bool &hasSelection) {
+    m_hasSelection = hasSelection;
+}
+
 void TabWidget::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
 
@@ -65,5 +82,23 @@ void TabWidget::paintEvent(QPaintEvent *event) {
         painter.drawLine(QLine(
             QPoint(0, yPos),
             QPoint(width(), yPos)));
+    }
+
+    if (m_hasSelection) {
+        double row = m_selectedIndex.x();
+        double col = m_selectedIndex.y();
+
+        double w = this->width() / m_maxSize.x();
+        double h = this->height() / m_maxSize.y();
+
+        double x = w * row;
+        double y = h * col;
+
+        pen.setColor(Qt::green);
+        pen.setWidth(6);
+
+        painter.setPen(pen);
+        painter.drawRect(QRect(
+            x, y, w, h));
     }
 }

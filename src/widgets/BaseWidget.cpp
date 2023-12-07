@@ -34,8 +34,11 @@ BaseWidget::BaseWidget(const WidgetTypes &type, const QString &title, const QStr
 
     m_layout->addWidget(m_title, 0, 0);
 
-    setStyleSheet("BaseWidget { background-color: black; border: 1px solid white; color: white; }");
+    setStyleSheet("BaseWidget { background-color: " + qApp->palette().color(QPalette::ColorRole::Base).darker(150).name() + "; border: 1px solid white; color: white; }");
     m_title->setStyleSheet("QLineEdit { border: none; border-bottom: 2px solid white; }");
+
+    this->setFrameShape(QFrame::Panel);
+    this->setFrameShadow(QFrame::Raised);
 
     QFont titleFont = this->titleFont();
     titleFont.setBold(true);

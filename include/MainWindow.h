@@ -43,7 +43,14 @@ private:
 
     QString m_filename{};
 
+    QPoint m_dragStart;
+    QPoint m_dragOffset;
+    BaseWidget *m_draggedWidget;
+    WidgetData m_draggedWidgetData;
+
     void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);
 
     QMap<BaseWidget *, WidgetData> widgetsForTab(int tabIdx);
