@@ -241,12 +241,14 @@ void MainWindow::loadObject(const QJsonDocument &doc) {
     relay();
 }
 
-bool MainWindow::positionContainsWidget(int row, int col, int tab) {
-    for (const WidgetData &data : m_widgets.values())
-    {
-        if (data.tabIdx == tab && (data.row <= row && row < data.row + data.rowSpan)
-            && (data.col <= col && col < data.col + data.colSpan)) {
-            return true;
+bool MainWindow::positionContainsWidget(WidgetData widgetData) {
+    TabWidget *tab = m_tabWidgets.at(widgetData.tabIdx);
+    for (int i = 0; i < widgetData.rowSpan; ++i) {
+        for (int j = 0; j < widgetData.colSpan; ++j) {
+            int row = widgetData.row + i;
+            int col = widgetData.col + j;
+
+            if (tab->layout()->itemAtPosition(row, col)) return true;
         }
     }
 
@@ -264,13 +266,20 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
         iterator.next();
         BaseWidget *widget = iterator.key();
         WidgetData data = iterator.value();
-        if (widget->geometry().contains(event->pos()) && data.tabIdx == m_centralWidget->currentIndex()) {
+        if (data.tabIdx != m_centralWidget->currentIndex()) continue;
+        TabWidget *tab = m_tabWidgets.at(data.tabIdx);
+
+        // map to tab widget as the base widget's geometry is relative to the tab widget
+        if (widget->geometry().contains(tab->mapFromGlobal(event->globalPosition()).toPoint())) {
             widgetPressed = widget;
             break;
         }
     }
 
-    if (event->button() == Qt::RightButton && widgetPressed) {
+    if (!widgetPressed) {
+        return;
+    }
+    if (event->button() == Qt::RightButton) {
         QMenu *menu = widgetPressed->constructContextMenu(m_widgets.value(widgetPressed));
 
         connect(widgetPressed, &BaseWidget::reconfigRequested, this, [this, widgetPressed](BaseWidget *widget, WidgetData data) {
@@ -292,46 +301,86 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
         });
 
         menu->popup(event->globalPosition().toPoint());
-    } else if (event->button() == Qt::LeftButton && widgetPressed) {
-        m_dragStart = event->position().toPoint();
-        m_draggedWidget = widgetPressed;
-        m_draggedWidgetData = m_widgets.value(widgetPressed);
-        m_draggedWidget->raise();
+        return;
+    }
 
+    if (event->button() != Qt::LeftButton) {
+        return;
+    }
+
+    m_dragStart = event->position().toPoint();
+    m_draggedWidget = widgetPressed;
+    m_draggedWidgetData = m_widgets.value(widgetPressed);
+    m_draggedWidget->raise();
+
+    if (widgetPressed->resizing() == NONE) {
         m_dragOffset = (event->position() - widgetPressed->pos()).toPoint();
+        m_dragging = true;
+    } else {
+        m_currentResize = widgetPressed->resizing();
+        m_initialSize = widgetPressed->geometry();
+
+        setCursor(widgetPressed->cursor());
+        m_resizing = true;
     }
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
-    if (!(event->buttons() & Qt::LeftButton) || !m_draggedWidget)
+    if (!(event->buttons() & Qt::LeftButton))
         return;
     if ((event->pos() - m_dragStart).manhattanLength()
         < QApplication::startDragDistance())
         return;
 
-    m_draggedWidget->move(QPoint(event->position().x(), event->position().y()) - m_dragOffset);
+    TabWidget *tab = m_tabWidgets.at(m_centralWidget->currentIndex());
+    QPoint point = tab->mapFromGlobal(event->globalPosition()).toPoint();
 
+    if (m_dragging) {
+        dragMove(point);
+    } else if (m_resizing) {
+        resizeMove(point);
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
+    if (m_dragging) {
+        dragRelease(event->pos());
+    } else if (m_resizing) {
+        resizeRelease(event->pos());
+    }
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    update();
+}
+
+void MainWindow::dragMove(QPoint point) {
     int tabIdx = m_centralWidget->currentIndex();
     TabWidget *tab = m_tabWidgets.at(tabIdx);
+
+    QPoint offset = (tab->mapToGlobal(point)) - m_dragOffset;
+    m_draggedWidget->move(offset);
 
     if (!tab->hasSelection()) {
         tab->layout()->removeWidget(m_draggedWidget);
         m_widgets.remove(m_draggedWidget);
     }
 
-    int col = std::floor(event->position().x() / (tab->width() / tab->maxSize().x()));
-    int row = std::floor(event->position().y() / (tab->height() / tab->maxSize().y()));
+    int col = std::floor(point.x() / (tab->width() / tab->maxSize().x()));
+    int row = std::floor(point.y() / (tab->height() / tab->maxSize().y()));
 
     int colSpan = m_draggedWidgetData.colSpan;
     int rowSpan = m_draggedWidgetData.rowSpan;
 
-    tab->setSelectedIndex(WidgetData{tabIdx, row, col, rowSpan, colSpan});
+    WidgetData data{tabIdx, row, col, rowSpan, colSpan};
+    tab->setSelectedIndex(data);
 
-    tab->setValidSelection(!positionContainsWidget(row, col, tabIdx) &&
+    tab->setValidSelection(!positionContainsWidget(data) &&
                            (row + rowSpan - 1 < tab->maxSize().x() && (col + colSpan - 1) < tab->maxSize().y()));
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
+void MainWindow::dragRelease(QPoint point) {
     if (m_tabWidgets.empty()) return;
     TabWidget *tab = m_tabWidgets.at(m_centralWidget->currentIndex());
 
@@ -351,11 +400,104 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
     tab->setHasSelection(false);
 
     m_draggedWidget = nullptr;
+    m_dragging = false;
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event) {
-    QMainWindow::resizeEvent(event);
-    update();
+void MainWindow::resizeRelease(QPoint point) {
+    if (m_tabWidgets.empty()) return;
+    TabWidget *tab = m_tabWidgets.at(m_centralWidget->currentIndex());
+
+    if (!tab->hasSelection()) return;
+
+    WidgetData data;
+
+    if (tab->isValidSelection()) {
+        data = tab->selectedIndex();
+    } else {
+        data = m_draggedWidgetData;
+    }
+
+    m_widgets.insert(m_draggedWidget,
+                     data);
+    relay();
+    tab->setHasSelection(false);
+
+    m_resizing = false;
+    m_draggedWidget = nullptr;
+}
+
+void MainWindow::resizeMove(QPoint point) {
+    if (m_initialSize == QRect()) {
+        return;
+    }
+
+    int tabIdx = m_centralWidget->currentIndex();
+    TabWidget *tab = m_tabWidgets.at(tabIdx);
+
+    if (!tab->hasSelection()) {
+        tab->layout()->removeWidget(m_draggedWidget);
+        m_widgets.remove(m_draggedWidget);
+    }
+
+    QPoint offset = tab->mapToGlobal(point) - m_dragStart;
+    ResizeDirection dir = m_currentResize;
+
+    int dx = 0;
+    int dy = 0;
+    int dh = 0;
+    int dw = 0;
+
+    if (dir & LEFT) {
+        dx = offset.x();
+        dw = -offset.x();
+    }
+    if (dir & RIGHT) {
+        dw = offset.x();
+    }
+    if (dir & TOP) {
+        dy = offset.y();
+        dh = -offset.y();
+    }
+    if (dir & BOTTOM) {
+        dh = offset.y();
+    }
+
+    int colF = std::floor(point.x() / (tab->width() / tab->maxSize().x()));
+    int rowF = std::floor(point.y() / (tab->height() / tab->maxSize().y()));
+
+    int colI = m_draggedWidgetData.col;
+    int rowI = m_draggedWidgetData.row;
+
+    int col = dir & LEFT ? std::min(colF, colI) : colI;
+    int row = dir & TOP ? std::min(rowF, rowI) : rowI;
+    int colSpan = (dir & LEFT || dir & RIGHT) ? std::abs(colF - colI) + 1 : m_draggedWidgetData.colSpan;
+    int rowSpan = (dir & TOP || dir & BOTTOM) ? std::abs(rowF - rowI) + 1 : m_draggedWidgetData.rowSpan;
+
+    if (colSpan < 1) colSpan = 1;
+    if (rowSpan < 1) rowSpan = 1;
+
+    if (dw <= -m_initialSize.width()) {
+        dw = 0;
+        colSpan = 1;
+
+    }
+    if (dh <= -m_initialSize.height()) {
+        dh = 0;
+        rowSpan = 1;
+    }
+
+    m_draggedWidget->setGeometry(
+        m_initialSize.x() + dx,
+        m_initialSize.y() + dy,
+        m_initialSize.width() + dw,
+        m_initialSize.height() + dh);
+
+    WidgetData data{tabIdx, row, col, rowSpan, colSpan};
+    tab->setSelectedIndex(data);
+
+    tab->setValidSelection(!positionContainsWidget(data) &&
+                           (row + rowSpan - 1 < tab->maxSize().x() && (col + colSpan - 1) < tab->maxSize().y()));
+
 }
 
 QMap<BaseWidget *, WidgetData> MainWindow::widgetsForTab(int tabIdx) {

@@ -43,16 +43,28 @@ private:
 
     QString m_filename{};
 
+    // Dragging
     QPoint m_dragStart;
     QPoint m_dragOffset;
     BaseWidget *m_draggedWidget;
     WidgetData m_draggedWidgetData;
-    bool m_dragValid;
+    bool m_dragging = false;
+
+    // Resizing
+    ResizeDirection m_currentResize;
+    QRect m_initialSize;
+    bool m_resizing = false;
 
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);
+
+    void dragMove(QPoint point);
+    void dragRelease(QPoint point);
+
+    void resizeMove(QPoint point);
+    void resizeRelease(QPoint point);
 
     QMap<BaseWidget *, WidgetData> widgetsForTab(int tabIdx);
 
@@ -68,7 +80,7 @@ public:
     QJsonDocument saveObject();
     void loadObject(const QJsonDocument &doc);
 
-    bool positionContainsWidget(int row, int col, int tab);
+    bool positionContainsWidget(WidgetData data);
 
 public slots:
     void newWidget(BaseWidget *widget, WidgetData data);
