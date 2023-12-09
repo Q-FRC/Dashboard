@@ -1,19 +1,17 @@
 #pragma once
 
+// #include "CentralWidget.h"
+
 #include "widgets/BaseWidget.h"
 #include "widgets/TabWidget.h"
 
 #include <QMainWindow>
 #include <QLabel>
 #include <QGridLayout>
-#include <QIcon>
-#include <QPixmap>
-#include <QStackedLayout>
 #include <QMap>
 #include <QMouseEvent>
-#include <QTabWidget>
-#include <QListWidget>
 #include <QJsonDocument>
+#include <QTabWidget>
 
 #include "Globals.h"
 
@@ -22,24 +20,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     QTabWidget *m_centralWidget;
-    QStackedLayout *m_layout;
 
     QToolBar *m_toolbar;
     QMenuBar *m_menubar;
 
     QList<TabWidget *> m_tabWidgets;
 
-    /**
-     * Widget map. Int array format is as follows:
-     * - tab idx
-     * - row idx
-     * - column idx
-     * - rowspan
-     * - colspan
-    */
     QMap<BaseWidget *, WidgetData> m_widgets;
-
-    bool m_needsRelay = true;
 
     QString m_filename{};
 
@@ -60,9 +47,11 @@ private:
     void mouseReleaseEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);
 
+    void dragStart(QPoint point, QPoint offset);
     void dragMove(QPoint point);
     void dragRelease(QPoint point);
 
+    void resizeStart(QPoint point);
     void resizeMove(QPoint point);
     void resizeRelease(QPoint point);
 
@@ -81,6 +70,7 @@ public:
     void loadObject(const QJsonDocument &doc);
 
     bool positionContainsWidget(WidgetData data);
+    bool eventFilter(QObject *object, QEvent *event);
 
 public slots:
     void newWidget(BaseWidget *widget, WidgetData data);
@@ -108,4 +98,6 @@ public slots:
 
     // About Menu
     void aboutDialog();
+signals:
+    void dragDone(BaseWidget *widget, WidgetData data);
 };

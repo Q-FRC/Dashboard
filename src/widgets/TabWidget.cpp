@@ -1,11 +1,15 @@
 #include "widgets/TabWidget.h"
+#include "qpainterpath.h"
 
 #include <QPaintEvent>
 #include <QPainter>
 
-TabWidget::TabWidget(const QPoint &maxSize)
+TabWidget::TabWidget(const QPoint &maxSize, QWidget *parent) : QWidget(parent)
 {
     m_layout = new QGridLayout(this);
+
+    // clazy:skip
+    installEventFilter(parent);
 
     setMaxSize(maxSize);
 }
@@ -50,8 +54,12 @@ WidgetData TabWidget::selectedIndex() {
 }
 
 void TabWidget::setSelectedIndex(const WidgetData &selectedIndex) {
+    bool doUpdate = m_selectedIndex != selectedIndex;
+
     m_selectedIndex = selectedIndex;
     setHasSelection(true);
+
+    if (doUpdate) update();
 }
 
 bool TabWidget::hasSelection() {
@@ -75,8 +83,9 @@ void TabWidget::paintEvent(QPaintEvent *event) {
 
     QPainter painter(this);
     QPen pen;
-    pen.setColor(Qt::red);
-    pen.setWidth(2);
+    pen.setColor(Qt::gray);
+    pen.setWidth(1);
+    painter.setPen(pen);
 
     for (int x = 0; x < m_maxSize.x(); ++x) {
         double xPos = width() / m_maxSize.x() * x;
@@ -108,7 +117,12 @@ void TabWidget::paintEvent(QPaintEvent *event) {
         pen.setWidth(6);
 
         painter.setPen(pen);
-        painter.drawRect(QRect(
+
+        QPainterPath path;
+
+        path.addRect(QRect(
             x, y, w * colSpan, h * rowSpan));
+
+        painter.drawPath(path);
     }
 }

@@ -17,10 +17,8 @@ private:
 
     bool m_hasSelection = false;
     bool m_isValidSelection = true;
-
-    void updateSpacers();
 public:
-    TabWidget(const QPoint &maxSize);
+    TabWidget(const QPoint &maxSize, QWidget *parent = nullptr);
     virtual ~TabWidget();
 
     QGridLayout *layout();
