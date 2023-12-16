@@ -83,6 +83,7 @@ private:
     QVariant readFontProperty(const QMetaProperty &property, const QJsonValue &value);
     QVariant readStringProperty(const QMetaProperty &property, const QJsonValue &value);
     QVariant readShapeProperty(const QMetaProperty &property, const QJsonValue &value);
+    QVariant readTopicListProperty(const QMetaProperty &property, const QJsonValue &value);
 
     QJsonValue writeDoubleProperty(const QMetaProperty &property);
     QJsonValue writeIntProperty(const QMetaProperty &property);
@@ -94,6 +95,7 @@ private:
     QJsonValue writeFontProperty(const QMetaProperty &property);
     QJsonValue writeStringProperty(const QMetaProperty &property);
     QJsonValue writeShapeProperty(const QMetaProperty &property);
+    QJsonValue writeTopicListProperty(const QMetaProperty &property);
 
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);

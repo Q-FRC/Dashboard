@@ -11,8 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets MultimediaWidgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets)
+find_package(QT NAMES Qt6 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets Charts)
 find_package(ntcore REQUIRED)
 
 #add_compile_options(-fsanitize=address)
@@ -39,6 +39,7 @@ set(PROJECT_SOURCES
         src/widgets/FieldWidget.cpp
         src/widgets/SendableFieldWidget.cpp
         src/widgets/CommandWidget.cpp
+        src/widgets/GraphWidget.cpp
 
         src/misc/NewWidgetTreeDialog.cpp
         src/misc/NTSettingsDialog.cpp
@@ -73,6 +74,7 @@ set(PROJECT_SOURCES
         include/widgets/FieldWidget.h
         include/widgets/SendableFieldWidget.h
         include/widgets/CommandWidget.h
+        include/widgets/GraphWidget.h
 
         include/misc/NewWidgetTreeDialog.h
         include/misc/NTSettingsDialog.h
@@ -104,7 +106,7 @@ endif()
 set(QAPPLICATION_CLASS QApplication)
 add_subdirectory("SingleApplication")
 
-target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::MultimediaWidgets ntcore SingleApplication::SingleApplication)
+target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::MultimediaWidgets Qt${QT_VERSION_MAJOR}::Charts ntcore SingleApplication::SingleApplication)
 
 target_include_directories(QFRCDashboard PRIVATE include/)
 target_include_directories(QFRCDashboard PRIVATE SingleApplication/)
@@ -116,8 +118,8 @@ install(TARGETS QFRCDashboard
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-set(Dashboard_VERSION "1.0.0-beta4")
-set(Dashboard_VERSION_NUMBER "1.0.0.4")
+set(Dashboard_VERSION "1.0.0")
+set(Dashboard_VERSION_NUMBER "1.0.0")
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(QFRCDashboard)

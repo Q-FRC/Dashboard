@@ -1,5 +1,10 @@
 #include "misc/WidgetDialogGenerator.h"
 
+#include "misc/NewWidgetTreeDialog.h"
+
+#include "qscreen.h"
+#include "stores/FilterStore.h"
+
 #include "qheaderview.h"
 #include "widgets/BaseWidget.h"
 
@@ -15,9 +20,10 @@
 #include <QDir>
 #include <QCheckBox>
 #include <QFileDialog>
+#include <QApplication>
 
 bool operator<(QMetaProperty a, QMetaProperty b) {
-    return a.name() < a.name();
+    return a.name() < b.name();
 }
 
 WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, QWidget *parent, bool isResize, WidgetData data) : QDialog(parent)
@@ -85,6 +91,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, QWidget *parent
         PROPERTY_FUNCTION(QMetaType::QString, stringProperty)
         PROPERTY_FUNCTION(QMetaType::QUrl, stringProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::FrameShape, shapeProperty)
+        PROPERTY_FUNCTION(CustomMetaTypes::TopicList, topicListProperty)
         { // else
             qCritical() << "Bad metatype for property" << property.name();
             continue;
@@ -358,6 +365,7 @@ QWidget *WidgetDialogGenerator::stringProperty(QMetaProperty property) {
 }
 
 QWidget *WidgetDialogGenerator::shapeProperty(QMetaProperty property) {
+
     QComboBox *comboBox = new QComboBox(this);
     comboBox->addItems(Globals::shapeNameMap.keys());
 
@@ -370,4 +378,96 @@ QWidget *WidgetDialogGenerator::shapeProperty(QMetaProperty property) {
     bindMetaProperty(property, func);
 
     return comboBox;
+}
+
+QWidget *WidgetDialogGenerator::topicListProperty(QMetaProperty property) {
+    QWidget *widget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(widget);
+
+    QListWidget *list = new QListWidget(widget);
+    layout->addWidget(list, 1);
+
+    auto topicListToStringList = [](const QList<Globals::Topic> &list) -> QStringList {
+        QStringList nameList{};
+
+        for (const Globals::Topic & topic : list) {
+            nameList.append(topic.name);
+        }
+
+        return nameList;
+    };
+
+    QStringList names = topicListToStringList(property.read(m_widget).value<QList<Globals::Topic>>());
+    list->addItems(names);
+
+    QPushButton *topicButton = new QPushButton("Select Topic...", this);
+    connect(topicButton, &QPushButton::clicked, this, [this, list] {
+        NewWidgetTreeDialog *dialog = new NewWidgetTreeDialog(true, this);
+        auto filteredTopics = NewWidgetTreeDialog::filterNumberTypes(FilterStore::UnfilteredTopics);
+
+        dialog->constructList(filteredTopics);
+        dialog->setWindowTitle("Select a Topic");
+
+        QRect screenSize = qApp->primaryScreen()->geometry();
+        dialog->resize(screenSize.width() / 2., screenSize.height() / 2.);
+
+        dialog->show();
+
+        QObject *receiver = new QObject(this);
+        connect(dialog, &NewWidgetTreeDialog::topicReady, this, [this, receiver, list](const Globals::Topic &topic) {
+            list->addItem(topic.name);
+            receiver->deleteLater();
+        });
+    });
+
+    QPushButton *addButton = new QPushButton("Add", this);
+    connect(addButton, &QPushButton::clicked, this, [list] {
+        QListWidgetItem *item = new QListWidgetItem("Topic", list);
+        item->setFlags(Qt::ItemFlag::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        list->addItem(item);
+    });
+
+    QPushButton *removeButton = new QPushButton("Delete", this);
+    removeButton->setShortcut(Qt::Key_Delete);
+    connect(removeButton, &QPushButton::clicked, this, [list] {
+        QList<QListWidgetItem *> selectedItems = list->selectedItems();
+
+        for (QListWidgetItem * item : selectedItems) {
+            delete item;
+        }
+    });
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+
+    buttonLayout->addWidget(topicButton);
+    buttonLayout->addWidget(addButton);
+    buttonLayout->addWidget(removeButton);
+
+    layout->addLayout(buttonLayout);
+
+    auto stringListToTopicList = [](const QStringList &list) -> QList<Globals::Topic> {
+        QList<Globals::Topic> topicList{};
+
+        for (const QString & name : list) {
+            Globals::Topic topic = FilterStore::topicFromName(name, FilterStore::FilteredTopics);
+            if (topic.name == name) {
+                topicList.append(topic);
+            }
+        }
+
+        return topicList;
+    };;
+
+    auto func = [list, stringListToTopicList]() -> QVariant {
+        QStringList names{};
+        for (int i = 0; i < list->count(); ++i) {
+            names.append(list->item(i)->text());
+        }
+
+        return QVariant::fromValue(stringListToTopicList(names));
+    };
+
+    bindMetaProperty(property, func);
+
+    return widget;
 }

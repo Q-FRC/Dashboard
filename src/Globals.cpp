@@ -20,6 +20,10 @@ bool operator==(const WidgetData &a, const WidgetData &b) {
            (a.tabIdx == b.tabIdx);
 }
 
+uint Globals::qHash(const Globals::Topic &topic) {
+    return qHash(topic.name);
+}
+
 bool Globals::Topic::operator==(const Globals::Topic &other) const {
     return (this->name == other.name);// && (this->type == other.type);
 }

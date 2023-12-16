@@ -99,13 +99,23 @@ MainWindow::MainWindow()
         m_menubar->addAction(newWidgetAction);
     } // End New Widget
 
-    { // Camera View
-        QAction *cameraAction = new QAction("New &Camera View", this);
+    { // Standalone Widgets
+        QMenu *standaloneMenu = new QMenu("New Standa&lone Widget", this);
 
-        connect(cameraAction, &QAction::triggered, this, &MainWindow::newCameraView);
+        QAction *cameraAction = new QAction("Camera View", standaloneMenu);
+        connect(cameraAction, &QAction::triggered, this, [this] {
+            makeNewWidget(WidgetTypes::CameraView);
+        });
+        standaloneMenu->addAction(cameraAction);
 
-        m_menubar->addAction(cameraAction);
-    } // End Camera View
+        QAction *graphAction = new QAction("Graph", standaloneMenu);
+        connect(graphAction, &QAction::triggered, this, [this] {
+            makeNewWidget(WidgetTypes::Graph);
+        });
+        standaloneMenu->addAction(graphAction);
+
+        m_menubar->addMenu(standaloneMenu);
+    } // End Standalone Widgets
 
     { // About
         QMenu *aboutMenu = new QMenu("&About");
@@ -588,6 +598,35 @@ void MainWindow::relay() {
     update();
 }
 
+void MainWindow::makeNewWidget(WidgetTypes type) {
+    if (m_tabWidgets.length() == 0) {
+        QMessageBox::StandardButton warning = QMessageBox::warning(this, "Cannot Add Widget", "You must select a tab before adding a widget.\nWould you like to add a tab now?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (warning == QMessageBox::StandardButton::Yes) {
+            newTab();
+        }
+    } else {
+        BaseWidget *widget = BaseWidget::defaultWidgetFromTopic("", type);
+        m_draggedWidget = widget;
+
+        WidgetData data{m_centralWidget->currentIndex(), 0, 0, 1, 1};
+        m_draggedWidgetData = data;
+
+        dragStart(QCursor::pos(), QPoint(0, 0));
+
+        // ensure connection only occurs once
+        QObject *receiver = new QObject(this);
+        connect(this, &MainWindow::dragDone, receiver, [this, receiver, widget](BaseWidget *, WidgetData data) {
+            receiver->deleteLater();
+
+            WidgetDialogGenerator *dialog = new WidgetDialogGenerator(widget, this, false, data);
+            dialog->setWindowTitle("New Widget");
+            dialog->show();
+
+            connect(dialog, &WidgetDialogGenerator::widgetReady, this, &MainWindow::newWidget);
+        });
+    }
+}
+
 /* Slots */
 void MainWindow::newWidget(BaseWidget *widget, WidgetData data) {
     widget->installEventFilter(this);
@@ -804,30 +843,10 @@ void MainWindow::newWidgetPopup() {
     }
 }
 
-// Camera View
-void MainWindow::newCameraView() {
-    if (m_tabWidgets.length() == 0) {
-        QMessageBox::StandardButton warning = QMessageBox::warning(this, "Cannot Add Widget", "You must select a tab before adding a widget.\nWould you like to add a tab now?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-        if (warning == QMessageBox::StandardButton::Yes) {
-            newTab();
-        }
-    } else {
-        BaseWidget *widget = BaseWidget::defaultWidgetFromTopic("", WidgetTypes::CameraView);
-        widget->setParent(this);
-        widget->installEventFilter(this);
-
-        WidgetDialogGenerator *dialog = new WidgetDialogGenerator(widget, this);
-        dialog->setWindowTitle("New Camera View");
-        dialog->open();
-
-        connect(dialog, &WidgetDialogGenerator::widgetReady, this, &MainWindow::newWidget);
-    }
-}
-
 //  Menu
 void MainWindow::aboutDialog() {
     QStringList aboutString;
-    aboutString << "Current Version: 1.0.0-beta5"
+    aboutString << "Current Version: 1.0.0"
                 << "GitHub: https://github.com/binex-dsk/QFRCDashboard"
                 << "Author: Carson Rueter <swurl@swurl.xyz>"
                 << "Contributors: Ashley Hawkins"

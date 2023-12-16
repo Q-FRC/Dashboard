@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
                                  "or even change their fonts--by right clicking any widget.");
     }
 
-    Globals::inst.AddListener({{""}}, nt::EventFlags::kTopic, [] (const nt::Event &event) {
+    Globals::inst.AddListener({{""}}, nt::EventFlags::kTopic, [window] (const nt::Event &event) {
         std::string topicName(event.GetTopicInfo()->name);
 
         if (event.Is(nt::EventFlags::kPublish)) {
