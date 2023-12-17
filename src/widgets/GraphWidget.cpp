@@ -1,5 +1,12 @@
 #include "widgets/GraphWidget.h"
 #include "stores/TopicStore.h"
+#include "stores/FilterStore.h"
+
+#include <QMouseEvent>
+#include <QFileDialog>
+#include <QFile>
+#include <QTextStream>
+#include <QMessageBox>
 
 GraphWidget::GraphWidget(const QString &topic, const QString &title)
     : BaseWidget(WidgetTypes::Graph, title, topic) {
@@ -54,9 +61,12 @@ void GraphWidget::setTopics(QList<Globals::Topic> topics) {
             QLineSeries *series = new QLineSeries;
             series->setName(topic.name);
             series->append(m_elapsed.elapsed() / 1000., TopicStore::getDoubleFromEntry(entry));
+
             m_chart->chart()->addSeries(series);
             series->attachAxis(m_xAxis);
             series->attachAxis(m_yAxis);
+            // series->setUseOpenGL(true);
+            series->setMarkerSize(100);
 
             m_seriesMap.insert(topic, series);
         }
@@ -124,3 +134,59 @@ void GraphWidget::updateGraph() {
 }
 
 void GraphWidget::setValue(const nt::Value &value) {}
+
+QMenu *GraphWidget::constructContextMenu(WidgetData data) {
+    QMenu *menu = BaseWidget::constructContextMenu(data);
+
+    QAction *csvAction = new QAction("Export CSV...", menu);
+    menu->addAction(csvAction);
+
+    connect(csvAction, &QAction::triggered, this, &GraphWidget::exportCSVPopup);
+
+    return menu;
+}
+
+
+void GraphWidget::mouseReleaseEvent(QMouseEvent *event) {
+    return event->ignore();
+}
+
+void GraphWidget::exportCSVPopup() {
+    QString fileString = QFileDialog::getSaveFileName(this, "Export CSV To...", QDir::homePath(), "CSV Files (*.csv);;All Files (*)");
+
+    exportCSV(fileString);
+}
+
+void GraphWidget::exportCSV(const QString &fileName) {
+    QFile file(fileName);
+
+    if (file.open(QIODevice::WriteOnly)) {
+        QTextStream stream(&file);
+        stream << "time" << ',' << FilterStore::topicNames(m_seriesMap.keys()).join(',') << Qt::endl;
+
+        // i hate CSV
+        QMap<double, QStringList> timeValueMap{};
+        for (const QLineSeries *series : m_seriesMap.values()) {
+            for (const QPointF &point : series->points()) {
+                QStringList list{};
+                if (timeValueMap.contains(point.x())) {
+                    list = timeValueMap.value(point.x());
+                }
+                list << QString::number(point.y());
+                timeValueMap.insert(point.x(), list);
+            }
+        }
+
+        QMapIterator iter(timeValueMap);
+
+        while (iter.hasNext()) {
+            iter.next();
+            stream << iter.key() << ',' << iter.value().join(',') << Qt::endl;
+        }
+
+        stream.flush();
+        file.close();
+    } else {
+        QMessageBox::critical(this, "Failed to Open File For Reading", "Failed to open file for reading. Directory may not exist, or you may lack permissions to write here.");
+    }
+}

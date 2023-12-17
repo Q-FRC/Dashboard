@@ -387,17 +387,9 @@ QWidget *WidgetDialogGenerator::topicListProperty(QMetaProperty property) {
     QListWidget *list = new QListWidget(widget);
     layout->addWidget(list, 1);
 
-    auto topicListToStringList = [](const QList<Globals::Topic> &list) -> QStringList {
-        QStringList nameList{};
+    auto topics = property.read(m_widget).value<QList<Globals::Topic>>();
 
-        for (const Globals::Topic & topic : list) {
-            nameList.append(topic.name);
-        }
-
-        return nameList;
-    };
-
-    QStringList names = topicListToStringList(property.read(m_widget).value<QList<Globals::Topic>>());
+    QStringList names = FilterStore::topicNames(topics);
     list->addItems(names);
 
     QPushButton *topicButton = new QPushButton("Select Topic...", this);

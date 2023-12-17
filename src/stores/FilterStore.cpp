@@ -110,3 +110,12 @@ Globals::Topic FilterStore::topicFromName(const QString &topicName, const QList<
 
     return Globals::Topic{topicName, TopicTypes::String};
 }
+
+// please coroutines
+QStringList FilterStore::topicNames(QList<Globals::Topic> list) {
+    QStringList strings{};
+    for (const Globals::Topic &topic : list) {
+        strings.append(topic.name);
+    }
+    return strings;
+}

@@ -8,6 +8,7 @@
 #include <QChart>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QMenu>
 
 #include <QValueAxis>
 
@@ -38,6 +39,8 @@ private:
     double m_maxYValue;
     double m_minYValue;
 
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 public:
     GraphWidget(const QString &topic = "", const QString &title = "");
 
@@ -58,8 +61,13 @@ public:
 
     void setValue(const nt::Value &value) override;
 
+    QMenu *constructContextMenu(WidgetData data) override;
+
 public slots:
     void updateGraph();
+
+    void exportCSVPopup();
+    void exportCSV(const QString &fileName);
 };
 
 #endif // GRAPHWIDGET_H
