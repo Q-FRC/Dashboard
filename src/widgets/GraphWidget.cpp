@@ -65,7 +65,6 @@ void GraphWidget::setTopics(QList<Globals::Topic> topics) {
             m_chart->chart()->addSeries(series);
             series->attachAxis(m_xAxis);
             series->attachAxis(m_yAxis);
-            // series->setUseOpenGL(true);
             series->setMarkerSize(100);
 
             m_seriesMap.insert(topic, series);
@@ -114,14 +113,49 @@ void GraphWidget::setMinYValue(double min) {
     m_yAxis->setMin(min);
 }
 
+Globals::GraphXAxis GraphWidget::xAxisData() {
+    return m_xAxisData;
+}
+
+void GraphWidget::setXAxisData(const Globals::GraphXAxis &axis) {
+    m_xAxisData = axis;
+
+    m_xAxis->setTitleText(axis.useTime ? "Time" : axis.topic);
+
+    m_xAxisEntry = TopicStore::subscribeWriteOnly(axis.topic.toStdString(), this);
+
+    if (m_xAxisData != axis) {
+        for (QLineSeries *series : m_seriesMap.values()) series->clear();
+        // reset values to NaN
+        m_minXValue = std::nan("0");
+        m_maxXValue = std::nan("1");
+    }
+}
+
+double GraphWidget::getCurrentXAxis() {
+    if (m_xAxisData.useTime) {
+        return m_elapsed.elapsed() / 1000.;
+    }
+    return TopicStore::getDoubleFromEntry(m_xAxisEntry);
+}
 
 void GraphWidget::updateGraph() {
-    double elapsedTime = m_elapsed.elapsed() / 1000.;
+    if (!m_ready) return;
 
-    double lowerBound = elapsedTime - m_maxTimeScale;
-    if (lowerBound < 0) lowerBound = 0;
+    double xValue = getCurrentXAxis(), lowerBound;
+    if (m_xAxisData.useTime) {
+        lowerBound = xValue - m_maxTimeScale;
+        if (lowerBound < 0) lowerBound = 0;
 
-    m_xAxis->setRange(lowerBound, elapsedTime);
+        m_minXValue = lowerBound;
+        m_maxXValue = xValue;
+    }
+    else {
+        if (std::isnan(m_maxXValue) || xValue >= m_maxXValue) m_maxXValue = xValue + 0.1;
+        if (std::isnan(m_minXValue) || xValue <= m_minXValue) m_minXValue = xValue - 0.1;
+    }
+
+    m_xAxis->setRange(m_minXValue, m_maxXValue);
 
     for (const Globals::Topic &topic : m_topics) {
         nt::NetworkTableEntry *entry = m_entryMap.value(topic);
@@ -129,7 +163,7 @@ void GraphWidget::updateGraph() {
 
         double value = TopicStore::getDoubleFromEntry(entry);
 
-        series->append(elapsedTime, value);
+        series->append(xValue, value);
     }
 }
 
@@ -162,22 +196,23 @@ void GraphWidget::exportCSV(const QString &fileName) {
 
     if (file.open(QIODevice::WriteOnly)) {
         QTextStream stream(&file);
-        stream << "time" << ',' << FilterStore::topicNames(m_seriesMap.keys()).join(',') << Qt::endl;
+        QString xLabel = m_xAxisData.useTime ? "Time" : m_xAxisData.topic;
+        stream << xLabel << ',' << FilterStore::topicNames(m_seriesMap.keys()).join(',') << Qt::endl;
 
         // i hate CSV
-        QMap<double, QStringList> timeValueMap{};
+        QMap<double, QStringList> xyValueMap{};
         for (const QLineSeries *series : m_seriesMap.values()) {
             for (const QPointF &point : series->points()) {
                 QStringList list{};
-                if (timeValueMap.contains(point.x())) {
-                    list = timeValueMap.value(point.x());
+                if (xyValueMap.contains(point.x())) {
+                    list = xyValueMap.value(point.x());
                 }
                 list << QString::number(point.y());
-                timeValueMap.insert(point.x(), list);
+                xyValueMap.insert(point.x(), list);
             }
         }
 
-        QMapIterator iter(timeValueMap);
+        QMapIterator iter(xyValueMap);
 
         while (iter.hasNext()) {
             iter.next();

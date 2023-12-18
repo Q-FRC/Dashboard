@@ -20,6 +20,7 @@ class GraphWidget : public BaseWidget
     Q_PROPERTY(double Time_Scale_Seconds READ maxTimeScale WRITE setMaxTimeScale REQUIRED)
     Q_PROPERTY(double Max_Y_Value READ maxYValue WRITE setMaxYValue REQUIRED)
     Q_PROPERTY(double Min_Y_Value READ minYValue WRITE setMinYValue REQUIRED)
+    Q_PROPERTY(Globals::GraphXAxis X_Axis_Topic READ xAxisData WRITE setXAxisData REQUIRED)
 private:
     QList<Globals::Topic> m_topics{};
 
@@ -38,6 +39,13 @@ private:
 
     double m_maxYValue;
     double m_minYValue;
+
+    double m_maxXValue;
+    double m_minXValue;
+
+    Globals::GraphXAxis m_xAxisData{true, ""};
+
+    nt::NetworkTableEntry *m_xAxisEntry;
 
     void mouseReleaseEvent(QMouseEvent *event) override;
 
@@ -58,6 +66,11 @@ public:
 
     double minYValue();
     void setMinYValue(double min);
+
+    Globals::GraphXAxis xAxisData();
+    void setXAxisData(const Globals::GraphXAxis &axis);
+
+    double getCurrentXAxis();
 
     void setValue(const nt::Value &value) override;
 

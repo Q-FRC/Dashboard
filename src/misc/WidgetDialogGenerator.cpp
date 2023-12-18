@@ -71,7 +71,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, QWidget *parent
 
     for (int i = offset; i < propertyCount; ++i) {
         QMetaProperty property = widget->metaObject()->property(i);
-        if (!property.isRequired()) {
+        if (!property.isRequired() || (m_isResize && property.isConstant())) {
             continue;
         }
 
@@ -92,6 +92,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, QWidget *parent
         PROPERTY_FUNCTION(QMetaType::QUrl, stringProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::FrameShape, shapeProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::TopicList, topicListProperty)
+        PROPERTY_FUNCTION(CustomMetaTypes::XAxis, xAxisProperty)
         { // else
             qCritical() << "Bad metatype for property" << property.name();
             continue;
@@ -109,6 +110,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, QWidget *parent
         QString name = m_nameInput->text();
 
         WidgetData widgetData;
+        widgetData.tabIdx = 0;
         widgetData.row = m_rowInput->value();
         widgetData.col = m_columnInput->value();
         widgetData.rowSpan = m_rowSpanInput->value();
@@ -127,6 +129,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, QWidget *parent
             property.write(m_widget, getter());
         }
 
+        m_widget->setReady(true);
         emit widgetReady(m_widget, widgetData);
         close();
     });
@@ -461,5 +464,61 @@ QWidget *WidgetDialogGenerator::topicListProperty(QMetaProperty property) {
 
     bindMetaProperty(property, func);
 
+    return widget;
+}
+
+QWidget *WidgetDialogGenerator::xAxisProperty(QMetaProperty property) {
+    Globals::GraphXAxis xAxis = property.read(m_widget).value<Globals::GraphXAxis>();
+    QWidget *widget = new QWidget(this);
+    QHBoxLayout *layout = new QHBoxLayout(widget);
+
+    QCheckBox *checkbox = new QCheckBox("Use Time?", widget);
+    checkbox->setChecked(xAxis.useTime);
+
+    QLineEdit *lineEdit = new QLineEdit(widget);
+    lineEdit->setText(xAxis.topic);
+
+    QPushButton *topicButton = new QPushButton("Select Topic...", this);
+    connect(topicButton, &QPushButton::clicked, this, [this, lineEdit] {
+        NewWidgetTreeDialog *dialog = new NewWidgetTreeDialog(true, this);
+        auto filteredTopics = NewWidgetTreeDialog::filterNumberTypes(FilterStore::UnfilteredTopics);
+
+        dialog->constructList(filteredTopics);
+        dialog->setWindowTitle("Select a Topic");
+
+        QRect screenSize = qApp->primaryScreen()->geometry();
+        dialog->resize(screenSize.width() / 2., screenSize.height() / 2.);
+
+        dialog->show();
+
+        QObject *receiver = new QObject(this);
+        connect(dialog, &NewWidgetTreeDialog::topicReady, this, [this, receiver, lineEdit](const Globals::Topic &topic) {
+            lineEdit->setText(topic.name);
+            receiver->deleteLater();
+        });
+    });
+
+    layout->addWidget(checkbox, 0);
+    layout->addWidget(lineEdit, 1);
+    layout->addWidget(topicButton, 0);
+
+    auto showLineEdit = [lineEdit, topicButton](bool checked) {
+        lineEdit->setVisible(!checked);
+        topicButton->setVisible(!checked);
+    };
+
+    showLineEdit(checkbox->isChecked());
+
+    connect(checkbox, &QCheckBox::clicked, this, showLineEdit);
+
+    auto func = [lineEdit, checkbox]() -> QVariant {
+        Globals::GraphXAxis axis{};
+        axis.useTime = checkbox->isChecked();
+        axis.topic = lineEdit->displayText();
+
+        return QVariant::fromValue(axis);
+    };
+
+    bindMetaProperty(property, func);
     return widget;
 }

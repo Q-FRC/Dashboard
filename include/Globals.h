@@ -94,16 +94,25 @@ typedef struct Topic {
 } Topic;
 
 extern uint qHash(const Globals::Topic &topic);
+
+typedef struct GraphXAxis {
+    bool useTime;
+    QString topic;
+
+    bool operator==(const struct GraphXAxis &other) const;
+} GraphXAxis;
 }
 
 Q_DECLARE_METATYPE(Globals::File)
 Q_DECLARE_METATYPE(Globals::Topic)
+Q_DECLARE_METATYPE(Globals::GraphXAxis)
 
 namespace CustomMetaTypes {
 static const int FrameShape = qMetaTypeId<Globals::FrameShape>();
 static const int File = qMetaTypeId<Globals::File>();
 static const int Topic = qMetaTypeId<Globals::Topic>();
 static const int TopicList = qMetaTypeId<QList<Globals::Topic>>();
+static const int XAxis = qMetaTypeId<Globals::GraphXAxis>();
 }
 
 extern bool operator==(const WidgetData &a, const WidgetData &b);

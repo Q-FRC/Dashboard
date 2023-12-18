@@ -25,7 +25,11 @@ uint Globals::qHash(const Globals::Topic &topic) {
 }
 
 bool Globals::Topic::operator==(const Globals::Topic &other) const {
-    return (this->name == other.name);// && (this->type == other.type);
+    return (this->name == other.name);
+}
+
+bool Globals::GraphXAxis::operator==(const Globals::GraphXAxis &other) const {
+    return (other.useTime && this->useTime) || ((other.useTime == this->useTime) && (other.topic == this->topic));
 }
 
 QMap<QString, Globals:: FrameShape> Globals::shapeNameMap = {

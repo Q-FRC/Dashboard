@@ -68,6 +68,8 @@ public:
     QWidget *shapeProperty(QMetaProperty property);
 
     QWidget *topicListProperty(QMetaProperty property);
+
+    QWidget *xAxisProperty(QMetaProperty property);
 signals:
     void widgetReady(BaseWidget *widget, WidgetData data);
 };

@@ -183,6 +183,7 @@ QJsonObject BaseWidget::saveObject() {
         PROPERTY_FUNCTION(QMetaType::QUrl, writeStringProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::FrameShape, writeShapeProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::TopicList, writeTopicListProperty)
+        PROPERTY_FUNCTION(CustomMetaTypes::XAxis, writeXAxisProperty)
         { // else
             qCritical() << "Bad metatype for property" << property.name() << (QMetaType::Type) id;
             continue;
@@ -222,6 +223,7 @@ WidgetData BaseWidget::fromJson(QJsonObject obj, int tabIdx) {
         PROPERTY_FUNCTION(QMetaType::QUrl, readStringProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::FrameShape, readShapeProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::TopicList, readTopicListProperty)
+        PROPERTY_FUNCTION(CustomMetaTypes::XAxis, readXAxisProperty)
         { // else
             qCritical() << "Bad metatype for property" << property.name() << (QMetaType::Type) id;
             continue;
@@ -237,6 +239,8 @@ WidgetData BaseWidget::fromJson(QJsonObject obj, int tabIdx) {
     data.col = geometry.at(1).toInt(0);
     data.rowSpan = geometry.at(2).toInt(1);
     data.colSpan = geometry.at(3).toInt(1);
+
+    m_ready = true;
 
     return data;
 }
@@ -343,6 +347,17 @@ QVariant BaseWidget::readTopicListProperty(const QMetaProperty &property, const 
     return QVariant::fromValue<QList<Globals::Topic>>(list);
 }
 
+QVariant BaseWidget::readXAxisProperty(const QMetaProperty &property, const QJsonValue &value) {
+    QJsonObject obj = value.toObject({});
+    Globals::GraphXAxis current = property.read(this).value<Globals::GraphXAxis>();
+
+    return QVariant::fromValue<Globals::GraphXAxis>(
+        Globals::GraphXAxis{
+            obj.value("useTime").toBool(current.useTime),
+                obj.value("topic").toString(current.topic)
+        });
+}
+
 // Write
 
 QJsonValue BaseWidget::writeDoubleProperty(const QMetaProperty &property) {
@@ -404,6 +419,16 @@ QJsonValue BaseWidget::writeTopicListProperty(const QMetaProperty &property) {
     return array;
 }
 
+QJsonValue BaseWidget::writeXAxisProperty(const QMetaProperty &property) {
+    Globals::GraphXAxis xAxis = property.read(this).value<Globals::GraphXAxis>();
+
+    return QJsonObject(
+        {
+            {"useTime", xAxis.useTime},
+            {"topic", xAxis.topic}
+        }
+    );
+}
 
 void BaseWidget::mouseMoveEvent(QMouseEvent *event) {
     QRect rect = this->rect();
@@ -415,7 +440,7 @@ void BaseWidget::mouseMoveEvent(QMouseEvent *event) {
     QRect pointerRect = QRect(event->position().toPoint() - QPoint(10, 10), QSize(20, 20));
 
     QCursor qcursor;
-    Qt::CursorShape shape = Qt::SizeAllCursor;
+    Qt::CursorShape shape = Qt::ArrowCursor;
 
     ResizeDirection direction = NONE;
 
