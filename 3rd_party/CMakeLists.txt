@@ -16,9 +16,7 @@ if (NOT USE_SYSTEM_PROTOBUF)
     set(Protobuf_DIR ${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake/protobuf)
     set(Protobuf_ROOT ${CMAKE_CURRENT_BINARY_DIR}/protobuf)
 
-    if (MSVC)
-        set(Protobuf_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/protobuf/include)
-    endif()
+    set(Protobuf_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/protobuf/src)
 
     file(WRITE "${Protobuf_DIR}/protobuf-targets.cmake" "")
 else()
