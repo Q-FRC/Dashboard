@@ -15,11 +15,14 @@ if (NOT USE_SYSTEM_PROTOBUF)
 
     set(Protobuf_DIR ${CMAKE_CURRENT_BINARY_DIR}/protobuf/cmake/protobuf)
     set(Protobuf_ROOT ${CMAKE_CURRENT_BINARY_DIR}/protobuf)
-    #    set(Protobuf_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/protobuf/include)
+
+    if (MSVC)
+        set(Protobuf_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/protobuf/include)
+    endif()
 
     file(WRITE "${Protobuf_DIR}/protobuf-targets.cmake" "")
 else()
-    find_package(protobuf)
+    find_package(Protobuf)
 endif()
 
 # WPILIB
