@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.25)
 
 project(QFRCDashboard VERSION 0.1 LANGUAGES CXX)
+
+#set(CMAKE_PREFIX_PATH "C:\\Qt6\\6.6.1\\msvc2019_64") # Windows thing
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -9,15 +11,14 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
+
+option(USE_SYSTEM_NTCORE "Use system ntcore installation" OFF)
+option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" OFF)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets MultimediaWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets)
-#find_package(ntcore REQUIRED)
 add_subdirectory(3rd_party)
-
-#add_compile_options(-fsanitize=address)
-#add_link_options(-fsanitize=address)
 
 set(PROJECT_SOURCES
         src/main.cpp
@@ -105,9 +106,10 @@ endif()
 set(QAPPLICATION_CLASS QApplication)
 add_subdirectory("SingleApplication")
 
+find_package(ntcore)
+
 target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::MultimediaWidgets ntcore SingleApplication::SingleApplication)
 
-target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
 target_include_directories(QFRCDashboard PRIVATE include/)
 target_include_directories(QFRCDashboard PRIVATE SingleApplication/)
 

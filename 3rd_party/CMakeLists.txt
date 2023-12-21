@@ -1,25 +1,48 @@
-cmake_minimum_required(VERSION 3.12)
-#project(test_app)
+cmake_minimum_required(VERSION 3.25)
+include(FetchContent)
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+set(CMAKE_POLICY_DEFAULT_CMP0074 NEW)
 
-# Compile WPILIB
-set(USE_SYSTEM_EIGEN OFF)
-set(USE_SYSTEM_FMTLIB OFF)
-set(WITH_JAVA OFF)
-set(WITH_CSCORE OFF)
-set(WITH_NTCORE ON)
-set(WITH_WPIMATH OFF)
-set(WITH_WPILIB OFF)
-set(WITH_TESTS OFF)
-set(WITH_GUI OFF)
-set(WITH_SIMULATION_MODULES OFF)
+# protobuf
+if (NOT USE_SYSTEM_PROTOBUF)
+    set(protobuf_ALLOW_CCACHE ON)
+    set(protobuf_MSVC_STATIC_RUNTIME OFF)
+    set(protobuf_BUILD_SHARED_LIBS ON)
+    set(protobuf_BUILD_TESTS OFF)
+    set(ABSL_PROPAGATE_CXX_STD ON)
 
-if(NOT DEFINED ENV{WPI_BUILT})
-	set(ENV{WPI_BUILT} ON)
-	add_subdirectory(allwpilib)
+    FetchContent_Declare(
+            protobuf
+            GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+            GIT_TAG        7f94235e552599141950d7a4a3eaf93bc87d1b22 # 25.1
+            FIND_PACKAGE_ARGS NAMES Protobuf
+    )
+    FetchContent_MakeAvailable(protobuf)
+else()
+    find_package(Protobuf)
 endif()
 
-#add_executable(test_app test.cpp)
-#target_include_directories(test_app PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
-#target_link_libraries(test_app PRIVATE ntcore)
+# WPILIB
+if (NOT USE_SYSTEM_NTCORE)
+    set(USE_SYSTEM_EIGEN OFF)
+    set(USE_SYSTEM_FMTLIB OFF)
+    set(WITH_JAVA OFF)
+    set(WITH_CSCORE OFF)
+    set(WITH_NTCORE ON)
+    set(WITH_WPIMATH OFF)
+    set(WITH_WPILIB OFF)
+    set(WITH_TESTS OFF)
+    set(WITH_GUI OFF)
+    set(WITH_SIMULATION_MODULES OFF)
+
+    set(NO_WERROR ON)
+    FetchContent_Declare(
+            ntcore
+            GIT_REPOSITORY https://github.com/binex-dsk/allwpilib.git
+            GIT_TAG        0b799b77f18f764847fc51eb4675e198d011b6f5
+            FIND_PACKAGE_ARGS NAMES ntcore
+    )
+    FetchContent_MakeAvailable(ntcore)
+
+endif()
