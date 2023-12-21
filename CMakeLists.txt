@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.28)
 
 project(QFRCDashboard VERSION 0.1 LANGUAGES CXX)
 
@@ -11,13 +11,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
+option(USE_SYSTEM_NTCORE "Use system ntcore installation" ON)
+option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
+
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets MultimediaWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets)
-#find_package(ntcore REQUIRED)
 add_subdirectory(3rd_party)
-
-#add_compile_options(-fsanitize=address)
-#add_link_options(-fsanitize=address)
 
 set(PROJECT_SOURCES
         src/main.cpp
