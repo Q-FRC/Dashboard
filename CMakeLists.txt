@@ -104,6 +104,10 @@ endif()
 set(QAPPLICATION_CLASS QApplication)
 add_subdirectory("SingleApplication")
 
+if (USE_SYSTEM_NTCORE)
+    find_package(ntcore)
+endif()
+
 target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::MultimediaWidgets ntcore SingleApplication::SingleApplication)
 
 target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
