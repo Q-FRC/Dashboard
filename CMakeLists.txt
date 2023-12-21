@@ -16,6 +16,9 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 option(USE_SYSTEM_NTCORE "Use system ntcore installation" OFF)
 option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" OFF)
 
+option(USE_SYSTEM_NTCORE "Use system ntcore installation" ON)
+option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
+
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets MultimediaWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets)
 add_subdirectory(3rd_party)
@@ -110,6 +113,7 @@ find_package(ntcore)
 
 target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::MultimediaWidgets ntcore SingleApplication::SingleApplication)
 
+target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
 target_include_directories(QFRCDashboard PRIVATE include/)
 target_include_directories(QFRCDashboard PRIVATE SingleApplication/)
 

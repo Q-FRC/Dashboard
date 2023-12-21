@@ -37,6 +37,7 @@ if (NOT USE_SYSTEM_NTCORE)
     set(WITH_SIMULATION_MODULES OFF)
 
     set(NO_WERROR ON)
+    
     FetchContent_Declare(
             ntcore
             GIT_REPOSITORY https://github.com/binex-dsk/allwpilib.git
@@ -44,5 +45,4 @@ if (NOT USE_SYSTEM_NTCORE)
             FIND_PACKAGE_ARGS NAMES ntcore
     )
     FetchContent_MakeAvailable(ntcore)
-
 endif()
