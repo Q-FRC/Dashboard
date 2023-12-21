@@ -19,8 +19,11 @@ option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
 find_package(ntcore)
 if( NOT ${ntcore_FOUND} )
     set(USE_SYSTEM_NTCORE OFF)
+endif()
+
+find_package(Protobuf)
+if( NOT ${Protobuf_FOUND} )
     set(USE_SYSTEM_PROTOBUF OFF)
-    set(BUILD_SHARED_LIBS OFF)
 endif()
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets MultimediaWidgets)
