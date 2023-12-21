@@ -100,6 +100,7 @@ cd QFRCDashboard
 mkdir build && cd build
 cmake -DCMAKE_PREFIX_PATH="C:\\Qt6\\6.6.1\\msvc2019_64" ..
 cmake --build .
+C:\Qt6\6.6.1\msvc2019_64\bin\windeployqt.exe .
 ```
 OR use [CLion](https://www.jetbrains.com/clion/)
 
