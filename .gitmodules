@@ -4,4 +4,7 @@
 	url = https://github.com/itay-grudev/SingleApplication
 [submodule "3rd_party/allwpilib"]
 	path = 3rd_party/allwpilib
-	url = https://github.com/wpilibsuite/allwpilib
+	url = https://github.com/binex-dsk/allwpilib
+[submodule "3rd_party/protobuf"]
+	path = 3rd_party/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
