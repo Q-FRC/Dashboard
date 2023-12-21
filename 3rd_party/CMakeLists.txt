@@ -16,11 +16,8 @@ if (NOT USE_SYSTEM_PROTOBUF)
             protobuf
             GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
             GIT_TAG        7f94235e552599141950d7a4a3eaf93bc87d1b22 # 25.1
-            FIND_PACKAGE_ARGS NAMES Protobuf
     )
-    FetchContent_MakeAvailable(protobuf)
-else()
-    find_package(Protobuf)
+    FetchContent_MakeAvailable(Protobuf)
 endif()
 
 # WPILIB
@@ -37,12 +34,11 @@ if (NOT USE_SYSTEM_NTCORE)
     set(WITH_SIMULATION_MODULES OFF)
 
     set(NO_WERROR ON)
-    
+
     FetchContent_Declare(
             ntcore
             GIT_REPOSITORY https://github.com/binex-dsk/allwpilib.git
             GIT_TAG        0b799b77f18f764847fc51eb4675e198d011b6f5
-            FIND_PACKAGE_ARGS NAMES ntcore
     )
     FetchContent_MakeAvailable(ntcore)
 endif()

@@ -50,9 +50,10 @@ You are allowed to contribute as you please. However, if you constantly spam use
 If you're at all confused with the code structure, make an issue about it and I will help you.
 
 ## Building
-This project uses CMake.
+This project uses CMake. Additionally, you must initialize git submodules first.
 
 ```bash
+git submodule update --init
 cmake -S . -B build
 cd build
 make -j$(nproc)
@@ -66,15 +67,7 @@ cmake --install build --prefix ${PKGDIR}
 ```
 
 ### Submodules
-If you don't want to install protobuf and ntcore to your system, submodules and CMake options are provided for such. First, initialize the submodules with git:
-
-```bash
-git submodule update --init --recursive
-```
-
-The recursive argument is necessary.
-
-Now, you can force CMake to use the bundled ntcore/protobuf with these options:
+If you don't want to install protobuf and ntcore to your system, CMake options are provided for such:
 
 - `USE_SYSTEM_NTCORE` (default ON)
 - `USE_SYSTEM_PROTOBUF` (default ON)
