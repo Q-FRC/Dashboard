@@ -81,5 +81,27 @@ cmake -S . -B build -DUSE_SYSTEM_NTCORE=OFF -DUSE_SYSTEM_PROTOBUF=OFF
 
 Though you can use the system ntcore with the bundled protobuf, this is not recommended and is entirely untested.
 
+### Ubuntu
+```bash
+sudo apt install qt6-base-dev build-essential qt6-multimedia-dev ninja-build
+git clone https://github.com/binex-dsk/QFRCDashboard.git
+cd QFRCDashboard
+mkdir build && cd build
+cmake ..
+make -j
+```
+
+### Windows
+- Install Qt from [here](https://www.qt.io/download-qt-installer-oss). Take note of where you download it!
+- Install CMake https://cmake.org/download/ (add to `PATH`)
+```bash
+git clone https://github.com/binex-dsk/QFRCDashboard.git
+cd QFRCDashboard
+mkdir build && cd build
+cmake -DCMAKE_PREFIX_PATH="C:\\Qt6\\6.6.1\\msvc2019_64" ..
+cmake --build .
+```
+OR use [CLion](https://www.jetbrains.com/clion/)
+
 ## Miscellaneous Notes
 QFRCDashboard is created solely for the purpose of A RELIABLE, LOW-OVERHEAD FRC dashboard. QFRCDashboard is NOT created with eye-candy or intense theming in mind. Contributions and suggestions to theming will be accepted and worked on, but without user request or contribution, QFRCDashboard will see very little updates to theming.
