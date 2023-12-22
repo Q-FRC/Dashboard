@@ -30,17 +30,23 @@ GraphWidget::GraphWidget(const QString &topic, const QString &title)
     setMaxYValue(10.0);
     setMinYValue(-10.0);
 
-    m_elapsed.start();
+    connect(this, &BaseWidget::isReady, this, [this] {
+        m_elapsed.start();
+    });
 
     m_layout->addWidget(m_chart, 1, 0, 3, 1);
 }
 
-QList<Globals::Topic> GraphWidget::topics() {
+QHash<Globals::Topic, QColor> GraphWidget::topics() {
     return m_topics;
 }
 
-void GraphWidget::setTopics(QList<Globals::Topic> topics) {
-    for (const Globals::Topic & topic : m_topics) {
+void GraphWidget::setTopics(QHash<Globals::Topic, QColor> topics) {
+    QHashIterator iter(m_topics);
+
+    while (iter.hasNext()) {
+        iter.next();
+        Globals::Topic topic = iter.key();
 
         if (!topics.contains(topic)) {
             TopicStore::unsubscribe(topic.name.toStdString(), this);
@@ -52,7 +58,12 @@ void GraphWidget::setTopics(QList<Globals::Topic> topics) {
         }
     }
 
-    for (const Globals::Topic &topic : topics) {
+    iter = QHashIterator(topics);
+
+    while (iter.hasNext()) {
+        iter.next();
+        Globals::Topic topic = iter.key();
+
         if (!m_topics.contains(topic)) {
             nt::NetworkTableEntry *entry = TopicStore::subscribeWriteOnly(topic.name.toStdString(), this);
 
@@ -61,6 +72,7 @@ void GraphWidget::setTopics(QList<Globals::Topic> topics) {
             QLineSeries *series = new QLineSeries;
             series->setName(topic.name);
             series->append(m_elapsed.elapsed() / 1000., TopicStore::getDoubleFromEntry(entry));
+            series->setColor(iter.value());
 
             m_chart->chart()->addSeries(series);
             series->attachAxis(m_xAxis);
@@ -68,6 +80,9 @@ void GraphWidget::setTopics(QList<Globals::Topic> topics) {
             series->setMarkerSize(100);
 
             m_seriesMap.insert(topic, series);
+        } else {
+            QLineSeries *series = m_seriesMap.value(topic);
+            series->setColor(iter.value());
         }
     }
 
@@ -118,14 +133,20 @@ Globals::GraphXAxis GraphWidget::xAxisData() {
 }
 
 void GraphWidget::setXAxisData(const Globals::GraphXAxis &axis) {
-    m_xAxisData = axis;
-
-    m_xAxis->setTitleText(axis.useTime ? "Time" : axis.topic);
-
-    m_xAxisEntry = TopicStore::subscribeWriteOnly(axis.topic.toStdString(), this);
-
     if (m_xAxisData != axis) {
+        m_xAxisData = axis;
+
+        m_xAxis->setTitleText(axis.useTime ? "Time" : axis.topic);
+
+        if (axis.useTime) {
+            m_elapsed.restart();
+        }
+
+        if (m_xAxisEntry != nullptr) TopicStore::unsubscribe(m_xAxisEntry, this);
+        m_xAxisEntry = TopicStore::subscribeWriteOnly(axis.topic.toStdString(), this);
+
         for (QLineSeries *series : m_seriesMap.values()) series->clear();
+
         // reset values to NaN
         m_minXValue = std::nan("0");
         m_maxXValue = std::nan("1");
@@ -157,7 +178,12 @@ void GraphWidget::updateGraph() {
 
     m_xAxis->setRange(m_minXValue, m_maxXValue);
 
-    for (const Globals::Topic &topic : m_topics) {
+    QHashIterator iter(m_topics);
+
+    while (iter.hasNext()) {
+        iter.next();
+        Globals::Topic topic = iter.key();
+
         nt::NetworkTableEntry *entry = m_entryMap.value(topic);
         QLineSeries *series = m_seriesMap.value(topic);
 

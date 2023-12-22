@@ -15,14 +15,14 @@
 class GraphWidget : public BaseWidget
 {
     Q_OBJECT
-    Q_PROPERTY(QList<Globals::Topic> Topics READ topics WRITE setTopics REQUIRED)
+    Q_PROPERTY(QHash<Globals::Topic, QColor> Topics READ topics WRITE setTopics REQUIRED)
     Q_PROPERTY(double Update_Frequency_Seconds READ updateFrequency WRITE setUpdateFrequency REQUIRED)
     Q_PROPERTY(double Time_Scale_Seconds READ maxTimeScale WRITE setMaxTimeScale REQUIRED)
     Q_PROPERTY(double Max_Y_Value READ maxYValue WRITE setMaxYValue REQUIRED)
     Q_PROPERTY(double Min_Y_Value READ minYValue WRITE setMinYValue REQUIRED)
     Q_PROPERTY(Globals::GraphXAxis X_Axis_Topic READ xAxisData WRITE setXAxisData REQUIRED)
 private:
-    QList<Globals::Topic> m_topics{};
+    QHash<Globals::Topic, QColor> m_topics{};
 
     QHash<Globals::Topic, nt::NetworkTableEntry *> m_entryMap;
     QHash<Globals::Topic, QLineSeries *> m_seriesMap;
@@ -52,8 +52,8 @@ private:
 public:
     GraphWidget(const QString &topic = "", const QString &title = "");
 
-    QList<Globals::Topic> topics();
-    void setTopics(QList<Globals::Topic> topics);
+    QHash<Globals::Topic, QColor> topics();
+    void setTopics(QHash<Globals::Topic, QColor> topics);
 
     double maxTimeScale();
     void setMaxTimeScale(double maxTimeScale);

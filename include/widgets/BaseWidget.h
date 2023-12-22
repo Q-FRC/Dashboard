@@ -85,6 +85,7 @@ private:
     QVariant readShapeProperty(const QMetaProperty &property, const QJsonValue &value);
     QVariant readTopicListProperty(const QMetaProperty &property, const QJsonValue &value);
     QVariant readXAxisProperty(const QMetaProperty &property, const QJsonValue &value);
+    QVariant readTopicColorMapProperty(const QMetaProperty &property, const QJsonValue &value);
 
     QJsonValue writeDoubleProperty(const QMetaProperty &property);
     QJsonValue writeIntProperty(const QMetaProperty &property);
@@ -98,6 +99,7 @@ private:
     QJsonValue writeShapeProperty(const QMetaProperty &property);
     QJsonValue writeTopicListProperty(const QMetaProperty &property);
     QJsonValue writeXAxisProperty(const QMetaProperty &property);
+    QJsonValue writeTopicColorMapProperty(const QMetaProperty &property);
 
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);

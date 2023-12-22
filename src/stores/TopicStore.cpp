@@ -1,4 +1,5 @@
 #include "stores/TopicStore.h"
+#include "qapplication.h"
 #include "widgets/BaseWidget.h"
 
 #include "Globals.h"

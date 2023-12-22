@@ -7,6 +7,7 @@
 #include <QMetaType>
 #include <QMetaEnum>
 #include <QFile>
+#include <QColor>
 
 // ENUMS //
 enum class WidgetTypes {
@@ -113,6 +114,7 @@ static const int File = qMetaTypeId<Globals::File>();
 static const int Topic = qMetaTypeId<Globals::Topic>();
 static const int TopicList = qMetaTypeId<QList<Globals::Topic>>();
 static const int XAxis = qMetaTypeId<Globals::GraphXAxis>();
+static const int TopicColorMap = qMetaTypeId<QHash<Globals::Topic, QColor>>();
 }
 
 extern bool operator==(const WidgetData &a, const WidgetData &b);

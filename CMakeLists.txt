@@ -15,9 +15,6 @@ find_package(QT NAMES Qt6 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets Charts)
 find_package(ntcore REQUIRED)
 
-#add_compile_options(-fsanitize=address)
-#add_link_options(-fsanitize=address)
-
 set(PROJECT_SOURCES
         src/main.cpp
         src/Globals.cpp

@@ -38,11 +38,13 @@ void FilterStore::filterTopics() {
 
     // delete unused topics
     for (const Globals::Topic &topic : FilteredTopics) {
+        if (!FilteredTopics.contains(topic)) return;
+
         QStringList split = topic.name.split('/');
         Globals::Topic supertable(topic);
         supertable.name = split.sliced(0, split.length() - 1).join('/');
 
-        QString name = topic.name;
+        const QString name = topic.name;
 
         // account for sendables
         if (FilteredTopics.contains(supertable)) {

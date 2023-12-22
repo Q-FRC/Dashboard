@@ -329,7 +329,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
             m_widgets.remove(widgetPressed);
             relay();
 
-            delete widgetPressed;
+            widgetPressed->deleteLater();
         });
 
         menu->popup(event->globalPosition().toPoint());
@@ -765,7 +765,7 @@ void MainWindow::closeTab() {
 
             if (data.tabIdx == index) {
                 m_widgets.remove(widget);
-                delete widget;
+                widget->deleteLater();
             } else if (data.tabIdx > index) {
                 data.tabIdx -= 1;
 

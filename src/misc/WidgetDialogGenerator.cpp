@@ -21,6 +21,9 @@
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QApplication>
+#include <QRandomGenerator>
+#include <QClipboard>
+#include <QMessageBox>
 
 bool operator<(QMetaProperty a, QMetaProperty b) {
     return a.name() < b.name();
@@ -93,6 +96,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, QWidget *parent
         PROPERTY_FUNCTION(CustomMetaTypes::FrameShape, shapeProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::TopicList, topicListProperty)
         PROPERTY_FUNCTION(CustomMetaTypes::XAxis, xAxisProperty)
+        PROPERTY_FUNCTION(CustomMetaTypes::TopicColorMap, topicColorMapProperty)
         { // else
             qCritical() << "Bad metatype for property" << property.name();
             continue;
@@ -154,8 +158,22 @@ QVariantMap WidgetDialogGenerator::serializeTable(QTableWidget *widget) {
     return variantMap;
 }
 
+void WidgetDialogGenerator::serializeMap(QHash<Globals::Topic, QColor> map, QTableWidget *widget) {
+    QHashIterator iter(map);
+
+    int i = 0;
+    while (iter.hasNext()) {
+        iter.next();
+
+        widget->insertRow(i);
+        widget->setItem(i, 0, new QTableWidgetItem(iter.key().name));
+        widget->setItem(i, 1, new QTableWidgetItem(iter.value().name()));
+        ++i;
+    }
+}
+
 void WidgetDialogGenerator::serializeMap(QVariantMap map, QTableWidget *widget) {
-    QMapIterator<QString, QVariant> iter(map);
+    QMapIterator iter(map);
 
     int i = 0;
     while (iter.hasNext()) {
@@ -166,6 +184,72 @@ void WidgetDialogGenerator::serializeMap(QVariantMap map, QTableWidget *widget) 
         widget->setItem(i, 1, new QTableWidgetItem(iter.value().toString()));
         ++i;
     }
+}
+
+QPushButton *WidgetDialogGenerator::selectTopicButton() {
+    QPushButton *topicButton = new QPushButton("Select Topic...", this);
+    connect(topicButton, &QPushButton::clicked, this, [this, topicButton] {
+        NewWidgetTreeDialog *dialog = new NewWidgetTreeDialog(true, this);
+        auto filteredTopics = NewWidgetTreeDialog::filterNumberTypes(FilterStore::UnfilteredTopics);
+
+        dialog->constructList(filteredTopics);
+        dialog->setWindowTitle("Select a Topic");
+
+        QRect screenSize = qApp->primaryScreen()->geometry();
+        dialog->resize(screenSize.width() / 2., screenSize.height() / 2.);
+
+        dialog->show();
+
+        QObject *receiver = new QObject(this);
+        connect(dialog, &NewWidgetTreeDialog::topicReady, receiver, [this, receiver, topicButton](const Globals::Topic &topic) {
+            emit topicSelected(topic, topicButton);
+            receiver->deleteLater();
+        });
+    });
+
+    return topicButton;
+}
+
+QPushButton *WidgetDialogGenerator::selectColorButton() {
+    QPushButton *colorButton = new QPushButton("Select Color...", this);
+    connect(colorButton, &QPushButton::clicked, this, [this] {
+        QColor random = QColor::fromRgb(QRandomGenerator::global()->generate());
+        QColor color = QColorDialog::getColor(random, this, "Select Color");
+
+        if (color.isValid()) emit colorSelected(color);
+    });
+
+    return colorButton;
+}
+
+std::tuple<QTableWidget *, QPushButton *, QPushButton *> WidgetDialogGenerator::setupTable(const QStringList &headers) {
+    QTableWidget *table = new QTableWidget(0, headers.count(), this);
+
+    table->setHorizontalHeaderLabels(headers);
+    table->horizontalHeader()->setStretchLastSection(false);
+    table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+
+    QPushButton *addButton = new QPushButton("Add", this);
+    connect(addButton, &QPushButton::clicked, this, [table, headers] {
+        int rowCount = table->rowCount();
+
+        table->insertRow(rowCount);
+        for (int i = 0; i < headers.count(); ++i) {
+            table->setItem(rowCount, i, new QTableWidgetItem(""));
+        }
+    });
+
+    QPushButton *removeButton = new QPushButton("Delete", this);
+    removeButton->setShortcut(Qt::Key_Delete);
+    connect(removeButton, &QPushButton::clicked, this, [table] {
+        QList<QTableWidgetItem *> selectedItems = table->selectedItems();
+
+        if (selectedItems.empty()) return;
+
+        table->removeRow(selectedItems.at(0)->row());
+    });
+
+    return {table, addButton, removeButton};
 }
 
 QWidget *WidgetDialogGenerator::doubleProperty(QMetaProperty property) {
@@ -220,28 +304,9 @@ QWidget *WidgetDialogGenerator::colorProperty(QMetaProperty property) {
 QWidget *WidgetDialogGenerator::mapProperty(QMetaProperty property) {
     // Table setup
     // An insert button for certain types as well.
-        QTableWidget *table = new QTableWidget(0, 2, this);
-    table->horizontalHeader()->setStretchLastSection(false);
-    table->setHorizontalHeaderLabels({"Key", "Value"});
+    auto [table, addButton, removeButton] = setupTable({"Key", "Value"});
 
     serializeMap(property.read(m_widget).toMap(), table);
-
-    QPushButton *addButton = new QPushButton("Add", this);
-    connect(addButton, &QPushButton::clicked, this, [table] {
-        int rowCount = table->rowCount();
-
-        table->insertRow(rowCount);
-    });
-
-    QPushButton *removeButton = new QPushButton("Delete", this);
-    removeButton->setShortcut(Qt::Key_Delete);
-    connect(removeButton, &QPushButton::clicked, this, [table] {
-        QList<QTableWidgetItem *> selectedItems = table->selectedItems();
-
-        if (selectedItems.empty()) return;
-
-        table->removeRow(selectedItems.at(0)->row());
-    });
 
     QWidget *tableLayoutWidget = new QWidget;
 
@@ -381,7 +446,7 @@ QWidget *WidgetDialogGenerator::shapeProperty(QMetaProperty property) {
     bindMetaProperty(property, func);
 
     return comboBox;
-}
+}    QVariantMap variantMap{};
 
 QWidget *WidgetDialogGenerator::topicListProperty(QMetaProperty property) {
     QWidget *widget = new QWidget(this);
@@ -395,24 +460,9 @@ QWidget *WidgetDialogGenerator::topicListProperty(QMetaProperty property) {
     QStringList names = FilterStore::topicNames(topics);
     list->addItems(names);
 
-    QPushButton *topicButton = new QPushButton("Select Topic...", this);
-    connect(topicButton, &QPushButton::clicked, this, [this, list] {
-        NewWidgetTreeDialog *dialog = new NewWidgetTreeDialog(true, this);
-        auto filteredTopics = NewWidgetTreeDialog::filterNumberTypes(FilterStore::UnfilteredTopics);
-
-        dialog->constructList(filteredTopics);
-        dialog->setWindowTitle("Select a Topic");
-
-        QRect screenSize = qApp->primaryScreen()->geometry();
-        dialog->resize(screenSize.width() / 2., screenSize.height() / 2.);
-
-        dialog->show();
-
-        QObject *receiver = new QObject(this);
-        connect(dialog, &NewWidgetTreeDialog::topicReady, this, [this, receiver, list](const Globals::Topic &topic) {
-            list->addItem(topic.name);
-            receiver->deleteLater();
-        });
+    QPushButton *topicButton = selectTopicButton();
+    connect(this, &WidgetDialogGenerator::topicSelected, this, [this, list](const Globals::Topic &topic, QWidget *) {
+        list->addItem(topic.name);
     });
 
     QPushButton *addButton = new QPushButton("Add", this);
@@ -478,24 +528,9 @@ QWidget *WidgetDialogGenerator::xAxisProperty(QMetaProperty property) {
     QLineEdit *lineEdit = new QLineEdit(widget);
     lineEdit->setText(xAxis.topic);
 
-    QPushButton *topicButton = new QPushButton("Select Topic...", this);
-    connect(topicButton, &QPushButton::clicked, this, [this, lineEdit] {
-        NewWidgetTreeDialog *dialog = new NewWidgetTreeDialog(true, this);
-        auto filteredTopics = NewWidgetTreeDialog::filterNumberTypes(FilterStore::UnfilteredTopics);
-
-        dialog->constructList(filteredTopics);
-        dialog->setWindowTitle("Select a Topic");
-
-        QRect screenSize = qApp->primaryScreen()->geometry();
-        dialog->resize(screenSize.width() / 2., screenSize.height() / 2.);
-
-        dialog->show();
-
-        QObject *receiver = new QObject(this);
-        connect(dialog, &NewWidgetTreeDialog::topicReady, this, [this, receiver, lineEdit](const Globals::Topic &topic) {
-            lineEdit->setText(topic.name);
-            receiver->deleteLater();
-        });
+    QPushButton *topicButton = selectTopicButton();
+    connect(this, &WidgetDialogGenerator::topicSelected, this, [this, lineEdit, topicButton](const Globals::Topic &topic, QWidget *receiver) {
+        if (topicButton == receiver) lineEdit->setText(topic.name);
     });
 
     layout->addWidget(checkbox, 0);
@@ -521,4 +556,73 @@ QWidget *WidgetDialogGenerator::xAxisProperty(QMetaProperty property) {
 
     bindMetaProperty(property, func);
     return widget;
+}
+
+QWidget *WidgetDialogGenerator::topicColorMapProperty(QMetaProperty property) {
+    auto [table, addButton, removeButton] = setupTable({"Topic", "Color"});
+
+    serializeMap(property.read(m_widget).value<QHash<Globals::Topic, QColor>>(), table);
+
+    QPushButton *topicButton = selectTopicButton();
+    connect(this, &WidgetDialogGenerator::topicSelected, this, [this, table, topicButton](const Globals::Topic &topic, QWidget *receiver) {
+        if (topicButton != receiver) return;
+        QList<QTableWidgetItem *> selectedItems = table->selectedItems();
+
+        if (selectedItems.empty()) {
+            qApp->clipboard()->setText(topic.name);
+            QMessageBox::information(this, "Copied to Clipboard", "Copied topic selection to clipboard.");
+            return;
+        }
+
+        int row = table->row(selectedItems.at(0));
+
+        table->item(row, 0)->setText(topic.name);
+    });
+
+    QPushButton *colorButton = selectColorButton();
+    connect(this, &WidgetDialogGenerator::colorSelected, this, [this, table](const QColor &color) {
+        QList<QTableWidgetItem *> selectedItems = table->selectedItems();
+
+        if (selectedItems.empty()) {
+            qApp->clipboard()->setText(color.name());
+            QMessageBox::information(this, "Copied to Clipboard", "Copied color selection to clipboard.");
+            return;
+        }
+
+        int row = table->row(selectedItems.at(0));
+
+        table->item(row, 1)->setText(color.name());
+    });
+
+    QWidget *tableLayoutWidget = new QWidget;
+
+    QVBoxLayout *tableLayout = new QVBoxLayout(tableLayoutWidget);
+
+    QHBoxLayout *buttons = new QHBoxLayout;
+
+    buttons->addWidget(addButton);
+    buttons->addWidget(removeButton);
+    buttons->addWidget(topicButton);
+    buttons->addWidget(colorButton);
+
+    tableLayout->addWidget(table);
+    tableLayout->addLayout(buttons);
+
+    auto func = [this, table]() -> QVariant {
+        QHash<Globals::Topic, QColor> map{};
+
+        for (int i = 0; i < table->rowCount(); ++i) {
+            QString name = table->item(i, 0)->text();
+            Globals::Topic key = FilterStore::topicFromName(name, FilterStore::UnfilteredTopics);
+            QString value = table->item(i, 1)->text();
+
+            if (!key.name.isEmpty() && !value.isEmpty()) map.insert(key, QColor(value));
+        }
+
+        return QVariant::fromValue(map);
+    };
+
+    bindMetaProperty(property, func);
+
+    return tableLayoutWidget;
 }
