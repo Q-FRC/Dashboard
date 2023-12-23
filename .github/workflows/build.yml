@@ -94,10 +94,6 @@ jobs:
         sudo apt-get install libxcb-cursor-dev libxcb-cursor0
         mkdir -p ${{ env.INSTALL_APPIMAGE_DIR}}/usr/{lib,bin}
 
-        ls build/_deps/protobuf-build/third_party/abseil-cpp/absl/base
-        #sudo cmake --install ${{ env.BUILD_DIR }}/_deps/ntcore-build --prefix /usr
-        #sudo cmake --install ${{ env.BUILD_DIR }}/_deps/protobuf-build --prefix /usr
-
         cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_APPIMAGE_DIR }}/usr
 
         export OUTPUT="QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage"
