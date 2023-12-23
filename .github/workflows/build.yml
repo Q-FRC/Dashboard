@@ -82,7 +82,7 @@ jobs:
     - name: Package (Linux)
       if: runner.os == 'Linux'
       run: |
-        cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }}
+        cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }}/usr
 
         cd ${{ env.INSTALL_DIR }}
         tar --owner root --group root -czf ../QFRCDashboard.tar.gz *
