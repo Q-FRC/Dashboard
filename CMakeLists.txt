@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.25)
 
 project(QFRCDashboard VERSION 0.1 LANGUAGES CXX)
+
+#set(CMAKE_PREFIX_PATH "C:\\Qt6\\6.6.1\\msvc2019_64") # Windows thing
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -11,9 +13,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
+option(USE_SYSTEM_NTCORE "Use system ntcore installation" ON)
+option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
+
+if( ${USE_SYSTEM_NTCORE})
+    find_package(ntcore)
+    if( NOT ${ntcore_FOUND} )
+        set(USE_SYSTEM_NTCORE OFF)
+    endif()
+endif()
+
+if( ${USE_SYSTEM_PROTOBUF})
+    find_package(Protobuf)
+    if( NOT ${Protobuf_FOUND} )
+        set(USE_SYSTEM_PROTOBUF OFF)
+    endif()
+endif()
+
 find_package(QT NAMES Qt6 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets Charts)
-find_package(ntcore REQUIRED)
+add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
 
 set(PROJECT_SOURCES
         src/main.cpp
@@ -106,6 +125,7 @@ add_subdirectory("SingleApplication")
 
 target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::MultimediaWidgets Qt${QT_VERSION_MAJOR}::Charts ntcore SingleApplication::SingleApplication)
 
+target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
 target_include_directories(QFRCDashboard PRIVATE include/)
 target_include_directories(QFRCDashboard PRIVATE SingleApplication/)
 
