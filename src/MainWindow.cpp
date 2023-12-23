@@ -62,7 +62,7 @@ MainWindow::MainWindow()
         loadAction->setShortcut(tr("Ctrl+O"));
         fileMenu->addAction(loadAction);
 
-        connect(loadAction, &QAction::triggered, this, &MainWindow::open);
+        connect(loadAction, &QAction::triggered, this, &MainWindow::openDialog);
 
         m_menubar->addMenu(fileMenu);
     } // End File
@@ -707,10 +707,14 @@ void MainWindow::saveAs() {
     file.close();
 }
 
-void MainWindow::open() {
+void MainWindow::openDialog() {
     QFile file(QFileDialog::getOpenFileName(
         this, "Open File", QDir::homePath(), "JSON Files (*.json);;All Files (*)"));
 
+    open(file);
+}
+
+void MainWindow::open(QFile &file) {
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::critical(this, "Load Failed!", "Failed to open file for reading. "
                                                     "Directory may not exist or may be inaccessible.",

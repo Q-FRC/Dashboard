@@ -12,6 +12,8 @@
 
 #include <QValueAxis>
 
+class ChartView;
+
 class GraphWidget : public BaseWidget
 {
     Q_OBJECT
@@ -29,7 +31,7 @@ private:
 
     QTimer *m_timer;
     QElapsedTimer m_elapsed;
-    QChartView *m_chart;
+    ChartView *m_chart;
 
     QValueAxis *m_xAxis;
     QValueAxis *m_yAxis;
@@ -46,6 +48,7 @@ private:
     Globals::GraphXAxis m_xAxisData{true, ""};
 
     nt::NetworkTableEntry *m_xAxisEntry;
+
 
     void mouseReleaseEvent(QMouseEvent *event) override;
 

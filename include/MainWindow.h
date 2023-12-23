@@ -83,7 +83,8 @@ public slots:
     // File Actions
     void save();
     void saveAs();
-    void open();
+    void openDialog();
+    void open(QFile &file);
 
     // Tab Actions
     void newTab();

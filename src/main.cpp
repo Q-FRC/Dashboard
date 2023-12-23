@@ -3,6 +3,7 @@
 #include <QRadioButton>
 #include <QSettings>
 #include <QMessageBox>
+#include <QCommandLineParser>
 
 #include "MainWindow.h"
 #include "Globals.h"
@@ -16,6 +17,15 @@ int main(int argc, char **argv) {
 
     app.setOrganizationName("binex-dsk");
     app.setApplicationName("QFRCDashboard");
+    app.setApplicationVersion("1.0.0");
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Simple, reliable, high-performance, low-footprint FRC dashboard");
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("file", "JSON file to open");
+
+    parser.process(app);
 
     MainWindow *window = new MainWindow();
     window->show();
@@ -117,6 +127,12 @@ int main(int argc, char **argv) {
         window,
         &QMainWindow::raise
         );
+
+    const QStringList args = parser.positionalArguments();
+    if (!args.isEmpty()) {
+        QFile file(args.at(0));
+        window->open(file);
+    }
 
     return app.exec();
 }

@@ -1,6 +1,7 @@
 #include "widgets/GraphWidget.h"
 #include "stores/TopicStore.h"
 #include "stores/FilterStore.h"
+#include "misc/ChartView.h"
 
 #include <QMouseEvent>
 #include <QFileDialog>
@@ -10,8 +11,10 @@
 
 GraphWidget::GraphWidget(const QString &topic, const QString &title)
     : BaseWidget(WidgetTypes::Graph, title, topic) {
+
+    QChart *chart = new QChart();
     m_timer = new QTimer(this);
-    m_chart = new QChartView(this);
+    m_chart = new ChartView(chart, this);
 
     connect(m_timer, &QTimer::timeout, this, &GraphWidget::updateGraph);
 
@@ -134,15 +137,13 @@ Globals::GraphXAxis GraphWidget::xAxisData() {
 
 void GraphWidget::setXAxisData(const Globals::GraphXAxis &axis) {
     if (m_xAxisData != axis) {
-        m_xAxisData = axis;
-
         m_xAxis->setTitleText(axis.useTime ? "Time" : axis.topic);
 
         if (axis.useTime) {
             m_elapsed.restart();
         }
 
-        if (m_xAxisEntry != nullptr) TopicStore::unsubscribe(m_xAxisEntry, this);
+        if (m_xAxisEntry != nullptr) TopicStore::unsubscribe(m_xAxisData.topic.toStdString(), this);
         m_xAxisEntry = TopicStore::subscribeWriteOnly(axis.topic.toStdString(), this);
 
         for (QLineSeries *series : m_seriesMap.values()) series->clear();
@@ -150,6 +151,8 @@ void GraphWidget::setXAxisData(const Globals::GraphXAxis &axis) {
         // reset values to NaN
         m_minXValue = std::nan("0");
         m_maxXValue = std::nan("1");
+
+        m_xAxisData = axis;
     }
 }
 
