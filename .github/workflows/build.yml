@@ -101,7 +101,6 @@ jobs:
         cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_APPIMAGE_DIR }}/usr
 
         export OUTPUT="QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage"
-        export QMAKE=/usr/bin/qmake
 
         chmod +x linuxdeploy-*.AppImage
 
