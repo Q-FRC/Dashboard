@@ -104,7 +104,7 @@ set(PROJECT_SOURCES
 )
 
 if(WIN32)
-    set(RCS_FILE ${CMAKE_CURRENT_BINARY_DIR}/QFRCDashboard.rc)
+    set(RCS_FILE ${CMAKE_CURRENT_BINARY_DIR}/program_info/QFRCDashboard.rc)
     set(Dashboard_BUILD_PLATFORM "win32")
 else()
     set(Dashboard_BUILD_PLATFORM "lin64")
@@ -135,6 +135,8 @@ get_git_head_revision(Dashboard_GIT_REFSPEC Dashboard_GIT_COMMIT)
 message(STATUS "Git commit: ${Dashboard_GIT_COMMIT}")
 message(STATUS "Git tag: ${Dashboard_GIT_TAG}")
 message(STATUS "Git refspec: ${Dashboard_GIT_REFSPEC}")
+
+string(REPLACE "-beta" "." Dashboard_GIT_TAG_NUMERO ${Dashboard_GIT_TAG})
 
 # Build Date
 string(TIMESTAMP TODAY "%Y-%m-%d")
