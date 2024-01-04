@@ -15,20 +15,23 @@
 
 #include "Globals.h"
 
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class MainWindow;
+}
+QT_END_NAMESPACE
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
-    QTabWidget *m_centralWidget;
-
-    QToolBar *m_toolbar;
-    QMenuBar *m_menubar;
-
     QList<TabWidget *> m_tabs;
 
     QString m_filename{};
 
     void makeNewWidget(WidgetTypes type);
+
+    Ui::MainWindow *ui;
 public:
     MainWindow();
     virtual ~MainWindow();
@@ -60,7 +63,10 @@ public slots:
     void newWidgetPopup();
     void configNewWidget(BaseWidget *widget, WidgetData data);
     void beginNewWidgetDrag(BaseWidget *widget, WidgetData data);
+    void newCameraView();
+    void newGraph();
 
     // About Menu
-    void aboutDialog();
+    void about();
+    void aboutQt();
 };

@@ -101,6 +101,9 @@ set(PROJECT_SOURCES
         include/stores/TopicStore.h
         include/stores/TypeStore.h
         include/stores/FilterStore.h
+
+        # ==================================
+        ui/MainWindow.ui
 )
 
 if(WIN32)
@@ -117,6 +120,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${RCS_FILE}
         ${PROJECT_SOURCES}
         include/misc/ChartView.h src/misc/ChartView.cpp
+        include/misc/GridLineWidget.h src/misc/GridLineWidget.cpp
 
     )
 endif()
@@ -152,6 +156,7 @@ target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${Q
 
 target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
 target_include_directories(QFRCDashboard PRIVATE include/)
+target_include_directories(QFRCDashboard PRIVATE ui/)
 
 include(GNUInstallDirs)
 install(TARGETS QFRCDashboard

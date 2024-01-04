@@ -26,132 +26,32 @@
 
 #include <BuildConfig.h>
 
-MainWindow::MainWindow()
+#include "../ui/ui_MainWindow.h"
+
+MainWindow::MainWindow() : QMainWindow()
 {
-    setCentralWidget(m_centralWidget = new QTabWidget(this));
-    m_centralWidget->setMouseTracking(true);
-    setMouseTracking(true);
-
-    m_toolbar = new QToolBar(this);
-
-    addToolBar(Qt::ToolBarArea::BottomToolBarArea, m_toolbar);
-
-    m_menubar = menuBar();
-    // NT Settings
-    {
-        QAction *ntServerAction = new QAction("NT &Server");
-        connect(ntServerAction, &QAction::triggered, this, &MainWindow::ntSettingsPopup);
-
-        m_menubar->addAction(ntServerAction);
-    } // End NT Settings
-
-    { // File
-        QMenu *fileMenu = new QMenu("&File", this);
-
-        QAction *saveAction = new QAction("Save", fileMenu);
-        saveAction->setShortcut(tr("Ctrl+S"));
-        fileMenu->addAction(saveAction);
-
-        connect(saveAction, &QAction::triggered, this, &MainWindow::save);
-
-        QAction *saveAsAction = new QAction("Save As...", fileMenu);
-        saveAsAction->setShortcut(tr("Ctrl+Shift+S"));
-        fileMenu->addAction(saveAsAction);
-
-        connect(saveAsAction, &QAction::triggered, this, &MainWindow::saveAs);
-
-        QAction *loadAction = new QAction("Open File...", fileMenu);
-        loadAction->setShortcut(tr("Ctrl+O"));
-        fileMenu->addAction(loadAction);
-
-        connect(loadAction, &QAction::triggered, this, &MainWindow::openDialog);
-
-        m_menubar->addMenu(fileMenu);
-    } // End File
-
-    { // Tab
-        QMenu *tabMenu = new QMenu("&Tab", this);
-
-        QAction *newTab = new QAction("New Tab", tabMenu);
-        newTab->setShortcut(QKeySequence::AddTab);
-        connect(newTab, &QAction::triggered, this, &MainWindow::newTab);
-        tabMenu->addAction(newTab);
-
-        QAction *closeTab = new QAction("Close Tab", tabMenu);
-        closeTab->setShortcut(QKeySequence::Close);
-        connect(closeTab, &QAction::triggered, this, &MainWindow::closeTab);
-        tabMenu->addAction(closeTab);
-
-        QAction *resizeTab = new QAction("Resize Tab", tabMenu);
-        connect(resizeTab, &QAction::triggered, this, &MainWindow::setMaxSize);
-        tabMenu->addAction(resizeTab);
-
-        QAction *renameTab = new QAction("Rename Tab", tabMenu);
-        connect(renameTab, &QAction::triggered, this, &MainWindow::renameTab);
-        tabMenu->addAction(renameTab);
-
-        m_menubar->addMenu(tabMenu);
-    } // End Tab
-
-    { // New Widget
-        QAction *newWidgetAction = new QAction("&New Widget", this);
-
-        connect(newWidgetAction, &QAction::triggered, this, &MainWindow::newWidgetPopup);
-
-        m_menubar->addAction(newWidgetAction);
-    } // End New Widget
-
-    { // Standalone Widgets
-        QMenu *standaloneMenu = new QMenu("New Standa&lone Widget", this);
-
-        QAction *cameraAction = new QAction("Camera View", standaloneMenu);
-        connect(cameraAction, &QAction::triggered, this, [this] {
-            makeNewWidget(WidgetTypes::CameraView);
-        });
-        standaloneMenu->addAction(cameraAction);
-
-        QAction *graphAction = new QAction("Graph", standaloneMenu);
-        connect(graphAction, &QAction::triggered, this, [this] {
-            makeNewWidget(WidgetTypes::Graph);
-        });
-        standaloneMenu->addAction(graphAction);
-
-        m_menubar->addMenu(standaloneMenu);
-    } // End Standalone Widgets
-
-    { // About
-        QMenu *aboutMenu = new QMenu("&About");
-
-        QAction *aboutAction = new QAction("About " + BuildConfig.APP_NAME, aboutMenu);
-        connect(aboutAction, &QAction::triggered, this, &MainWindow::aboutDialog);
-        aboutMenu->addAction(aboutAction);
-
-        QAction *aboutQtAction = new QAction("About Qt", aboutMenu);
-        connect(aboutQtAction, &QAction::triggered, this, [this] {
-            QMessageBox::aboutQt(this, "About Qt");
-        });
-        aboutMenu->addAction(aboutQtAction);
-
-        menuBar()->addMenu(aboutMenu);
-    }
+    ui = new Ui::MainWindow;
+    ui->setupUi(this);
 
     // Initialize Shortcuts
     {
         new QShortcut(QKeySequence(Qt::Key_Control + Qt::Key_Tab), this, [this] {
-            int tabIdx = m_centralWidget->currentIndex() + 1;
-            if (tabIdx == m_centralWidget->count()) tabIdx = 0;
+            int tabIdx = ui->centralwidget->currentIndex() + 1;
+            if (tabIdx == ui->centralwidget->count()) tabIdx = 0;
 
-            m_centralWidget->setCurrentIndex(tabIdx);
+            ui->centralwidget->setCurrentIndex(tabIdx);
         });
     }
 
     update();
 }
 
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow() {
+    delete ui;
+}
 
 TabWidget *MainWindow::currentTab() {
-    return m_tabs.at(m_centralWidget->currentIndex());
+    return m_tabs.at(ui->centralwidget->currentIndex());
 }
 
 /* File I/O */
@@ -201,7 +101,7 @@ void MainWindow::loadObject(const QJsonDocument &doc) {
         tab->setMouseTracking(true);
 
         tab->loadObject(object);
-        m_centralWidget->addTab(tab, tab->name());
+        ui->centralwidget->addTab(tab, tab->name());
         m_tabs.append(tab);
     } // tabs
 }
@@ -331,21 +231,21 @@ void MainWindow::newTab() {
         tab->setMouseTracking(true);
 
         m_tabs.append(tab);
-        m_centralWidget->addTab(tab, tabName);
-        m_centralWidget->setCurrentWidget(tab);
+        ui->centralwidget->addTab(tab, tabName);
+        ui->centralwidget->setCurrentWidget(tab);
         tab->setName(tabName);
     }
 }
 
 void MainWindow::closeTab() {
     if (m_tabs.empty()) return;
-    int index = m_centralWidget->currentIndex();
+    int index = ui->centralwidget->currentIndex();
 
     QMessageBox::StandardButton close = QMessageBox::question(this, "Close Tab?", "Are you sure you want to close this tab?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
     if (close == QMessageBox::Yes) {
         TabWidget *tab = m_tabs.at(index);
-        m_centralWidget->removeTab(index);
+        ui->centralwidget->removeTab(index);
         m_tabs.remove(index);
         delete tab;
     }
@@ -355,10 +255,10 @@ void MainWindow::renameTab() {
     if (m_tabs.empty()) return;
 
     bool ok;
-    QString tabName = QInputDialog::getText(this, "Tab Name", "Input new tab name", QLineEdit::Normal, m_centralWidget->tabText(m_centralWidget->currentIndex()), &ok);
+    QString tabName = QInputDialog::getText(this, "Tab Name", "Input new tab name", QLineEdit::Normal, ui->centralwidget->tabText(ui->centralwidget->currentIndex()), &ok);
 
     if (!tabName.isEmpty() && ok) {
-        m_centralWidget->setTabText(m_centralWidget->currentIndex(), tabName);
+        ui->centralwidget->setTabText(ui->centralwidget->currentIndex(), tabName);
         currentTab()->setName(tabName);
     }
 }
@@ -418,8 +318,16 @@ void MainWindow::beginNewWidgetDrag(BaseWidget *widget, WidgetData data) {
     connect(tab, &TabWidget::dragDone, this, &MainWindow::configNewWidget, Qt::SingleShotConnection);
 }
 
+void MainWindow::newCameraView() {
+    makeNewWidget(WidgetTypes::CameraView);
+}
+
+void MainWindow::newGraph() {
+    makeNewWidget(WidgetTypes::Graph);
+}
+
 //  Menu
-void MainWindow::aboutDialog() {
+void MainWindow::about() {
     QStringList aboutString;
     aboutString << "Current Version: " + BuildConfig.versionString()
                 << "Build Platform: " + BuildConfig.BUILD_PLATFORM
@@ -430,4 +338,8 @@ void MainWindow::aboutDialog() {
                 << "Copyleft 2023-2024 Carson Rueter"
                 << "Enjoy :)";
     QMessageBox::about(this, "About " + BuildConfig.APP_NAME, aboutString.join("\n"));
+}
+
+void MainWindow::aboutQt() {
+    QMessageBox::aboutQt(this, "About Qt");
 }
