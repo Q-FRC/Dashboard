@@ -28,18 +28,17 @@
 
 #include "../ui/ui_MainWindow.h"
 
-MainWindow::MainWindow() : QMainWindow()
+MainWindow::MainWindow() : QMainWindow(), Ui::MainWindow()
 {
-    ui = new Ui::MainWindow;
-    ui->setupUi(this);
+    setupUi(this);
 
     // Initialize Shortcuts
     {
         new QShortcut(QKeySequence(Qt::Key_Control + Qt::Key_Tab), this, [this] {
-            int tabIdx = ui->centralwidget->currentIndex() + 1;
-            if (tabIdx == ui->centralwidget->count()) tabIdx = 0;
+            int tabIdx = centralwidget->currentIndex() + 1;
+            if (tabIdx == centralwidget->count()) tabIdx = 0;
 
-            ui->centralwidget->setCurrentIndex(tabIdx);
+            centralwidget->setCurrentIndex(tabIdx);
         });
     }
 
@@ -47,11 +46,10 @@ MainWindow::MainWindow() : QMainWindow()
 }
 
 MainWindow::~MainWindow() {
-    delete ui;
 }
 
 TabWidget *MainWindow::currentTab() {
-    return m_tabs.at(ui->centralwidget->currentIndex());
+    return m_tabs.at(centralwidget->currentIndex());
 }
 
 /* File I/O */
@@ -101,7 +99,7 @@ void MainWindow::loadObject(const QJsonDocument &doc) {
         tab->setMouseTracking(true);
 
         tab->loadObject(object);
-        ui->centralwidget->addTab(tab, tab->name());
+        centralwidget->addTab(tab, tab->name());
         m_tabs.append(tab);
     } // tabs
 }
@@ -231,21 +229,21 @@ void MainWindow::newTab() {
         tab->setMouseTracking(true);
 
         m_tabs.append(tab);
-        ui->centralwidget->addTab(tab, tabName);
-        ui->centralwidget->setCurrentWidget(tab);
+        centralwidget->addTab(tab, tabName);
+        centralwidget->setCurrentWidget(tab);
         tab->setName(tabName);
     }
 }
 
 void MainWindow::closeTab() {
     if (m_tabs.empty()) return;
-    int index = ui->centralwidget->currentIndex();
+    int index = centralwidget->currentIndex();
 
     QMessageBox::StandardButton close = QMessageBox::question(this, "Close Tab?", "Are you sure you want to close this tab?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
     if (close == QMessageBox::Yes) {
         TabWidget *tab = m_tabs.at(index);
-        ui->centralwidget->removeTab(index);
+        centralwidget->removeTab(index);
         m_tabs.remove(index);
         delete tab;
     }
@@ -255,10 +253,10 @@ void MainWindow::renameTab() {
     if (m_tabs.empty()) return;
 
     bool ok;
-    QString tabName = QInputDialog::getText(this, "Tab Name", "Input new tab name", QLineEdit::Normal, ui->centralwidget->tabText(ui->centralwidget->currentIndex()), &ok);
+    QString tabName = QInputDialog::getText(this, "Tab Name", "Input new tab name", QLineEdit::Normal, centralwidget->tabText(centralwidget->currentIndex()), &ok);
 
     if (!tabName.isEmpty() && ok) {
-        ui->centralwidget->setTabText(ui->centralwidget->currentIndex(), tabName);
+        centralwidget->setTabText(centralwidget->currentIndex(), tabName);
         currentTab()->setName(tabName);
     }
 }

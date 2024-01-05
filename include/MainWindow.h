@@ -1,7 +1,5 @@
 #pragma once
 
-// #include "CentralWidget.h"
-
 #include "widgets/BaseWidget.h"
 #include "widgets/TabWidget.h"
 
@@ -14,14 +12,9 @@
 #include <QTabWidget>
 
 #include "Globals.h"
+#include "ui_MainWindow.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
-QT_END_NAMESPACE
-
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, Ui::MainWindow
 {
     Q_OBJECT
 private:
@@ -30,8 +23,6 @@ private:
     QString m_filename{};
 
     void makeNewWidget(WidgetTypes type);
-
-    Ui::MainWindow *ui;
 public:
     MainWindow();
     virtual ~MainWindow();

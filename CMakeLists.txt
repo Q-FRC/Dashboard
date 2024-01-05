@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.25)
 
 project(QFRCDashboard VERSION 1.0.0 LANGUAGES CXX)
 
+set(CMAKE_AUTOUIC_SEARCH_PATHS "ui/")
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -104,6 +106,7 @@ set(PROJECT_SOURCES
 
         # ==================================
         ui/MainWindow.ui
+        ui/NTSettingsDialog.ui
 )
 
 if(WIN32)
@@ -155,8 +158,8 @@ add_subdirectory("buildconfig")
 target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::MultimediaWidgets Qt${QT_VERSION_MAJOR}::Charts ntcore SingleApplication::SingleApplication BuildConfig)
 
 target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
-target_include_directories(QFRCDashboard PRIVATE include/)
 target_include_directories(QFRCDashboard PRIVATE ui/)
+target_include_directories(QFRCDashboard PRIVATE include/)
 
 include(GNUInstallDirs)
 install(TARGETS QFRCDashboard
