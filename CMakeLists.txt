@@ -107,6 +107,7 @@ set(PROJECT_SOURCES
         # ==================================
         ui/MainWindow.ui
         ui/NTSettingsDialog.ui
+        ui/WidgetDialogGenerator.ui
 )
 
 if(WIN32)
