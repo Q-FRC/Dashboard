@@ -6,7 +6,9 @@
 
 GridLineWidget::GridLineWidget(QWidget *parent)
     : QWidget{parent}
-{}
+{
+    setMouseTracking(true);
+}
 
 void GridLineWidget::setSize(QPoint size) {
     m_size = size;
@@ -51,7 +53,7 @@ void GridLineWidget::paintEvent(QPaintEvent *event) {
     painter.setPen(pen);
 
     for (int x = 0; x < m_size.x() + 1; ++x) {
-        double xPos = width() / m_size.x() * x;
+        double xPos = width() / m_size.x() * (double) x;
 
         painter.drawLine(QLineF(
             QPointF(xPos, 0.),
@@ -59,7 +61,7 @@ void GridLineWidget::paintEvent(QPaintEvent *event) {
     }
 
     for (int y = 0; y < m_size.y() + 1; ++y) {
-        double yPos = height() / m_size.y() * y;
+        double yPos = height() / m_size.y() * (double) y;
 
         painter.drawLine(QLineF(
             QPointF(0, yPos),

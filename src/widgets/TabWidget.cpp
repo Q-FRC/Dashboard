@@ -54,13 +54,20 @@ WidgetData TabWidget::widgetData(BaseWidget *widget) {
 }
 
 bool TabWidget::widgetAtPoint(WidgetData data) {
-    for (int i = 0; i < data.rowSpan; ++i) {
-        for (int j = 0; j < data.colSpan; ++j) {
-            int row = data.row + i;
-            int col = data.col + j;
+    // this is mild cancer but idrc
 
-            QLayoutItem *item = m_layout->itemAtPosition(row, col);
-            if (item && item->widget() != m_gridLine) return true;
+    for (int i = 0; i < m_layout->count(); ++i) {
+        QLayoutItem *item = m_layout->itemAt(i);
+        if (item->widget() == m_gridLine) continue;
+
+        int row, col, rowSpan, colSpan;
+        m_layout->getItemPosition(i, &row, &col, &rowSpan, &colSpan);
+
+        QRect dataRect = QRect(data.row, data.col, data.rowSpan, data.colSpan);
+        QRect itemRect = QRect(row, col, rowSpan, colSpan);
+
+        if (dataRect.intersects(itemRect)) {
+            return true;
         }
     }
 
@@ -364,9 +371,6 @@ void TabWidget::resizeMove(QPoint point) {
 
     WidgetData data{row, col, rowSpan, colSpan};
     m_gridLine->setSelection(data);
-
-    qDebug() << "row" << row << rowSpan << m_maxSize.y();
-    qDebug() << "col" << col << colSpan << m_maxSize.x();
 
     m_gridLine->setValidSelection(!widgetAtPoint(data) &&
                                   (row + rowSpan <= m_maxSize.y()) &&
