@@ -11,13 +11,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-option(USE_SYSTEM_NTCORE "Use system ntcore installation" ON)
+option(USE_SYSTEM_WPILIB "Use system wpilib installation" ON)
 option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
 
-if( ${USE_SYSTEM_NTCORE})
+if( ${USE_SYSTEM_WPILIB})
+    find_package(cscore)
     find_package(ntcore)
-    if( NOT ${ntcore_FOUND} )
-        set(USE_SYSTEM_NTCORE OFF)
+    if( NOT ${cscore_FOUND} OR NOT ${ntcore_FOUND} )
+        set(USE_SYSTEM_WPILIB OFF)
     endif()
 endif()
 
@@ -117,6 +118,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${RCS_FILE}
         ${PROJECT_SOURCES}
         include/misc/ChartView.h src/misc/ChartView.cpp
+        include/stores/CameraStore.h src/stores/CameraStore.cpp
 
     )
 endif()
