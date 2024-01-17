@@ -59,8 +59,10 @@ Section "@Dashboard_APP_NAME@"
   File *.dll
   File /r "iconengines"
   File /r "imageformats"
+  File /r "multimedia"
   File /r "platforms"
   File /r "styles"
+  File /r "tls"
 
   ; Write the installation path into the registry
   WriteRegStr HKCU Software\@Dashboard_APP_NAME@ "InstallDir" "$INSTDIR"
