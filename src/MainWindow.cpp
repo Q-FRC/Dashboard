@@ -34,13 +34,6 @@ MainWindow::MainWindow() : QMainWindow(), Ui::MainWindow()
 {
     setupUi(this);
 
-    { // Cameras
-        QAction *camerasAction = new QAction("&CameraServer", this);
-        connect(camerasAction, &QAction::triggered, this, &MainWindow::cameraServerPopup);
-
-        menuBar()->addAction(camerasAction);
-    }
-
     // Initialize Shortcuts
     {
         new QShortcut(QKeySequence(Qt::Key_Control + Qt::Key_Tab), this, [this] {

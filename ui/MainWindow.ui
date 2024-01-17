@@ -68,11 +68,18 @@
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
+   <widget class="QMenu" name="menu_CameraServer">
+    <property name="title">
+     <string>&amp;CameraServer</string>
+    </property>
+    <addaction name="actionAdd_Camera"/>
+   </widget>
    <addaction name="menuNetworkTables"/>
    <addaction name="menuFile"/>
    <addaction name="menu_Tab"/>
    <addaction name="menuWidget"/>
    <addaction name="menuAbout"/>
+   <addaction name="menu_CameraServer"/>
   </widget>
   <action name="action_Server_2">
    <property name="text">
@@ -161,6 +168,11 @@
   <action name="actionNew_Camera_View">
    <property name="text">
     <string>New &amp;Camera View</string>
+   </property>
+  </action>
+  <action name="actionAdd_Camera">
+   <property name="text">
+    <string>Add &amp;Camera...</string>
    </property>
   </action>
  </widget>
@@ -374,6 +386,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionAdd_Camera</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cameraServerPopup()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ntSettingsPopup()</slot>
@@ -389,5 +417,6 @@
   <slot>newGraph()</slot>
   <slot>about()</slot>
   <slot>aboutQt()</slot>
+  <slot>cameraServerPopup()</slot>
  </slots>
 </ui>
