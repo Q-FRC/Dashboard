@@ -187,5 +187,5 @@ jobs:
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v3
       with:
-        name: QFRCDashboard-${{ matrix.name }}-Setup-${{ env.VERSION }}-${{ inputs.build_type }}
+        name: QFRCDashboard-${{ runner.os }}-Setup-${{ env.VERSION }}-${{ inputs.build_type }}
         path: QFRCDashboard-Setup.exe
