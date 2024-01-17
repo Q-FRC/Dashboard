@@ -20,11 +20,12 @@ jobs:
           - os: ubuntu-20.04
             qt_host: linux
             qt_version: '6.6.0'
-            qt_modules: 'qt6-multimedia-dev qt6-wayland-dev qt6-charts-dev'
+            qt_modules: 'qtmultimedia qtcharts qtwaylandcompositor'
 
           - os: windows-2022
             qt_host: windows
             qt_version: '6.6.0'
+            qt_modules: 'qtmultimedia qtcharts'
 
     runs-on: ${{ matrix.os }}
 
@@ -63,7 +64,7 @@ jobs:
       uses: jurplel/install-qt-action@v3.3.0
       with:
         version: 6.6.0
-        modules: qtmultimedia qtcharts qtwaylandcompositor
+        modules: ${{ matrix.qt_modules }}
 
     - name: Install Python Dependencies
       run: |
