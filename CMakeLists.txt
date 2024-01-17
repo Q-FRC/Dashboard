@@ -11,13 +11,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-option(USE_SYSTEM_WPILIB "Use system wpilib installation" ON)
+option(USE_SYSTEM_NTCORE "Use system wpilib installation" ON)
 option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
 
-if( ${USE_SYSTEM_WPILIB})
+if( ${USE_SYSTEM_NTCORE})
     find_package(ntcore)
     if( NOT ${ntcore_FOUND} )
-        set(USE_SYSTEM_WPILIB OFF)
+        set(USE_SYSTEM_NTCORE OFF)
     endif()
 endif()
 
