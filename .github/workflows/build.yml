@@ -131,6 +131,7 @@ jobs:
         ./linuxdeploy-x86_64.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt
 
     - name: Package (Windows, Portable)
+      if: runner.os == 'Windows'
       shell: cmd
       run: |
         cmake --install ${{ env.BUILD_DIR }}\_deps\ntcore-build --prefix ${{ env.NTCORE_INSTALL_DIR }}
@@ -151,6 +152,7 @@ jobs:
         cp ${{ env.PROTOBUF_INSTALL_DIR }}\bin\abseil_dll.dll ${{ env.INSTALL_DIR }}
 
     - name: Package (Windows, Installer)
+      if: runner.os == 'Windows'
       shell: cmd
       run: |
         cd ${{ env.INSTALL_DIR }}
@@ -175,6 +177,7 @@ jobs:
         path: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
 
     - name: Upload binary zip (Windows, portable)
+      if: runner.os == 'Windows'
       uses: actions/upload-artifact@v3
       with:
         name: QFRCDashboard-Windows-Portable-${{ env.VERSION }}-${{ inputs.build_type }}
