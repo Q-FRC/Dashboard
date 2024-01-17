@@ -15,10 +15,19 @@ option(USE_SYSTEM_WPILIB "Use system wpilib installation" ON)
 option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
 
 if( ${USE_SYSTEM_WPILIB})
+    find_package(wpinet)
     find_package(cscore)
     find_package(ntcore)
-    if( NOT ${cscore_FOUND} OR NOT ${ntcore_FOUND} )
+    if( NOT ${cscore_FOUND} AND NOT ${ntcore_FOUND} )
         set(USE_SYSTEM_WPILIB OFF)
+    elseif(NOT ${cscore_FOUND} )
+        message(FATAL_ERROR "Building with a system ntcore installation and "
+            "inbuilt cscore installation is not supported. Please set "
+            "-DUSE_SYSTEM_WPILIB=OFF and try again.")
+    elseif(NOT ${ntcore_FOUND} )
+        message(FATAL_ERROR "Building with a system cscore installation and "
+            "inbuilt ntcore installation is not supported. Please set "
+            "-DUSE_SYSTEM_WPILIB=OFF and try again.")
     endif()
 endif()
 
@@ -56,17 +65,20 @@ set(PROJECT_SOURCES
         src/widgets/CommandWidget.cpp
         src/widgets/GraphWidget.cpp
 
-        src/misc/NewWidgetTreeDialog.cpp
-        src/misc/NTSettingsDialog.cpp
-        src/misc/WidgetDialogGenerator.cpp
         src/misc/ShapedFrame.cpp
         src/misc/BetterDial.cpp
         src/misc/FieldImage.cpp
-        src/misc/TabMaxSizeDialog.cpp
+        src/dialogs/TabMaxSizeDialog.cpp
 
         src/stores/TopicStore.cpp
         src/stores/TypeStore.cpp
         src/stores/FilterStore.cpp
+
+        src/dialogs/CameraSelectionDialog.cpp
+        src/dialogs/NewWidgetTreeDialog.cpp
+        src/dialogs/NTSettingsDialog.cpp
+        src/dialogs/WidgetDialogGenerator.cpp
+        src/dialogs/TabMaxSizeDialog.cpp
 
         # =======================================
 
@@ -91,17 +103,19 @@ set(PROJECT_SOURCES
         include/widgets/CommandWidget.h
         include/widgets/GraphWidget.h
 
-        include/misc/NewWidgetTreeDialog.h
-        include/misc/NTSettingsDialog.h
-        include/misc/WidgetDialogGenerator.h
         include/misc/ShapedFrame.h
         include/misc/BetterDial.h
         include/misc/FieldImage.h
-        include/misc/TabMaxSizeDialog.h
 
         include/stores/TopicStore.h
         include/stores/TypeStore.h
         include/stores/FilterStore.h
+
+        include/dialogs/CameraSelectionDialog.h
+        include/dialogs/NewWidgetTreeDialog.h
+        include/dialogs/NTSettingsDialog.h
+        include/dialogs/WidgetDialogGenerator.h
+        include/dialogs/TabMaxSizeDialog.h
 )
 
 if(WIN32)
