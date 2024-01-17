@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-option(USE_SYSTEM_NTCORE "Use system ntcore installation" ON)
+option(USE_SYSTEM_NTCORE "Use system wpilib installation" ON)
 option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
 
 if( ${USE_SYSTEM_NTCORE})
@@ -57,17 +57,20 @@ set(PROJECT_SOURCES
         src/widgets/CommandWidget.cpp
         src/widgets/GraphWidget.cpp
 
-        src/misc/NewWidgetTreeDialog.cpp
-        src/misc/NTSettingsDialog.cpp
-        src/misc/WidgetDialogGenerator.cpp
         src/misc/ShapedFrame.cpp
         src/misc/BetterDial.cpp
         src/misc/FieldImage.cpp
-        src/misc/TabMaxSizeDialog.cpp
+        src/dialogs/TabMaxSizeDialog.cpp
 
         src/stores/TopicStore.cpp
         src/stores/TypeStore.cpp
         src/stores/FilterStore.cpp
+
+        src/dialogs/CameraSelectionDialog.cpp
+        src/dialogs/NewWidgetTreeDialog.cpp
+        src/dialogs/NTSettingsDialog.cpp
+        src/dialogs/WidgetDialogGenerator.cpp
+        src/dialogs/TabMaxSizeDialog.cpp
 
         # =======================================
 
@@ -92,23 +95,29 @@ set(PROJECT_SOURCES
         include/widgets/CommandWidget.h
         include/widgets/GraphWidget.h
 
-        include/misc/NewWidgetTreeDialog.h
-        include/misc/NTSettingsDialog.h
-        include/misc/WidgetDialogGenerator.h
         include/misc/ShapedFrame.h
         include/misc/BetterDial.h
         include/misc/FieldImage.h
-        include/misc/TabMaxSizeDialog.h
 
         include/stores/TopicStore.h
         include/stores/TypeStore.h
         include/stores/FilterStore.h
+
+        include/misc/ChartView.h src/misc/ChartView.cpp
+        include/misc/GridLineWidget.h src/misc/GridLineWidget.cpp
+        include/stores/CameraStore.h src/stores/CameraStore.cpp
 
         # ==================================
         ui/MainWindow.ui
         ui/NTSettingsDialog.ui
         ui/WidgetDialogGenerator.ui
         ui/NewWidgetTreeDialog.ui
+
+        include/dialogs/CameraSelectionDialog.h
+        include/dialogs/NewWidgetTreeDialog.h
+        include/dialogs/NTSettingsDialog.h
+        include/dialogs/WidgetDialogGenerator.h
+        include/dialogs/TabMaxSizeDialog.h
 )
 
 if(WIN32)
@@ -124,9 +133,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         fields.qrc
         ${RCS_FILE}
         ${PROJECT_SOURCES}
-        include/misc/ChartView.h src/misc/ChartView.cpp
-        include/misc/GridLineWidget.h src/misc/GridLineWidget.cpp
-
     )
 endif()
 

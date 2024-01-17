@@ -1,12 +1,14 @@
 #include "MainWindow.h"
 #include "Globals.h"
 
-#include "misc/NewWidgetTreeDialog.h"
-#include "misc/NTSettingsDialog.h"
-#include "misc/WidgetDialogGenerator.h"
-#include "misc/TabMaxSizeDialog.h"
+#include "dialogs/NewWidgetTreeDialog.h"
+#include "dialogs/NTSettingsDialog.h"
+#include "dialogs/WidgetDialogGenerator.h"
+#include "dialogs/TabMaxSizeDialog.h"
+#include "dialogs/CameraSelectionDialog.h"
 
 #include "stores/FilterStore.h"
+#include "widgets/CameraViewWidget.h"
 
 #include <networktables/NetworkTableInstance.h>
 
@@ -31,6 +33,13 @@
 MainWindow::MainWindow() : QMainWindow(), Ui::MainWindow()
 {
     setupUi(this);
+
+    { // Cameras
+        QAction *camerasAction = new QAction("&CameraServer", this);
+        connect(camerasAction, &QAction::triggered, this, &MainWindow::cameraServerPopup);
+
+        menuBar()->addAction(camerasAction);
+    }
 
     // Initialize Shortcuts
     {
@@ -322,6 +331,26 @@ void MainWindow::newCameraView() {
 
 void MainWindow::newGraph() {
     makeNewWidget(WidgetTypes::Graph);
+}
+
+void MainWindow::cameraServerPopup() {
+    if (m_tabs.length() == 0) {
+        QMessageBox::StandardButton warning = QMessageBox::warning(this, "Cannot Add Widget", "You must select a tab before adding a widget.\nWould you like to add a tab now?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (warning == QMessageBox::StandardButton::Yes) {
+            newTab();
+        }
+    } else {
+        CameraSelectionDialog *dialog = new CameraSelectionDialog(this);
+        dialog->show();
+
+        connect(dialog, &CameraSelectionDialog::selectedCamera, this, [this](Camera camera) {
+            CameraViewWidget *widget = new CameraViewWidget(
+                QString("%1 (%2)").arg(camera.Name, camera.Source), camera.Urls.at(0));
+            WidgetData data{0, 0, 1, 1};
+
+            beginNewWidgetDrag(widget, data);
+        });
+    }
 }
 
 //  Menu

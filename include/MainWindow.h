@@ -57,6 +57,9 @@ public slots:
     void newCameraView();
     void newGraph();
 
+    // Camera
+    void cameraServerPopup();
+
     // About Menu
     void about();
     void aboutQt();

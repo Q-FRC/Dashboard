@@ -1,6 +1,6 @@
-#include "misc/WidgetDialogGenerator.h"
+#include "dialogs/WidgetDialogGenerator.h"
 
-#include "misc/NewWidgetTreeDialog.h"
+#include "dialogs/NewWidgetTreeDialog.h"
 
 #include "qscreen.h"
 #include "stores/FilterStore.h"
@@ -35,7 +35,7 @@ WidgetDialogGenerator::WidgetDialogGenerator(BaseWidget *widget, QWidget *parent
     m_widget = widget;
     m_isResize = isResize;
 
-    nameInput->setText(isResize ? widget->title() : "");
+    nameInput->setText(widget->title());
     rowInput->setValue(data.row);
     colInput->setValue(data.col);
     rowSpanInput->setValue((data.rowSpan == 0 ? 1 : data.rowSpan));

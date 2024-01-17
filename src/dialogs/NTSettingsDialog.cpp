@@ -1,4 +1,4 @@
-#include "misc/NTSettingsDialog.h"
+#include "dialogs/NTSettingsDialog.h"
 
 NTSettingsDialog::NTSettingsDialog(QWidget *parent) : QDialog(parent), Ui::NTSettingsDialog()
 {
