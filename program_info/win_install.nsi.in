@@ -56,7 +56,7 @@ Section "@Dashboard_APP_NAME@"
   SetOutPath $INSTDIR
 
   File "@Dashboard_APP_NAME@.exe"
-  File "qt.conf"
+;  File "qt.conf"
   File *.dll
   File /r "iconengines"
   File /r "imageformats"
