@@ -27,7 +27,7 @@ if (NOT USE_SYSTEM_WPILIB)
     set(USE_SYSTEM_FMTLIB OFF)
     set(WITH_JAVA OFF)
 
-    set(WITH_CSCORE ON)
+    set(WITH_CSCORE OFF)
     set(WITH_NTCORE ON)
 
     set(WITH_WPIMATH OFF)
@@ -39,10 +39,10 @@ if (NOT USE_SYSTEM_WPILIB)
     set(NO_WERROR ON)
 
     FetchContent_Declare(
-            wpilib
+            ntcore
             GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
             GIT_TAG        4809f3d0fcaea95115c069d6027694191fca9750
             OVERRIDE_FIND_PACKAGE
     )
-    FetchContent_MakeAvailable(wpilib)
+    FetchContent_MakeAvailable(ntcore)
 endif()

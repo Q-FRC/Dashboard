@@ -15,19 +15,9 @@ option(USE_SYSTEM_WPILIB "Use system wpilib installation" ON)
 option(USE_SYSTEM_PROTOBUF "Use system protobuf installation" ON)
 
 if( ${USE_SYSTEM_WPILIB})
-    find_package(wpinet)
-    find_package(cscore)
     find_package(ntcore)
-    if( NOT ${cscore_FOUND} AND NOT ${ntcore_FOUND} )
+    if( NOT ${ntcore_FOUND} )
         set(USE_SYSTEM_WPILIB OFF)
-    elseif(NOT ${cscore_FOUND} )
-        message(FATAL_ERROR "Building with a system ntcore installation and "
-            "inbuilt cscore installation is not supported. Please set "
-            "-DUSE_SYSTEM_WPILIB=OFF and try again.")
-    elseif(NOT ${ntcore_FOUND} )
-        message(FATAL_ERROR "Building with a system cscore installation and "
-            "inbuilt ntcore installation is not supported. Please set "
-            "-DUSE_SYSTEM_WPILIB=OFF and try again.")
     endif()
 endif()
 
