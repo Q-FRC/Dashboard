@@ -36,7 +36,7 @@ OutFile "../@Dashboard_APP_NAME@-Setup.exe"
 ;--------------------------------
 
 ; Version info
-VIProductVersion "@Dashboard_GIT_TAG@"
+VIProductVersion "@Dashboard_VERSION_WIN@"
 VIFileVersion "@Dashboard_VERSION_WIN@"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "@Dashboard_APP_NAME@"
 VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "@Dashboard_APP_NAME@ Installer"
@@ -56,7 +56,6 @@ Section "@Dashboard_APP_NAME@"
   SetOutPath $INSTDIR
 
   File "@Dashboard_APP_NAME@.exe"
-;  File "qt.conf"
   File *.dll
   File /r "iconengines"
   File /r "imageformats"
