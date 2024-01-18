@@ -158,11 +158,11 @@ jobs:
         cd ${{ env.INSTALL_DIR }}
         makensis -NOCD "${{ github.workspace }}/${{ env.BUILD_DIR }}/program_info/win_install.nsi"
 
-        cd ..
-        mv ${{ env.BUILD_DIR }} old_build
-
         mkdir application
         cp ${{ env.BUILD_DIR }}\QFRCDashboard.exe application
+
+        cd ..
+        mv ${{ env.BUILD_DIR }} old_build
 
     - name: Package (Windows, MSI)
       if: runner.os == 'Windows'
