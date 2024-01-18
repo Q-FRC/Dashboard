@@ -23,7 +23,7 @@ CameraSelectionDialog::CameraSelectionDialog(QWidget *parent) : QDialog(parent)
     connect(m_buttonBox, &QDialogButtonBox::accepted, this, [this] {
         auto items = m_list->selectedItems();
 
-        if (items.empty()) return;
+        if (items.empty() || items.length() < 1) return;
         QString selected = items.at(0)->text();
 
         Camera camera;
