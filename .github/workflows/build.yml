@@ -158,6 +158,7 @@ jobs:
       run: |
         cd ${{ env.INSTALL_DIR }}
         makensis -NOCD "${{ github.workspace }}/${{ env.BUILD_DIR }}/program_info/win_install.nsi"
+        cd ..
         mv ${{ env.BUILD_DIR }} old_build
 
     - name: Package (Windows, MSI)
