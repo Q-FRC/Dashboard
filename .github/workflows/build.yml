@@ -151,7 +151,6 @@ jobs:
 
         cp ${{ env.PROTOBUF_INSTALL_DIR }}\bin\abseil_dll.dll ${{ env.INSTALL_DIR }}
         cp ${{ env.BUILD_DIR }}\QFRCDashboard.exe .
-        mv ${{ env.BUILD_DIR }} old_build
 
     - name: Package (Windows, NSIS)
       if: runner.os == 'Windows'
@@ -159,6 +158,7 @@ jobs:
       run: |
         cd ${{ env.INSTALL_DIR }}
         makensis -NOCD "${{ github.workspace }}/${{ env.BUILD_DIR }}/program_info/win_install.nsi"
+        mv ${{ env.BUILD_DIR }} old_build
 
     - name: Package (Windows, MSI)
       if: runner.os == 'Windows'
