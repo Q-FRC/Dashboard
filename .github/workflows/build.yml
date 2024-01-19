@@ -158,18 +158,13 @@ jobs:
         cd ${{ env.INSTALL_DIR }}
         makensis -NOCD "${{ github.workspace }}/${{ env.BUILD_DIR }}/program_info/win_install.nsi"
 
-        cd ..
-
-        mkdir application
-        cp ${{ env.BUILD_DIR }}\QFRCDashboard.exe application
-        mv ${{ env.BUILD_DIR }} old_build
-
     - name: Package (Windows, MSI)
       if: runner.os == 'Windows'
-      uses: AliceOh/CreateWindowsInstaller@1.0.0
-      with:
-        version: 1.0.0
-        exefile: 'QFRCDashboard.exe'
+      shell: cmd
+      run: |
+        cd ${{ env.BUILD_DIR }}
+        cpack -G WIX -C ${{ inputs.build_type }}
+        mv QFRCDashboard*.msi ../QFRCDashboard.msi
 
     ##
     # UPLOAD
@@ -207,5 +202,5 @@ jobs:
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v3
       with:
-        name: QFRCDashboard-${{ runner.os }}-Setup-${{ env.VERSION }}-${{ inputs.build_type }}.msi
-        path: QFRCDashboard.exe.msi
+        name: QFRCDashboard-${{ runner.os }}-System-${{ env.VERSION }}-${{ inputs.build_type }}.msi
+        path: QFRCDashboard.msi

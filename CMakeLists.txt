@@ -166,6 +166,15 @@ target_link_libraries(QFRCDashboard PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${Q
 target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
 target_include_directories(QFRCDashboard PRIVATE include/)
 
+set(CPACK_GENERATOR WIX)
+set(CPACK_PACKAGE_NAME ${Dashboard_APP_NAME})
+set(CPACK_PACKAGE_VENDOR ${Dashboard_ORG_NAME})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Reliable, high-performance dashboard for FRC use")
+set(CPACK_PACKAGE_VERSION ${Dashboard_GIT_TAG_NUMERO})
+set(CPACK_PACKAGE_VERSION_MAJOR ${Dashboard_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${Dashboard_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${Dashboard_VERSION_HOTFIX})
+
 include(GNUInstallDirs)
 install(TARGETS QFRCDashboard
     BUNDLE DESTINATION .
