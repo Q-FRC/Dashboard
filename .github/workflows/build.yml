@@ -164,8 +164,8 @@ jobs:
       run: |
         cd ${{ env.BUILD_DIR }}
         cpack -G WIX -C ${{ inputs.build_type }}
-        type 'D:/a/QFRCDashboard/QFRCDashboard/build/_CPack_Packages/win64/WIX/wix.log'
-        mv QFRCDashboard*.msi ../QFRCDashboard.msi
+        type 'D:\a\QFRCDashboard\QFRCDashboard\build\_CPack_Packages\win64\WIX\wix.log'
+        mv QFRCDashboard*.msi ..\QFRCDashboard.msi
 
     ##
     # UPLOAD
