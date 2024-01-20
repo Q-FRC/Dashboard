@@ -146,7 +146,7 @@ elseif(WIN32)
     set(RESOURCES_DEST_DIR ".")
 endif()
 
-FIXUP_BUNDLE(QFRCDashboard)
+fixup_bundle(QFRCDashboard)
 
 install(TARGETS QFRCDashboard
     BUNDLE DESTINATION "." COMPONENT Runtime
