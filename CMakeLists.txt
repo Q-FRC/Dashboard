@@ -136,6 +136,29 @@ set(Dashboard_ORG_NAME "binex-dsk")
 set(Dashboard_APP_NAME "QFRCDashboard")
 set(Dashboard_GIT_REPO "https://github.com/binex-dsk/QFRCDashboard")
 
+# Directory Structure
+if (UNIX)
+    set(BINARY_DEST_DIR "bin")
+    set(LIBRARY_DEST_DIR "lib${LIB_SUFFIX}")
+elseif(WIN32)
+    set(BINARY_DEST_DIR ".")
+    set(LIBRARY_DEST_DIR ".")
+    set(RESOURCES_DEST_DIR ".")
+endif()
+
+include(ECMQueryQt)
+ecm_query_qt(QT_PLUGINS_DIR  QT_INSTALL_PLUGINS)
+ecm_query_qt(QT_LIBS_DIR     QT_INSTALL_LIBS)
+ecm_query_qt(QT_LIBEXECS_DIR QT_INSTALL_LIBEXECS)
+ecm_query_qt(QT_DATA_DIR     QT_HOST_DATA)
+set(QT_MKSPECS_DIR ${QT_DATA_DIR}/mkspecs)
+
+install(TARGETS ${Launcher_Name}
+    BUNDLE DESTINATION "." COMPONENT Runtime
+    LIBRARY DESTINATION ${LIBRARY_DEST_DIR} COMPONENT Runtime
+    RUNTIME DESTINATION ${BINARY_DEST_DIR} COMPONENT Runtime
+)
+
 # Git
 include(GetGitRevisionDescription)
 git_get_exact_tag(Dashboard_GIT_TAG)
@@ -180,17 +203,8 @@ set(CPACK_PACKAGE_VERSION_MINOR ${Dashboard_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${Dashboard_VERSION_HOTFIX})
 set(CPACK_COMPONENTS_ALL Unspecified)
 
-if (UNIX)
-    include(GNUInstallDirs)
-    install(TARGETS QFRCDashboard
-        BUNDLE DESTINATION .
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    )
-endif()
-
 install(
-    CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/qt.conf\" \" \")"
+    CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${RESOURCES_DEST_DIR}/qt.conf\" \" \")"
     COMPONENT Runtime
 )
 

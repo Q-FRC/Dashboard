@@ -1,4 +1,3 @@
-# Config stuff
 if(UNIX AND NOT(APPLE))
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${Dashboard_APP_NAME}.desktop DESTINATION "share/applications")
     install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${Dashboard_APP_NAME}.svg DESTINATION "share/icons/hicolor/scalable/apps")
