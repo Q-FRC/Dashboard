@@ -14,8 +14,8 @@ if (NOT USE_SYSTEM_PROTOBUF)
 
     FetchContent_Declare(
             protobuf
-            GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-            GIT_TAG        7f94235e552599141950d7a4a3eaf93bc87d1b22 # 25.1
+            GIT_REPOSITORY https://github.com/binex-dsk/protobuf.git
+            GIT_TAG        1054eb3a372212644bd1898c7a3619f029830a34 # 25.2
             OVERRIDE_FIND_PACKAGE
     )
     FetchContent_MakeAvailable(Protobuf)
