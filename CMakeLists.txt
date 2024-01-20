@@ -30,7 +30,7 @@ endif()
 
 find_package(QT NAMES Qt6 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets Charts)
-add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
+add_subdirectory(3rd_party)
 
 set(PROJECT_SOURCES
         src/main.cpp
