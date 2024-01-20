@@ -60,17 +60,20 @@ set(PROJECT_SOURCES
         src/misc/ShapedFrame.cpp
         src/misc/BetterDial.cpp
         src/misc/FieldImage.cpp
-        src/dialogs/TabMaxSizeDialog.cpp
+        src/misc/ChartView.cpp
+        src/misc/GridLineWidget.cpp
 
         src/stores/TopicStore.cpp
         src/stores/TypeStore.cpp
         src/stores/FilterStore.cpp
+        src/stores/CameraStore.cpp
 
         src/dialogs/CameraSelectionDialog.cpp
         src/dialogs/NewWidgetTreeDialog.cpp
         src/dialogs/NTSettingsDialog.cpp
         src/dialogs/WidgetDialogGenerator.cpp
         src/dialogs/TabMaxSizeDialog.cpp
+        src/dialogs/PreferencesDialog.cpp
 
         # =======================================
 
@@ -98,26 +101,29 @@ set(PROJECT_SOURCES
         include/misc/ShapedFrame.h
         include/misc/BetterDial.h
         include/misc/FieldImage.h
+        include/misc/ChartView.h
+        include/misc/GridLineWidget.h
 
         include/stores/TopicStore.h
         include/stores/TypeStore.h
         include/stores/FilterStore.h
-
-        include/misc/ChartView.h src/misc/ChartView.cpp
-        include/misc/GridLineWidget.h src/misc/GridLineWidget.cpp
-        include/stores/CameraStore.h src/stores/CameraStore.cpp
-
-        # ==================================
-        ui/MainWindow.ui
-        ui/NTSettingsDialog.ui
-        ui/WidgetDialogGenerator.ui
-        ui/NewWidgetTreeDialog.ui
+        include/stores/CameraStore.h
 
         include/dialogs/CameraSelectionDialog.h
         include/dialogs/NewWidgetTreeDialog.h
         include/dialogs/NTSettingsDialog.h
         include/dialogs/WidgetDialogGenerator.h
         include/dialogs/TabMaxSizeDialog.h
+        include/dialogs/PreferencesDialog.h
+
+        # ==================================
+        ui/MainWindow.ui
+        ui/NTSettingsDialog.ui
+        ui/WidgetDialogGenerator.ui
+        ui/NewWidgetTreeDialog.ui
+        ui/CameraSelectionDialog.ui
+        ui/TabMaxSizeDialog.ui
+        ui/PreferencesDialog.ui
 )
 
 if(WIN32)
@@ -131,10 +137,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QFRCDashboard
         MANUAL_FINALIZATION
         fields.qrc
+        theme/qrc/breeze.qrc
         ${RCS_FILE}
         ${PROJECT_SOURCES}
-        ui/CameraSelectionDialog.ui
-        ui/TabMaxSizeDialog.ui
     )
 endif()
 
@@ -154,6 +159,14 @@ message(STATUS "Git tag: ${Dashboard_GIT_TAG}")
 message(STATUS "Git refspec: ${Dashboard_GIT_REFSPEC}")
 
 string(REPLACE "-beta" "." Dashboard_GIT_TAG_NUMERO ${Dashboard_GIT_TAG})
+
+string(REPLACE "." " " Dashboard_SPLIT_VERSION ${Dashboard_GIT_TAG_NUMERO})
+
+separate_arguments(Dashboard_SPLIT_VERSION)
+
+list(GET Dashboard_SPLIT_VERSION 0 Dashboard_VERSION_MAJOR)
+list(GET Dashboard_SPLIT_VERSION 1 Dashboard_VERSION_MINOR)
+list(GET Dashboard_SPLIT_VERSION 2 Dashboard_VERSION_HOTFIX)
 
 # Build Date
 string(TIMESTAMP TODAY "%Y-%m-%d")
@@ -176,6 +189,11 @@ install(TARGETS QFRCDashboard
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(
+    CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/qt.conf\" \" \")"
+    COMPONENT Runtime
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)

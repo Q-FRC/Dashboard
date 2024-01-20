@@ -3,6 +3,7 @@
 
 #include "dialogs/NewWidgetTreeDialog.h"
 #include "dialogs/NTSettingsDialog.h"
+#include "dialogs/PreferencesDialog.h"
 #include "dialogs/WidgetDialogGenerator.h"
 #include "dialogs/TabMaxSizeDialog.h"
 #include "dialogs/CameraSelectionDialog.h"
@@ -25,6 +26,7 @@
 #include <QMetaProperty>
 #include <QShortcut>
 #include <QDrag>
+#include <QSettings>
 
 #include <BuildConfig.h>
 
@@ -122,6 +124,20 @@ void MainWindow::makeNewWidget(WidgetTypes type) {
 }
 
 /* Slots */
+
+// Preferences
+void MainWindow::preferences() {
+    PreferencesDialog *dialog = new PreferencesDialog(this);
+
+    dialog->show();
+
+    connect(dialog, &PreferencesDialog::styleSheetSet, this, [](QString styleSheet) {
+        setAppStyleSheet(styleSheet);
+
+        QSettings settings(qApp);
+        settings.setValue("styleSheet", styleSheet);
+    });
+}
 
 // NT Settings
 void MainWindow::ntSettingsPopup() {

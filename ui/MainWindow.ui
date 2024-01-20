@@ -30,12 +30,6 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuNetworkTables">
-    <property name="title">
-     <string>&amp;NetworkTables</string>
-    </property>
-    <addaction name="action_Server_2"/>
-   </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>&amp;File</string>
@@ -74,21 +68,20 @@
     </property>
     <addaction name="actionAdd_Camera"/>
    </widget>
-   <addaction name="menuNetworkTables"/>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>&amp;Settings</string>
+    </property>
+    <addaction name="action_Preferences"/>
+    <addaction name="action_NT_Server"/>
+   </widget>
+   <addaction name="menuSettings"/>
    <addaction name="menuFile"/>
    <addaction name="menu_Tab"/>
    <addaction name="menuWidget"/>
    <addaction name="menuAbout"/>
    <addaction name="menu_CameraServer"/>
   </widget>
-  <action name="action_Server_2">
-   <property name="text">
-    <string>&amp;Server</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+E</string>
-   </property>
-  </action>
   <action name="actionSave">
    <property name="text">
     <string>&amp;Save</string>
@@ -175,11 +168,24 @@
     <string>Add &amp;Camera...</string>
    </property>
   </action>
+  <action name="action_Preferences">
+   <property name="text">
+    <string>&amp;Preferences</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
+   </property>
+  </action>
+  <action name="action_NT_Server">
+   <property name="text">
+    <string>&amp;NT Server</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>action_Server_2</sender>
+   <sender>action_NT_Server</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>ntSettingsPopup()</slot>
@@ -402,6 +408,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_Preferences</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>preferences()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>ntSettingsPopup()</slot>
@@ -418,5 +440,6 @@
   <slot>about()</slot>
   <slot>aboutQt()</slot>
   <slot>cameraServerPopup()</slot>
+  <slot>preferences()</slot>
  </slots>
 </ui>
