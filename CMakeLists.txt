@@ -146,6 +146,9 @@ elseif(WIN32)
     set(RESOURCES_DEST_DIR ".")
 endif()
 
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH "${ECM_MODULE_PATH};${CMAKE_MODULE_PATH}")
+
 include(ECMQueryQt)
 ecm_query_qt(QT_PLUGINS_DIR  QT_INSTALL_PLUGINS)
 ecm_query_qt(QT_LIBS_DIR     QT_INSTALL_LIBS)
