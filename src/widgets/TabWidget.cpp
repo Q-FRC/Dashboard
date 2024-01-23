@@ -268,7 +268,6 @@ void TabWidget::setDragData(BaseWidget *widget, WidgetData data) {
 }
 
 void TabWidget::cancelDrags() {
->>>>>>> 2c56246 (fix dragging bug and new widget bug)
     m_dragging = false;
     m_resizing = false;
     m_draggedWidget = nullptr;
