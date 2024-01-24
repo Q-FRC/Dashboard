@@ -26,11 +26,11 @@
 #include <QMetaProperty>
 #include <QShortcut>
 #include <QDrag>
-#include <QSettings>
 
 #include <BuildConfig.h>
 
-#include "../ui/ui_MainWindow.h"
+#include "Constants.h"
+#include "ui_MainWindow.h"
 
 MainWindow::MainWindow() : QMainWindow(), Ui::MainWindow()
 {
@@ -131,11 +131,11 @@ void MainWindow::preferences() {
 
     dialog->show();
 
-    connect(dialog, &PreferencesDialog::styleSheetSet, this, [](QString styleSheet) {
+    connect(dialog, &PreferencesDialog::dataReady, this, [](QString styleSheet, bool loadRecent) {
         setAppStyleSheet(styleSheet);
 
-        QSettings settings(qApp);
-        settings.setValue("styleSheet", styleSheet);
+        Settings::StyleSheet.setValue(styleSheet);
+        Settings::LoadRecent.setValue(loadRecent);
     });
 }
 
@@ -228,6 +228,8 @@ void MainWindow::open(QFile &file) {
 
     m_filename = file.fileName();
 
+    addRecentFile(file);
+
     QTextStream stream(&file);
     QByteArray data = stream.readAll().toUtf8();
 
@@ -235,6 +237,46 @@ void MainWindow::open(QFile &file) {
 
     loadObject(doc);
     file.close();
+}
+
+void MainWindow::refreshRecentFiles() {
+    menuRecent_Files->clear();
+    QStringList recentFiles = Settings::RecentFiles.value().toStringList();
+    size_t i = 0;
+
+    for (const QString &file : recentFiles) {
+        ++i;
+        QString actionName = QString(
+                                 "&%1. %2"
+                                 ).arg(QString::number(i), file);
+        QAction *action = new QAction(actionName, menuRecent_Files);
+        connect(action, &QAction::triggered, this, [this, file]() {
+            QFile qfile(file);
+            open(qfile);
+        });
+
+        menuRecent_Files->addAction(action);
+    }
+}
+
+void MainWindow::addRecentFile(QFile &file) {
+    QStringList recentFiles = Settings::RecentFiles.value().toStringList();
+
+    QString fileName = file.fileName();
+    int index = recentFiles.indexOf(fileName);
+
+    if (index != -1) {
+        recentFiles.move(index, 0);
+    } else {
+        recentFiles.prepend(fileName);
+    }
+
+    if (recentFiles.length() > 5) {
+        recentFiles.removeLast();
+    }
+
+    Settings::RecentFiles.setValue(recentFiles);
+    refreshRecentFiles();
 }
 
 // Tab Actions
