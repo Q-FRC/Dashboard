@@ -15,7 +15,7 @@ CameraSelectionDialog::CameraSelectionDialog(QWidget *parent) : QDialog(parent),
 void CameraSelectionDialog::emitCamera() {
     auto items = listWidget->selectedItems();
 
-    if (items.empty() || items.length() < 1) return;
+    if (items.empty()) return;
     QString selected = items.at(0)->text();
 
     Camera camera;

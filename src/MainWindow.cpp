@@ -374,15 +374,24 @@ void MainWindow::beginNewWidgetDrag(BaseWidget *widget, WidgetData data) {
     tab->setDragData(widget, data);
     tab->dragStart(QCursor::pos(), QPoint(0, 0));
 
-    QMetaObject::Connection *conn = new QMetaObject::Connection;
-    *conn = connect(tab, &TabWidget::dragDone, this, &MainWindow::configNewWidget, Qt::SingleShotConnection);
+    QMetaObject::Connection *doneConn = new QMetaObject::Connection;
+    QMetaObject::Connection *cancelConn = new QMetaObject::Connection;
+    *doneConn = connect(tab, &TabWidget::dragDone, this, [this, cancelConn, doneConn](BaseWidget *widget, WidgetData data) {
+            configNewWidget(widget, data);
+            disconnect(*doneConn);
+            delete doneConn;
 
-    connect(tab, &TabWidget::dragCancelled, this, [this, conn, widget, tab](BaseWidget *draggedWidget) {
-            if (widget == draggedWidget) {
-                disconnect(*conn);
-                delete conn;
-                delete widget;
-            }
+            disconnect(*cancelConn);
+            delete cancelConn;
+        }, Qt::SingleShotConnection);
+
+    *cancelConn = connect(tab, &TabWidget::dragCancelled, this, [this, doneConn, cancelConn, widget](BaseWidget *draggedWidget) {
+            disconnect(*doneConn);
+            delete doneConn;
+            disconnect(*cancelConn);
+            delete cancelConn;
+
+            delete widget;
         }, Qt::SingleShotConnection);
 }
 
@@ -405,8 +414,20 @@ void MainWindow::cameraServerPopup() {
         dialog->show();
 
         connect(dialog, &CameraSelectionDialog::selectedCamera, this, [this](Camera camera) {
+            QUrl url;
+            if (camera.Urls.isEmpty() || camera.Urls.at(0).isValid()) {
+                QMessageBox::critical(this,
+                                      "Invalid Stream",
+                                      "This camera contains an invalid or nonexistent stream "
+                                      "URL. Please manually enter the correct URL if it "
+                                      "exists.");
+                url = QUrl(camera.Source);
+            } else {
+                url = camera.Urls.at(0);
+            }
+
             CameraViewWidget *widget = new CameraViewWidget(
-                QString("%1 (%2)").arg(camera.Name, camera.Source), camera.Urls.at(0));
+                QString("%1 (%2)").arg(camera.Name, camera.Source), url);
             WidgetData data{0, 0, 1, 1};
 
             beginNewWidgetDrag(widget, data);
