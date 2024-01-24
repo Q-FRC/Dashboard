@@ -27,12 +27,15 @@ jobs:
         with:
           submodules: 'true'
           path: 'QFRCDashboard-source'
+
       - name: Download artifacts
         uses: actions/download-artifact@v3
+
       - name: Grab and store version
         run: |
           tag_name=$(echo ${{ github.ref }} | grep -oE "[^/]+$")
           echo "VERSION=$tag_name" >> $GITHUB_ENV
+
       - name: Package artifacts properly
         run: |
           mv ${{ github.workspace }}/QFRCDashboard-source QFRCDashboard-${{ env.VERSION }}

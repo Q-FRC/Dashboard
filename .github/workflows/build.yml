@@ -35,19 +35,17 @@ jobs:
       NTCORE_INSTALL_DIR: "install-ntcore"
       PROTOBUF_INSTALL_DIR: "install-protobuf"
       BUILD_DIR: "build"
-      VERSION: "1.0.0"
 
     steps:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
-    - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      id: strings
+    - name: Grab and store version
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        tag_name=$(echo ${{ github.ref }} | grep -oE "[^/]+$")
+        echo "VERSION=$tag_name" >> $GITHUB_ENV
 
     - name: Install CMake
       uses: lukka/get-cmake@v3.28.1
@@ -117,7 +115,7 @@ jobs:
 
         cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_APPIMAGE_DIR }}/usr
 
-        export OUTPUT="QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage"
+        export OUTPUT="QFRCDashboard-${{ runner.os }}-${{ steps.strings.outputs.version }}-${{ inputs.build_type }}-x86_64.AppImage"
 
         chmod +x linuxdeploy-*.AppImage
 
@@ -166,26 +164,26 @@ jobs:
       if: runner.os == 'Linux'
       uses: actions/upload-artifact@v3
       with:
-        name: QFRCDashboard-${{ runner.os }}-Binary-${{ env.VERSION }}-${{ inputs.build_type }}
+        name: QFRCDashboard-${{ runner.os }}-Binary-${{ steps.strings.outputs.version }}-${{ inputs.build_type }}
         path: QFRCDashboard.tar.gz
 
     - name: Upload AppImage (Linux)
       if: runner.os == 'Linux'
       uses: actions/upload-artifact@v3
       with:
-        name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
-        path: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
+        name: QFRCDashboard-${{ runner.os }}-${{ steps.strings.outputs.version }}-${{ inputs.build_type }}-x86_64.AppImage
+        path: QFRCDashboard-${{ runner.os }}-${{ steps.strings.outputs.version }}-${{ inputs.build_type }}-x86_64.AppImage
 
     - name: Upload binary zip (Windows, portable)
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v3
       with:
-        name: QFRCDashboard-Windows-Portable-${{ env.VERSION }}-${{ inputs.build_type }}
+        name: QFRCDashboard-Windows-Portable-${{ steps.strings.outputs.version }}-${{ inputs.build_type }}
         path: ${{ env.INSTALL_DIR }}/**
 
     - name: Upload installer (Windows)
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v3
       with:
-        name: QFRCDashboard-${{ runner.os }}-Setup-${{ env.VERSION }}-${{ inputs.build_type }}
+        name: QFRCDashboard-${{ runner.os }}-Setup-${{ steps.strings.outputs.version }}-${{ inputs.build_type }}
         path: QFRCDashboard-Setup.exe
