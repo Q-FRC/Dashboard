@@ -95,13 +95,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: cmd
       run: |
-        if "${{ inputs.build_type }}" == "Debug" (
-          set BUILD_FLAG="/MTd"
-        ) else (
-          set BUILD_FLAG="/MT"
-        )
-
-        cmake -S . -B ${{ env.BUILD_DIR }} -G Ninja -DCMAKE_CXX_FLAGS="%BUILD_FLAG%" -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DUSE_SYSTEM_NTCORE=OFF -DUSE_SYSTEM_PROTOBUF=OFF
+        cmake -S . -B ${{ env.BUILD_DIR }} -G Ninja -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DUSE_SYSTEM_NTCORE=OFF -DUSE_SYSTEM_PROTOBUF=OFF
 
     - name: Build
       run: |

@@ -189,6 +189,14 @@ target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTER
 target_include_directories(QFRCDashboard PRIVATE ui/)
 target_include_directories(QFRCDashboard PRIVATE include/)
 
+if(WIN32)
+    if(${CMAKE_BUILD_TYPE} EQUAL "Debug")
+        target_compile_options(QFRCDashboard "/MTd")
+    else()
+        target_compile_options(QFRCDashboard "/MT")
+    endif()
+endif()
+
 include(GNUInstallDirs)
 install(TARGETS QFRCDashboard
     BUNDLE DESTINATION .
