@@ -93,6 +93,7 @@ jobs:
 
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'
+      shell: cmd
       run: |
         if "${{ inputs.build_type }}" == "Debug" (
           set BUILD_FLAG="/MTd"
