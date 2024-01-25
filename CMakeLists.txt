@@ -189,8 +189,13 @@ target_include_directories(QFRCDashboard PRIVATE "$<TARGET_PROPERTY:ntcore,INTER
 target_include_directories(QFRCDashboard PRIVATE ui/)
 target_include_directories(QFRCDashboard PRIVATE include/)
 
-if (UNIX)
-    target_compile_options(QFRCDashboard PRIVATE "-Wmaybe-uninitialized")
+if (NOT CMAKE_BUILD_TYPE EQUAL "Release")
+    if (UNIX)
+        target_compile_options(QFRCDashboard PRIVATE "-Wmaybe-uninitialized")
+        target_compile_options(QFRCDashboard PRIVATE "-fsanitize=address")
+    elseif(WIN32)
+        target_compile_options(QFRCDashboard PRIVATE "/fsanitize=address")
+    endif()
 endif()
 
 include(GNUInstallDirs)
