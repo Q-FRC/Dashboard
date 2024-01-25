@@ -191,9 +191,9 @@ target_include_directories(QFRCDashboard PRIVATE include/)
 
 if(WIN32)
     if(${CMAKE_BUILD_TYPE} EQUAL "Debug")
-        target_compile_options(QFRCDashboard "/MTd")
+        target_compile_options(QFRCDashboard PRIVATE "/MTd")
     else()
-        target_compile_options(QFRCDashboard "/MT")
+        target_compile_options(QFRCDashboard PRIVATE "/MT")
     endif()
 endif()
 
