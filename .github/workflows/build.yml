@@ -29,13 +29,6 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    env:
-      INSTALL_DIR: "install"
-      INSTALL_APPIMAGE_DIR: "install-appdir"
-      NTCORE_INSTALL_DIR: "install-ntcore"
-      PROTOBUF_INSTALL_DIR: "install-protobuf"
-      BUILD_DIR: "build"
-
     steps:
     - uses: actions/checkout@v4
       with:
@@ -47,6 +40,11 @@ jobs:
       run: |
         tag_name=$(git describe --tags --abbrev=0)
         echo "VERSION=$tag_name" >> $GITHUB_ENV
+        echo "BUILD_DIR=${{ github.workspace }}/build" >> $GITHUB_ENV
+        echo "INSTALL_DIR=${{ github.workspace }}/install" >> $GITHUB_ENV
+        echo "INSTALL_APPIMAGE_DIR=${{ github.workspace }}/install-appdir" >> $GITHUB_ENV
+        echo "NTCORE_INSTALL_DIR=${{ github.workspace }}/install-ntcore" >> $GITHUB_ENV
+        echo "PROTOBUFINSTALL_DIR=${{ github.workspace }}/install-protobuf" >> $GITHUB_ENV
 
     - name: Install CMake
       uses: lukka/get-cmake@v3.28.1
@@ -112,8 +110,7 @@ jobs:
       run: |
         cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }}/usr
 
-        cd ${{ env.INSTALL_DIR }}
-        tar --owner root --group root -czf ../QFRCDashboard.tar.gz *
+        tar --owner root --group root -czf QFRCDashboard.tar.gz ${{ env.INSTALL_DIR }}/*
 
     - name: Package AppImage (Linux)
       if: runner.os == 'Linux'
