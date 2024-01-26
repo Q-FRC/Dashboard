@@ -110,7 +110,8 @@ jobs:
       run: |
         cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }}/usr
 
-        tar --owner root --group root -czf QFRCDashboard.tar.gz ${{ env.INSTALL_DIR }}/*
+        cd ${{ env.INSTALL_DIR }}
+        tar --owner root --group root -czf ../QFRCDashboard.tar.gz *
 
     - name: Package AppImage (Linux)
       if: runner.os == 'Linux'
@@ -160,7 +161,7 @@ jobs:
       shell: cmd
       run: |
         cd ${{ env.INSTALL_DIR }}
-        makensis -NOCD "${{ github.workspace }}/${{ env.BUILD_DIR }}/program_info/win_install.nsi"
+        makensis -NOCD "${{ env.BUILD_DIR }}/program_info/win_install.nsi"
 
     ##
     # UPLOAD
