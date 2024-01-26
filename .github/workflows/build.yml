@@ -44,7 +44,7 @@ jobs:
         echo "INSTALL_DIR=${{ github.workspace }}/install" >> $GITHUB_ENV
         echo "INSTALL_APPIMAGE_DIR=${{ github.workspace }}/install-appdir" >> $GITHUB_ENV
         echo "NTCORE_INSTALL_DIR=${{ github.workspace }}/install-ntcore" >> $GITHUB_ENV
-        echo "PROTOBUFINSTALL_DIR=${{ github.workspace }}/install-protobuf" >> $GITHUB_ENV
+        echo "PROTOBUF_INSTALL_DIR=${{ github.workspace }}/install-protobuf" >> $GITHUB_ENV
 
     - name: Install CMake
       uses: lukka/get-cmake@v3.28.1
