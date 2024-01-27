@@ -37,9 +37,11 @@ protected:
 
     ResizeDirection m_resize = NONE;
 
+    bool m_sendable = false;
+
     nt::NetworkTableEntry *m_entry;
 public:
-    explicit BaseWidget(const WidgetTypes &type = WidgetTypes::StringDisplay, const QString &title = "", const QString &topic = "");
+    explicit BaseWidget(const WidgetTypes &type = WidgetTypes::StringDisplay, const QString &title = "", const QString &topic = "", const bool sendable = false);
     ~BaseWidget();
 
     bool ready();
