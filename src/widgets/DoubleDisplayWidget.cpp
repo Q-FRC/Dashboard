@@ -15,8 +15,6 @@ DoubleDisplayWidget::~DoubleDisplayWidget() {
 }
 
 void DoubleDisplayWidget::setValue(const nt::Value &value) {
-    qDebug() << TopicStore::topicSubscriberMap.keys(this);
-
     if (!m_text->hasFocus()) {
         m_value = value.GetDouble();
         setText(QString::number(m_value));

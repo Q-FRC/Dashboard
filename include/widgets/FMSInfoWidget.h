@@ -73,7 +73,7 @@ public:
 
     void forceUpdate() override;
 
-    void setValue(nt::Value &value);
+    void setValue(const nt::Value &value) override;
 };
 
 #endif // FMSINFOWIDGET_H

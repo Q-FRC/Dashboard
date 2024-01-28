@@ -24,10 +24,10 @@ QMap<AllianceStation, QString> StationNames = {
 FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
     : BaseWidget(WidgetTypes::FMSInfo, title, table, true)
 {
-    qDebug() << table;
     m_event = TopicStore::subscribe(table.toStdString() + "/EventName", this);
     m_controlWord = TopicStore::subscribe(table.toStdString() + "/FMSControlData", this);
     m_gameSpecificMessage = TopicStore::subscribe(table.toStdString() + "/GameSpecificMessage", this);
+
     m_redAlliance = TopicStore::subscribe(table.toStdString() + "/IsRedAlliance", this);
     m_matchNumber = TopicStore::subscribe(table.toStdString() + "/MatchNumber", this);
     m_matchType = TopicStore::subscribe(table.toStdString() + "/MatchType", this);
@@ -78,9 +78,7 @@ FMSInfoWidget::~FMSInfoWidget() {
     TopicStore::unsubscribe(m_allianceStation, this);
 }
 
-void FMSInfoWidget::setValue(nt::Value &value) {
-    qDebug() << "Updatesd :)";
-    qDebug() << TopicStore::topicSubscriberMap.keys(this);
+void FMSInfoWidget::setValue(const nt::Value &value) {
     m_eventString = QString::fromStdString(m_event->GetString("Unknown"));
     m_eventLabel->setText("Event: " + m_eventString);
 
@@ -107,7 +105,6 @@ void FMSInfoWidget::setValue(nt::Value &value) {
     ControlFlags flags(m_word);
 
     std::cout << std::bitset<8>((int) m_word) << std::endl;
-    qDebug() << flags;
 
     QString state = "Robot State: ";
 
@@ -148,7 +145,6 @@ void FMSInfoWidget::setValue(nt::Value &value) {
 }
 
 void FMSInfoWidget::forceUpdate() {
-    qDebug() << "he was forced to sneed";
     auto placeholder = nt::Value::MakeString("");
     setValue(placeholder);
 }

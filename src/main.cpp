@@ -45,10 +45,6 @@ int main(int argc, char **argv) {
                          QString::fromStdString(Globals::server.server),
                          QString(connected ? "" : "Not ") + "Connected")
                 );
-
-            QTimer::singleShot(1000, window, [window] {
-                window->forceUpdateTab(window->currentTabIdx());
-            });
         });
     });
 

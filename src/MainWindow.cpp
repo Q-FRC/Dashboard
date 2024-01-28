@@ -36,18 +36,6 @@ MainWindow::MainWindow() : QMainWindow(), Ui::MainWindow()
 {
     setupUi(this);
 
-    // Initialize Shortcuts
-    {
-        // new QShortcut(QKeySequence(Qt::Key_Control + Qt::Key_Tab), this, [this] {
-        //     qDebug() << "bruh";
-        //     int tabIdx = currentTabIdx() + 1;
-        //     if (tabIdx == centralwidget->count()) tabIdx = 0;
-
-        //     centralwidget->setCurrentIndex(tabIdx);
-        //     forceUpdateTab(currentTabIdx());
-        // });
-    }
-
     // this isn't available in the ui lol
     connect(centralwidget->tabBar(), &QTabBar::tabMoved, this, &MainWindow::moveTab);
 }
@@ -134,7 +122,6 @@ void MainWindow::makeNewWidget(WidgetTypes type) {
 
 // Internal Stuff
 void MainWindow::forceUpdateTab(int idx) {
-    qDebug() << "He was forced to...";
     if (m_tabs.length() <= idx) return;
     for (BaseWidget *widget : m_tabs.at(idx)->widgets()) {
         widget->forceUpdate();
