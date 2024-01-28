@@ -7,7 +7,7 @@ enum class MatchType {
     None = 0,
     Practice = 1,
     Qualification = 2,
-    Elimination = 3,
+    Elimination = 3
 };
 
 enum class AllianceStation {
@@ -22,13 +22,13 @@ enum class AllianceStation {
 };
 
 enum class ControlWord {
-    Invalid = 0,
-    Enabled = 1 << 0,
-    Auto = 1 << 1,
-    Test = 1 << 2,
-    EStop = 1 << 3,
-    FMSAttached = 1 << 4,
-    DSAttached = 1 << 5
+    Invalid = 0x0,
+    Enabled = 0x1,
+    Auto = 0x2,
+    Test = 0x4,
+    EStop = 0x8,
+    FMSAttached = 0x10,
+    DSAttached = 0x20
 };
 
 Q_DECLARE_FLAGS(ControlFlags, ControlWord)
@@ -71,7 +71,7 @@ public:
     FMSInfoWidget(const QString &table = "", const QString &title = "");
     virtual ~FMSInfoWidget();
 
-    void forceUpdate();
+    void forceUpdate() override;
 
     void setValue(nt::Value &value);
 };

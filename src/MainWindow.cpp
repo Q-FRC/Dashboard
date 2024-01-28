@@ -38,12 +38,14 @@ MainWindow::MainWindow() : QMainWindow(), Ui::MainWindow()
 
     // Initialize Shortcuts
     {
-        new QShortcut(QKeySequence(Qt::Key_Control + Qt::Key_Tab), this, [this] {
-            int tabIdx = centralwidget->currentIndex() + 1;
-            if (tabIdx == centralwidget->count()) tabIdx = 0;
+        // new QShortcut(QKeySequence(Qt::Key_Control + Qt::Key_Tab), this, [this] {
+        //     qDebug() << "bruh";
+        //     int tabIdx = currentTabIdx() + 1;
+        //     if (tabIdx == centralwidget->count()) tabIdx = 0;
 
-            centralwidget->setCurrentIndex(tabIdx);
-        });
+        //     centralwidget->setCurrentIndex(tabIdx);
+        //     forceUpdateTab(currentTabIdx());
+        // });
     }
 
     // this isn't available in the ui lol
@@ -54,7 +56,11 @@ MainWindow::~MainWindow() {
 }
 
 TabWidget *MainWindow::currentTab() {
-    return m_tabs.at(centralwidget->currentIndex());
+    return m_tabs.at(currentTabIdx());
+}
+
+int MainWindow::currentTabIdx() {
+    return centralwidget->currentIndex();
 }
 
 /* File I/O */
@@ -128,6 +134,8 @@ void MainWindow::makeNewWidget(WidgetTypes type) {
 
 // Internal Stuff
 void MainWindow::forceUpdateTab(int idx) {
+    qDebug() << "He was forced to...";
+    if (m_tabs.length() <= idx) return;
     for (BaseWidget *widget : m_tabs.at(idx)->widgets()) {
         widget->forceUpdate();
     }
@@ -301,7 +309,7 @@ void MainWindow::newTab() {
 
 void MainWindow::closeTab() {
     if (m_tabs.empty()) return;
-    int index = centralwidget->currentIndex();
+    int index = currentTabIdx();
 
     QMessageBox::StandardButton close = QMessageBox::question(this, "Close Tab?", "Are you sure you want to close this tab?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
@@ -317,10 +325,10 @@ void MainWindow::renameTab() {
     if (m_tabs.empty()) return;
 
     bool ok;
-    QString tabName = QInputDialog::getText(this, "Tab Name", "Input new tab name", QLineEdit::Normal, centralwidget->tabText(centralwidget->currentIndex()), &ok);
+    QString tabName = QInputDialog::getText(this, "Tab Name", "Input new tab name", QLineEdit::Normal, centralwidget->tabText(currentTabIdx()), &ok);
 
     if (!tabName.isEmpty() && ok) {
-        centralwidget->setTabText(centralwidget->currentIndex(), tabName);
+        centralwidget->setTabText(currentTabIdx(), tabName);
         currentTab()->setName(tabName);
     }
 }

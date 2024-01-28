@@ -1,10 +1,12 @@
 #include "widgets/FMSInfoWidget.h"
 
 #include "stores/TopicStore.h"
+#include <bitset>
+#include <iostream>
 
 QMap<MatchType, QString> MatchTypeNames = {
     {MatchType::Elimination, "Elimination"},
-    {MatchType::None, "None"},
+    {MatchType::None, "Unknown"},
     {MatchType::Practice, "Practice"},
     {MatchType::Qualification, "Qual"}
 };
@@ -22,6 +24,7 @@ QMap<AllianceStation, QString> StationNames = {
 FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
     : BaseWidget(WidgetTypes::FMSInfo, title, table, true)
 {
+    qDebug() << table;
     m_event = TopicStore::subscribe(table.toStdString() + "/EventName", this);
     m_controlWord = TopicStore::subscribe(table.toStdString() + "/FMSControlData", this);
     m_gameSpecificMessage = TopicStore::subscribe(table.toStdString() + "/GameSpecificMessage", this);
@@ -61,7 +64,7 @@ FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
     m_layout->setColumnStretch(0, 6);
     m_layout->setColumnStretch(1, 11);
 
-    qDebug() << m_event->Exists();
+    setReady(true);
 }
 
 FMSInfoWidget::~FMSInfoWidget() {
@@ -77,6 +80,7 @@ FMSInfoWidget::~FMSInfoWidget() {
 
 void FMSInfoWidget::setValue(nt::Value &value) {
     qDebug() << "Updatesd :)";
+    qDebug() << TopicStore::topicSubscriberMap.keys(this);
     m_eventString = QString::fromStdString(m_event->GetString("Unknown"));
     m_eventLabel->setText("Event: " + m_eventString);
 
@@ -84,7 +88,7 @@ void FMSInfoWidget::setValue(nt::Value &value) {
     m_gsmLabel->setText("Game Specific Message:\n" + m_gsm);
 
     int station = m_allianceStation->GetInteger(1);
-    if (m_redAlliance->GetBoolean(false)) {
+    if (!m_redAlliance->GetBoolean(false)) {
         station += 3;
     }
 
@@ -92,7 +96,7 @@ void FMSInfoWidget::setValue(nt::Value &value) {
     m_stationLabel->setText("Station: " + StationNames.value(m_station));
 
     m_number = m_matchNumber->GetInteger(0);
-    m_type = (MatchType) m_matchNumber->GetInteger(0);
+    m_type = (MatchType) m_matchType->GetInteger(0);
 
     m_matchLabel->setText("Match: " +
                           MatchTypeNames.value(m_type) +
@@ -100,46 +104,51 @@ void FMSInfoWidget::setValue(nt::Value &value) {
                           QString::number(m_number));
 
     m_word = (ControlWord) m_controlWord->GetInteger(0);
+    ControlFlags flags(m_word);
+
+    std::cout << std::bitset<8>((int) m_word) << std::endl;
+    qDebug() << flags;
 
     QString state = "Robot State: ";
 
-    if (m_word | ControlWord::Auto) {
+    if (flags & ControlWord::Auto) {
         state += "Autonomous";
     }
-    else if (m_word | ControlWord::Test) {
+    else if (flags & ControlWord::Test) {
         state += "Testing";
-    } else if (m_word | ControlWord::EStop) {
-        state += "E-Stopped";
     } else {
         state += "Teleop";
     }
 
-    if (m_word | ControlWord::Enabled) {
+    if (flags & ControlWord::Enabled) {
         state += " Enabled";
+    } else if (flags & ControlWord::EStop) {
+        state += " E-Stopped";
     } else {
         state += " Disabled";
     }
 
     m_controlLabel->setText(state);
 
-    if (m_word | ControlWord::FMSAttached) {
+    if (flags & ControlWord::FMSAttached) {
         m_fmsLabel->setText("FMS Attached");
-        m_fmsIconLabel->setPixmap(QIcon(":/check.svg").pixmap(20, 20));
+        m_fmsIconLabel->setPixmap(QIcon(":/icons/check.svg").pixmap(20, 20));
     } else {
         m_fmsLabel->setText("FMS Disconnected");
-        m_fmsIconLabel->setPixmap(QIcon(":/xmark.svg").pixmap(20, 20));
+        m_fmsIconLabel->setPixmap(QIcon(":/icons/xmark.svg").pixmap(20, 20));
     }
 
-    if (m_word | ControlWord::DSAttached) {
-        m_fmsLabel->setText("DS Attached");
-        m_fmsIconLabel->setPixmap(QIcon(":/check.svg").pixmap(20, 20));
+    if (flags & ControlWord::DSAttached) {
+        m_dsLabel->setText("DS Attached");
+        m_dsIconLabel->setPixmap(QIcon(":/icons/check.svg").pixmap(20, 20));
     } else {
-        m_fmsLabel->setText("DS Disconnected");
-        m_fmsIconLabel->setPixmap(QIcon(":/xmark.svg").pixmap(20, 20));
+        m_dsLabel->setText("DS Disconnected");
+        m_dsIconLabel->setPixmap(QIcon(":/icons/xmark.svg").pixmap(20, 20));
     }
 }
 
 void FMSInfoWidget::forceUpdate() {
+    qDebug() << "he was forced to sneed";
     auto placeholder = nt::Value::MakeString("");
     setValue(placeholder);
 }
