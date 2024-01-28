@@ -36,7 +36,7 @@ FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
     m_matchLabel = new QLabel("Match: Unknown", this);
     m_stationLabel = new QLabel("Station: Unknown", this);
     m_eventLabel = new QLabel("Event: Unknown", this);
-    m_gsmLabel = new QLabel("Game Specific Message:\nUnknown", this);
+    m_gsmLabel = new QLabel("Game Specific Message: Unknown", this);
 
     m_dsIconLabel = new QLabel(this);
     m_dsLabel = new QLabel("DS Disconnected", this);
@@ -45,6 +45,21 @@ FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
     m_fmsLabel = new QLabel("FMS Disconnected", this);
 
     m_controlLabel = new QLabel("Robot State: Unknown", this);
+
+    for (QLabel *label : QList{
+             m_matchLabel,
+             m_stationLabel,
+             m_eventLabel,
+             m_gsmLabel,
+             m_dsIconLabel,
+             m_dsLabel,
+             m_fmsIconLabel,
+             m_dsLabel,
+             m_controlLabel
+         }) {
+        label->setScaledContents(true);
+        label->setWordWrap(true);
+    }
 
     m_layout->addWidget(m_title, 0, 0, 1, 2);
 
@@ -83,7 +98,7 @@ void FMSInfoWidget::setValue(const nt::Value &value) {
     m_eventLabel->setText("Event: " + m_eventString);
 
     m_gsm = QString::fromStdString(m_gameSpecificMessage->GetString("Unknown"));
-    m_gsmLabel->setText("Game Specific Message:\n" + m_gsm);
+    m_gsmLabel->setText("Game Specific Message: " + m_gsm);
 
     int station = m_allianceStation->GetInteger(1);
     if (!m_redAlliance->GetBoolean(false)) {
