@@ -1,8 +1,6 @@
 #include "widgets/FMSInfoWidget.h"
 
 #include "stores/TopicStore.h"
-#include <bitset>
-#include <iostream>
 
 QMap<MatchType, QString> MatchTypeNames = {
     {MatchType::Elimination, "Elimination"},
@@ -51,9 +49,7 @@ FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
              m_stationLabel,
              m_eventLabel,
              m_gsmLabel,
-             m_dsIconLabel,
              m_dsLabel,
-             m_fmsIconLabel,
              m_dsLabel,
              m_controlLabel
          }) {
@@ -63,21 +59,21 @@ FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
 
     m_layout->addWidget(m_title, 0, 0, 1, 2);
 
-    m_layout->addWidget(m_matchLabel, 1, 0, 1, 2, Qt::AlignHCenter | Qt::AlignTop);
-    m_layout->addWidget(m_stationLabel, 2, 0, 1, 2, Qt::AlignHCenter | Qt::AlignTop);
-    m_layout->addWidget(m_eventLabel, 3, 0, 1, 2, Qt::AlignHCenter | Qt::AlignTop);
-    m_layout->addWidget(m_gsmLabel, 4, 0, 1, 2, Qt::AlignHCenter | Qt::AlignTop);
+    m_layout->addWidget(m_matchLabel, 1, 0, 1, 2);
+    m_layout->addWidget(m_stationLabel, 2, 0, 1, 2);
+    m_layout->addWidget(m_eventLabel, 3, 0, 1, 2);
+    m_layout->addWidget(m_gsmLabel, 4, 0, 1, 2);
 
-    m_layout->addWidget(m_dsIconLabel, 5, 0, Qt::AlignRight | Qt::AlignTop);
-    m_layout->addWidget(m_dsLabel, 5, 1, Qt::AlignLeft | Qt::AlignTop);
+    m_layout->addWidget(m_dsIconLabel, 5, 0);
+    m_layout->addWidget(m_dsLabel, 5, 1);
 
-    m_layout->addWidget(m_fmsIconLabel, 6, 0, Qt::AlignRight | Qt::AlignTop);
-    m_layout->addWidget(m_fmsLabel, 6, 1, Qt::AlignLeft | Qt::AlignTop);
+    m_layout->addWidget(m_fmsIconLabel, 6, 0);
+    m_layout->addWidget(m_fmsLabel, 6, 1);
 
-    m_layout->addWidget(m_controlLabel, 7, 0, 1, 2, Qt::AlignCenter);
+    m_layout->addWidget(m_controlLabel, 7, 0, 1, 2);
 
-    m_layout->setColumnStretch(0, 6);
-    m_layout->setColumnStretch(1, 11);
+    m_layout->setColumnStretch(0, 0);
+    m_layout->setColumnStretch(1, 1);
 
     setReady(true);
 }
@@ -118,8 +114,6 @@ void FMSInfoWidget::setValue(const nt::Value &value) {
 
     m_word = (ControlWord) m_controlWord->GetInteger(0);
     ControlFlags flags(m_word);
-
-    std::cout << std::bitset<8>((int) m_word) << std::endl;
 
     QString state = "Robot State: ";
 
