@@ -11,17 +11,23 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets MultimediaWidgets Charts)
-find_package(ntcore)
-find_package(Protobuf)
-
 if(WIN32)
     set(RCS_FILE ${CMAKE_CURRENT_BINARY_DIR}/program_info/${Dashboard_APP_NAME}.rc)
     set(Dashboard_BUILD_PLATFORM "win32")
 else()
     set(Dashboard_BUILD_PLATFORM "lin64")
 endif()
+
+option(WITH_TESTS "Build tests" ON)
+
+set(QTCOMPONENTS Widgets MultimediaWidgets Charts)
+
+if(WITH_TESTS)
+    set(QTCOMPONENTS ${QTCOMPONENTS} Test)
+endif()
+
+find_package(QT NAMES Qt6 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS ${QTCOMPONENTS})
 
 set(Dashboard_ORG_NAME "binex-dsk")
 set(Dashboard_APP_NAME "QFRCDashboard")
@@ -56,6 +62,8 @@ set(Dashboard_BUILD_TIMESTAMP "${TODAY}")
 
 add_subdirectory("program_info")
 add_subdirectory(lib)
+find_package(ntcore)
+find_package(Protobuf)
 
 set(QAPPLICATION_CLASS QApplication)
 add_subdirectory("SingleApplication")
@@ -89,6 +97,8 @@ install(
     CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/qt.conf\" \" \")"
     COMPONENT Runtime
 )
+
+add_subdirectory(tests)
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(QFRCDashboard)

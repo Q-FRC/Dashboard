@@ -19,7 +19,7 @@ private:
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void test_case1();
+    void testSave();
 };
 
 SaveLoad::SaveLoad() {
@@ -39,7 +39,7 @@ void SaveLoad::cleanupTestCase() {
     delete m_window;
 }
 
-void SaveLoad::test_case1() {
+void SaveLoad::testSave() {
     QJsonDocument doc = m_window->saveObject();
     QCOMPARE(doc, m_doc);
 }

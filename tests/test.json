@@ -15,7 +15,7 @@
         {
           "False_Color": "#ff0000",
           "Shape": "Hexagon",
-          "Topic": "/epic/booleanMan",
+          "Topic": "/test",
           "True_Color": "#00ff00",
           "geometry": [
             2,
