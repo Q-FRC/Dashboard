@@ -100,8 +100,8 @@ jobs:
         cmake --build ${{ env.BUILD_DIR }} --parallel $(nproc) --config ${{ inputs.build_type }}
 
     - name: Test
-      working-directory: ${{ env.BUILD_DIR }}
-      run: ctest --build-config ${{ matrix.build_type }}
+      working-directory: ${{ env.BUILD_DIR }}/tests
+      run: ctest --build-config ${{ inputs.build_type }}
 
     - name: Package (Linux)
       if: runner.os == 'Linux'
