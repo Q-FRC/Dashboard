@@ -1,0 +1,199 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"build" : "lib",
+					"childIndexes" : 
+					[
+						2,
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-lib-Debug-e3dba7bf762e092c7c16.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "/hdd/code/QFRCDashboard/lib",
+					"targetIndexes" : 
+					[
+						3,
+						4,
+						5
+					]
+				},
+				{
+					"build" : "lib/3rd_party",
+					"jsonFile" : "directory-lib.3rd_party-Debug-357c7c9e91b1faf81a05.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.25"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "/hdd/code/QFRCDashboard/lib/3rd_party"
+				},
+				{
+					"build" : "lib/buildconfig",
+					"jsonFile" : "directory-lib.buildconfig-Debug-435f9aec6092366159a9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "/hdd/code/QFRCDashboard/lib/buildconfig",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Tests",
+					"targetIndexes" : 
+					[
+						6,
+						7,
+						8
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1,
+						2,
+						3
+					],
+					"name" : "QFRCDashboardLib",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 3,
+					"id" : "BuildConfig::@42bdb40ab31f929ccba0",
+					"jsonFile" : "target-BuildConfig-Debug-b572e731c857f5628a33.json",
+					"name" : "BuildConfig",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "BuildConfig_autogen::@42bdb40ab31f929ccba0",
+					"jsonFile" : "target-BuildConfig_autogen-Debug-5fe489b60d618ab62d77.json",
+					"name" : "BuildConfig_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "BuildConfig_autogen_timestamp_deps::@42bdb40ab31f929ccba0",
+					"jsonFile" : "target-BuildConfig_autogen_timestamp_deps-Debug-16507debedf79a77f759.json",
+					"name" : "BuildConfig_autogen_timestamp_deps",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "QFRCDashboardLib::@306ed2d68c6501e8728f",
+					"jsonFile" : "target-QFRCDashboardLib-Debug-42a801c2c695030b97a9.json",
+					"name" : "QFRCDashboardLib",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "QFRCDashboardLib_autogen::@306ed2d68c6501e8728f",
+					"jsonFile" : "target-QFRCDashboardLib_autogen-Debug-734bc39d7315db3db82a.json",
+					"name" : "QFRCDashboardLib_autogen",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "QFRCDashboardLib_autogen_timestamp_deps::@306ed2d68c6501e8728f",
+					"jsonFile" : "target-QFRCDashboardLib_autogen_timestamp_deps-Debug-188e3aaddf489cc0b810.json",
+					"name" : "QFRCDashboardLib_autogen_timestamp_deps",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SaveLoad::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SaveLoad-Debug-e8f06eb86cbeca126b39.json",
+					"name" : "SaveLoad",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SaveLoad_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SaveLoad_autogen-Debug-32077da3879be72d98a0.json",
+					"name" : "SaveLoad_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SaveLoad_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SaveLoad_autogen_timestamp_deps-Debug-60be90a7d278986b2d0e.json",
+					"name" : "SaveLoad_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug",
+		"source" : "/hdd/code/QFRCDashboard/tests"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

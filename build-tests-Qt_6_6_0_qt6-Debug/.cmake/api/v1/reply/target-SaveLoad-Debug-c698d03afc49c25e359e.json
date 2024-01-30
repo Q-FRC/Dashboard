@@ -1,0 +1,895 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "SaveLoad"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"AddTest",
+			"install",
+			"target_link_libraries",
+			"set_target_properties",
+			"include",
+			"find_package",
+			"find_dependency",
+			"_qt_internal_find_qt_dependencies",
+			"set_property",
+			"_qt_internal_find_third_party_dependencies",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt",
+			"/usr/lib/cmake/Qt6MultimediaWidgets/Qt6MultimediaWidgetsTargets.cmake",
+			"/usr/lib/cmake/Qt6MultimediaWidgets/Qt6MultimediaWidgetsConfig.cmake",
+			"/usr/lib/cmake/Qt6/Qt6Config.cmake",
+			"/usr/lib/cmake/Qt6Network/Qt6NetworkVersionlessTargets.cmake",
+			"/usr/lib/cmake/Qt6Network/Qt6NetworkConfig.cmake",
+			"/usr/share/cmake/Modules/CMakeFindDependencyMacro.cmake",
+			"/usr/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake",
+			"/usr/lib/cmake/Qt6Multimedia/Qt6MultimediaDependencies.cmake",
+			"/usr/lib/cmake/Qt6Multimedia/Qt6MultimediaConfig.cmake",
+			"/usr/lib/cmake/Qt6MultimediaWidgets/Qt6MultimediaWidgetsDependencies.cmake",
+			"/usr/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsVersionlessTargets.cmake",
+			"/usr/lib/cmake/Qt6OpenGLWidgets/Qt6OpenGLWidgetsConfig.cmake",
+			"/usr/lib/cmake/Qt6Charts/Qt6ChartsDependencies.cmake",
+			"/usr/lib/cmake/Qt6Charts/Qt6ChartsConfig.cmake",
+			"/usr/lib/cmake/Qt6OpenGL/Qt6OpenGLVersionlessTargets.cmake",
+			"/usr/lib/cmake/Qt6OpenGL/Qt6OpenGLConfig.cmake",
+			"/usr/lib/cmake/Qt6Widgets/Qt6WidgetsTargets.cmake",
+			"/usr/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake",
+			"/usr/share/cmake/Modules/FindOpenGL.cmake",
+			"/usr/lib/cmake/Qt6/FindWrapOpenGL.cmake",
+			"/usr/lib/cmake/Qt6Gui/Qt6GuiDependencies.cmake",
+			"/usr/lib/cmake/Qt6Gui/Qt6GuiConfig.cmake",
+			"/usr/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake",
+			"/usr/share/ntcore/ntcore.cmake",
+			"/usr/share/ntcore/ntcore-config.cmake",
+			"/usr/share/wpiutil/wpiutil.cmake",
+			"/usr/share/wpiutil/wpiutil-config.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 44,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 24,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 37,
+				"parent" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 26,
+				"parent" : 1
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"file" : 3,
+				"parent" : 5
+			},
+			{
+				"command" : 6,
+				"file" : 3,
+				"line" : 166,
+				"parent" : 6
+			},
+			{
+				"file" : 2,
+				"parent" : 7
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 62,
+				"parent" : 8
+			},
+			{
+				"file" : 1,
+				"parent" : 9
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 70,
+				"parent" : 10
+			},
+			{
+				"command" : 5,
+				"file" : 2,
+				"line" : 50,
+				"parent" : 8
+			},
+			{
+				"file" : 10,
+				"parent" : 12
+			},
+			{
+				"command" : 8,
+				"file" : 10,
+				"line" : 39,
+				"parent" : 13
+			},
+			{
+				"command" : 7,
+				"file" : 7,
+				"line" : 111,
+				"parent" : 14
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 76,
+				"parent" : 15
+			},
+			{
+				"file" : 9,
+				"parent" : 16
+			},
+			{
+				"command" : 5,
+				"file" : 9,
+				"line" : 50,
+				"parent" : 17
+			},
+			{
+				"file" : 8,
+				"parent" : 18
+			},
+			{
+				"command" : 8,
+				"file" : 8,
+				"line" : 39,
+				"parent" : 19
+			},
+			{
+				"command" : 7,
+				"file" : 7,
+				"line" : 111,
+				"parent" : 20
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 76,
+				"parent" : 21
+			},
+			{
+				"file" : 5,
+				"parent" : 22
+			},
+			{
+				"command" : 5,
+				"file" : 5,
+				"line" : 67,
+				"parent" : 23
+			},
+			{
+				"file" : 4,
+				"parent" : 24
+			},
+			{
+				"command" : 4,
+				"file" : 4,
+				"line" : 70,
+				"parent" : 25
+			},
+			{
+				"command" : 6,
+				"file" : 3,
+				"line" : 166,
+				"parent" : 6
+			},
+			{
+				"file" : 14,
+				"parent" : 27
+			},
+			{
+				"command" : 5,
+				"file" : 14,
+				"line" : 50,
+				"parent" : 28
+			},
+			{
+				"file" : 13,
+				"parent" : 29
+			},
+			{
+				"command" : 8,
+				"file" : 13,
+				"line" : 39,
+				"parent" : 30
+			},
+			{
+				"command" : 7,
+				"file" : 7,
+				"line" : 111,
+				"parent" : 31
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 76,
+				"parent" : 32
+			},
+			{
+				"file" : 12,
+				"parent" : 33
+			},
+			{
+				"command" : 5,
+				"file" : 12,
+				"line" : 67,
+				"parent" : 34
+			},
+			{
+				"file" : 11,
+				"parent" : 35
+			},
+			{
+				"command" : 4,
+				"file" : 11,
+				"line" : 70,
+				"parent" : 36
+			},
+			{
+				"command" : 7,
+				"file" : 7,
+				"line" : 111,
+				"parent" : 31
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 76,
+				"parent" : 38
+			},
+			{
+				"file" : 16,
+				"parent" : 39
+			},
+			{
+				"command" : 5,
+				"file" : 16,
+				"line" : 67,
+				"parent" : 40
+			},
+			{
+				"file" : 15,
+				"parent" : 41
+			},
+			{
+				"command" : 4,
+				"file" : 15,
+				"line" : 70,
+				"parent" : 42
+			},
+			{
+				"command" : 6,
+				"file" : 3,
+				"line" : 166,
+				"parent" : 6
+			},
+			{
+				"file" : 18,
+				"parent" : 44
+			},
+			{
+				"command" : 5,
+				"file" : 18,
+				"line" : 62,
+				"parent" : 45
+			},
+			{
+				"file" : 17,
+				"parent" : 46
+			},
+			{
+				"command" : 4,
+				"file" : 17,
+				"line" : 70,
+				"parent" : 47
+			},
+			{
+				"command" : 5,
+				"file" : 18,
+				"line" : 50,
+				"parent" : 45
+			},
+			{
+				"file" : 23,
+				"parent" : 49
+			},
+			{
+				"command" : 8,
+				"file" : 23,
+				"line" : 39,
+				"parent" : 50
+			},
+			{
+				"command" : 7,
+				"file" : 7,
+				"line" : 111,
+				"parent" : 51
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 76,
+				"parent" : 52
+			},
+			{
+				"file" : 22,
+				"parent" : 53
+			},
+			{
+				"command" : 5,
+				"file" : 22,
+				"line" : 50,
+				"parent" : 54
+			},
+			{
+				"file" : 21,
+				"parent" : 55
+			},
+			{
+				"command" : 10,
+				"file" : 21,
+				"line" : 30,
+				"parent" : 56
+			},
+			{
+				"command" : 7,
+				"file" : 7,
+				"line" : 36,
+				"parent" : 57
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 76,
+				"parent" : 58
+			},
+			{
+				"file" : 20,
+				"parent" : 59
+			},
+			{
+				"command" : 6,
+				"file" : 20,
+				"line" : 13,
+				"parent" : 60
+			},
+			{
+				"file" : 19,
+				"parent" : 61
+			},
+			{
+				"command" : 9,
+				"file" : 19,
+				"line" : 673,
+				"parent" : 62
+			},
+			{
+				"command" : 4,
+				"file" : 19,
+				"line" : 671,
+				"parent" : 62
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 18,
+				"parent" : 0
+			},
+			{
+				"file" : 25,
+				"parent" : 65
+			},
+			{
+				"command" : 5,
+				"file" : 25,
+				"line" : 7,
+				"parent" : 66
+			},
+			{
+				"file" : 24,
+				"parent" : 67
+			},
+			{
+				"command" : 4,
+				"file" : 24,
+				"line" : 60,
+				"parent" : 68
+			},
+			{
+				"command" : 7,
+				"file" : 25,
+				"line" : 3,
+				"parent" : 66
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 76,
+				"parent" : 70
+			},
+			{
+				"file" : 27,
+				"parent" : 71
+			},
+			{
+				"command" : 5,
+				"file" : 27,
+				"line" : 13,
+				"parent" : 72
+			},
+			{
+				"file" : 26,
+				"parent" : 73
+			},
+			{
+				"command" : 4,
+				"file" : 26,
+				"line" : 60,
+				"parent" : 74
+			},
+			{
+				"command" : 11,
+				"file" : 0,
+				"line" : 29,
+				"parent" : 1
+			},
+			{
+				"command" : 11,
+				"file" : 0,
+				"line" : 30,
+				"parent" : 1
+			},
+			{
+				"command" : 11,
+				"file" : 0,
+				"line" : 31,
+				"parent" : 1
+			},
+			{
+				"command" : 11,
+				"file" : 0,
+				"line" : 32,
+				"parent" : 1
+			},
+			{
+				"command" : 11,
+				"file" : 0,
+				"line" : 28,
+				"parent" : 1
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-DQT_QML_DEBUG -g -std=gnu++20 -fdiagnostics-color=always"
+				},
+				{
+					"backtrace" : 4,
+					"fragment" : "-mno-direct-extern-access"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 4,
+					"define" : "FMT_SHARED"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_CHARTS_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_CORE_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_GUI_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_MULTIMEDIAWIDGETS_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_MULTIMEDIA_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_NETWORK_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_OPENGLWIDGETS_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_OPENGL_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_TESTCASE_BUILDDIR=\"/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug\""
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_TESTCASE_SOURCEDIR=\"/hdd/code/QFRCDashboard/tests\""
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_TESTLIB_LIB"
+				},
+				{
+					"backtrace" : 4,
+					"define" : "QT_WIDGETS_LIB"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 0,
+					"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/SaveLoad_autogen/include"
+				},
+				{
+					"backtrace" : 76,
+					"path" : "/hdd/code/QFRCDashboard/tests/../lib/ui"
+				},
+				{
+					"backtrace" : 77,
+					"path" : "/hdd/code/QFRCDashboard/tests/../lib/include"
+				},
+				{
+					"backtrace" : 78,
+					"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include"
+				},
+				{
+					"backtrace" : 79,
+					"path" : "/hdd/code/QFRCDashboard/tests/../lib"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/hdd/code/QFRCDashboard/lib/buildconfig"
+				},
+				{
+					"backtrace" : 80,
+					"isSystem" : true,
+					"path" : "/usr/include/ntcore"
+				},
+				{
+					"backtrace" : 80,
+					"isSystem" : true,
+					"path" : "/usr/include/wpinet"
+				},
+				{
+					"backtrace" : 80,
+					"isSystem" : true,
+					"path" : "/usr/include/wpiutil"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtWidgets"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtCore"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/lib/qt6/mkspecs/linux-g++"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtGui"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtMultimediaWidgets"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtMultimedia"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtNetwork"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtCharts"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtOpenGL"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtOpenGLWidgets"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtTest"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					4,
+					4
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 4,
+			"id" : "QFRCDashboardLib::@306ed2d68c6501e8728f"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "BuildConfig::@42bdb40ab31f929ccba0"
+		},
+		{
+			"id" : "SaveLoad_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "SaveLoad_autogen::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "SaveLoad::@6890427a1f51a3e7e1df",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 3,
+				"path" : "bin"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-DQT_QML_DEBUG -g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "lib/libQFRCDashboardLib.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/usr/lib/libQt6MultimediaWidgets.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/usr/lib/libQt6Charts.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/usr/lib/libntcore.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "lib/buildconfig/libBuildConfig.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/usr/lib/libQt6Test.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 11,
+				"fragment" : "/usr/lib/libQt6Multimedia.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 26,
+				"fragment" : "/usr/lib/libQt6Network.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 37,
+				"fragment" : "/usr/lib/libQt6OpenGLWidgets.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/usr/lib/libQt6Widgets.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 43,
+				"fragment" : "/usr/lib/libQt6OpenGL.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 48,
+				"fragment" : "/usr/lib/libQt6Gui.so.6.6.1",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 63,
+				"fragment" : "/usr/lib/libGLX.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 64,
+				"fragment" : "/usr/lib/libOpenGL.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 69,
+				"fragment" : "/usr/lib/libwpinet.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 69,
+				"fragment" : "/usr/lib/libwpiutil.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 75,
+				"fragment" : "/usr/lib/libprotobuf.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 75,
+				"fragment" : "-ldl",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 75,
+				"fragment" : "/usr/lib/libatomic.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 75,
+				"fragment" : "/usr/lib/libfmt.so.10.2.0",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 48,
+				"fragment" : "/usr/lib/libQt6Core.so.6.6.1",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "SaveLoad",
+	"nameOnDisk" : "SaveLoad",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				2
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				3
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/SaveLoad_autogen/mocs_compilation.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "tst_saveload.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/SaveLoad_autogen/timestamp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/SaveLoad_autogen/timestamp.rule",
+			"sourceGroupIndex" : 2
+		}
+	],
+	"type" : "EXECUTABLE"
+}

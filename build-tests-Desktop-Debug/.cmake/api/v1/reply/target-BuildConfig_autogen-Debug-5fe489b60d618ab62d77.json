@@ -1,0 +1,71 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"/hdd/code/QFRCDashboard/lib/buildconfig/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "BuildConfig_autogen_timestamp_deps::@42bdb40ab31f929ccba0"
+		}
+	],
+	"id" : "BuildConfig_autogen::@42bdb40ab31f929ccba0",
+	"isGeneratorProvided" : true,
+	"name" : "BuildConfig_autogen",
+	"paths" : 
+	{
+		"build" : "lib/buildconfig",
+		"source" : "/hdd/code/QFRCDashboard/lib/buildconfig"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/buildconfig/CMakeFiles/BuildConfig_autogen",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/buildconfig/CMakeFiles/BuildConfig_autogen.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/buildconfig/BuildConfig_autogen/timestamp.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

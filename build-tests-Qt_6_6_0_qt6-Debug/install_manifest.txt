@@ -1,0 +1,4 @@
+/hdd/code/QFRCDashboard/tests/testinstall/bin/SaveLoad
+/hdd/code/QFRCDashboard/tests/testinstall/bin/WidgetDeletion
+/hdd/code/QFRCDashboard/tests/testinstall/bin/WidgetUpdate
+/hdd/code/QFRCDashboard/tests/testinstall/lib/libQFRCDashboardLib.a

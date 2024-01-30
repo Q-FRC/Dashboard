@@ -1,0 +1,24 @@
+{
+	"BUILD_DIR" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/QFRCDashboardLib_autogen",
+	"CMAKE_BINARY_DIR" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/hdd/code/QFRCDashboard/lib",
+	"CMAKE_SOURCE_DIR" : "/hdd/code/QFRCDashboard/tests",
+	"GENERATOR" : "Unix Makefiles",
+	"INCLUDE_DIR" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/QFRCDashboardLib_autogen/include",
+	"INPUTS" : 
+	[
+		"/hdd/code/QFRCDashboard/lib/images/2024-field.png",
+		"/hdd/code/QFRCDashboard/lib/images/2023-field.png"
+	],
+	"LOCK_FILE" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/CMakeFiles/QFRCDashboardLib_autogen.dir/AutoRcc_fields_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "fields" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_fields.cpp",
+	"RCC_EXECUTABLE" : "/usr/lib/qt6/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/CMakeFiles/QFRCDashboardLib_autogen.dir/AutoRcc_fields_EWIEGA46WW_Used.txt",
+	"SOURCE" : "/hdd/code/QFRCDashboard/lib/fields.qrc",
+	"VERBOSITY" : 0
+}
