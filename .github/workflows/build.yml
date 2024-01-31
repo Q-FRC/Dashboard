@@ -101,7 +101,7 @@ jobs:
 
     - name: Test
       working-directory: ${{ env.BUILD_DIR }}/tests
-      run: ctest --build-config ${{ inputs.build_type }}
+      run: ctest --build-config ${{ inputs.build_type }} --verbose
 
     - name: Package (Linux)
       if: runner.os == 'Linux'
