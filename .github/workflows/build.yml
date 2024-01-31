@@ -103,8 +103,8 @@ jobs:
       working-directory: ${{ env.BUILD_DIR }}/tests
       shell: bash
       run: |
-        export QT_QPA_PLATFORM_PLUGIN=minimal
-        ctest --build-config ${{ inputs.build_type }}
+        export QT_QPA_PLATFORM_PLUGIN=offscreen
+        ctest --build-config ${{ inputs.build_type }} --verbose
 
     - name: Package (Linux)
       if: runner.os == 'Linux'
