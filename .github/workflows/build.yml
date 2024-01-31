@@ -101,7 +101,10 @@ jobs:
 
     - name: Test
       working-directory: ${{ env.BUILD_DIR }}/tests
-      run: ctest --build-config ${{ inputs.build_type }} --verbose
+      shell: bash
+      run: |
+        export QT_QPA_PLATFORM_PLUGIN=minimal
+        ctest --build-config ${{ inputs.build_type }}
 
     - name: Package (Linux)
       if: runner.os == 'Linux'
