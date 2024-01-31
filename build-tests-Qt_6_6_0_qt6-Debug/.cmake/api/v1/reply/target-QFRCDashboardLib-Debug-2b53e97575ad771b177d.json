@@ -1,0 +1,999 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "lib/libQFRCDashboardLib.a"
+		}
+	],
+	"backtrace" : 4,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"_qt_internal_add_library",
+			"qt6_add_library",
+			"qt_add_library",
+			"install",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"/usr/lib/cmake/Qt6Core/Qt6CoreMacros.cmake",
+			"/hdd/code/QFRCDashboard/lib/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 136,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 2377,
+				"parent" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2281,
+				"parent" : 2
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 2355,
+				"parent" : 3
+			},
+			{
+				"command" : 4,
+				"file" : 1,
+				"line" : 157,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 1,
+				"line" : 148,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 151,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 152,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 150,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-DQT_QML_DEBUG -Wall -fPIC -g -std=gnu++20 -fdiagnostics-color=always"
+				},
+				{
+					"backtrace" : 6,
+					"fragment" : "-mno-direct-extern-access"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 6,
+					"define" : "FMT_SHARED"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_CHARTS_LIB"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_CORE_LIB"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_GUI_LIB"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_MULTIMEDIAWIDGETS_LIB"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_MULTIMEDIA_LIB"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_NETWORK_LIB"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_OPENGLWIDGETS_LIB"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_OPENGL_LIB"
+				},
+				{
+					"backtrace" : 6,
+					"define" : "QT_WIDGETS_LIB"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 0,
+					"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include"
+				},
+				{
+					"backtrace" : 7,
+					"path" : "/hdd/code/QFRCDashboard/lib/ui"
+				},
+				{
+					"backtrace" : 8,
+					"path" : "/hdd/code/QFRCDashboard/lib/include"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "/hdd/code/QFRCDashboard/lib/buildconfig"
+				},
+				{
+					"backtrace" : 9,
+					"isSystem" : true,
+					"path" : "/usr/include/ntcore"
+				},
+				{
+					"backtrace" : 9,
+					"isSystem" : true,
+					"path" : "/usr/include/wpinet"
+				},
+				{
+					"backtrace" : 9,
+					"isSystem" : true,
+					"path" : "/usr/include/wpiutil"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtWidgets"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtCore"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/lib/qt6/mkspecs/linux-g++"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtGui"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtMultimediaWidgets"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtMultimedia"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtNetwork"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtCharts"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtOpenGL"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/qt6/QtOpenGLWidgets"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					6,
+					6
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				82,
+				91,
+				92,
+				93
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 6,
+			"id" : "BuildConfig::@42bdb40ab31f929ccba0"
+		},
+		{
+			"id" : "QFRCDashboardLib_autogen_timestamp_deps::@306ed2d68c6501e8728f"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "QFRCDashboardLib_autogen::@306ed2d68c6501e8728f"
+		}
+	],
+	"id" : "QFRCDashboardLib::@306ed2d68c6501e8728f",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 5,
+				"path" : "lib"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
+	"name" : "QFRCDashboardLib",
+	"nameOnDisk" : "libQFRCDashboardLib.a",
+	"paths" : 
+	{
+		"build" : "lib",
+		"source" : "/hdd/code/QFRCDashboard/lib"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				82,
+				91,
+				92,
+				93
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				3,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				90
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				39,
+				40,
+				41,
+				42,
+				43,
+				44,
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60,
+				61,
+				62,
+				63,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				81,
+				83,
+				84,
+				85,
+				86,
+				87,
+				88,
+				89
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				94,
+				95,
+				96,
+				97
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/mocs_compilation.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/fields.qrc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/theme/qrc/breeze.qrc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/icons.qrc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/Globals.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/MainWindow.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/Constants.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/BaseWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/DoubleDisplayWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/TabWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/BooleanDisplayWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/StringDisplayWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/TextWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/BooleanCheckboxWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/DoubleDialWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/StringChooserWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/CameraViewWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/EnumWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/IntegerDisplayWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/IntegerDialWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/FieldWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/SendableFieldWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/CommandWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/GraphWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/misc/ShapedFrame.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/misc/BetterDial.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/misc/FieldImage.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/misc/ChartView.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/misc/GridLineWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/stores/TopicStore.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/stores/TypeStore.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/stores/FilterStore.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/stores/CameraStore.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/dialogs/CameraSelectionDialog.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/dialogs/NewWidgetTreeDialog.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/dialogs/NTSettingsDialog.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/dialogs/WidgetDialogGenerator.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/dialogs/TabMaxSizeDialog.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/dialogs/PreferencesDialog.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/Globals.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/MainWindow.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/Constants.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/BaseWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/DoubleDisplayWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/TabWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/BooleanDisplayWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/StringDisplayWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/TextWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/BooleanCheckboxWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/DoubleDialWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/StringChooserWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/CameraViewWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/EnumWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/IntegerDisplayWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/IntegerDialWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/FieldWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/SendableFieldWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/CommandWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/GraphWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/misc/ShapedFrame.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/misc/BetterDial.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/misc/FieldImage.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/misc/ChartView.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/misc/GridLineWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/stores/TopicStore.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/stores/TypeStore.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/stores/FilterStore.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/stores/CameraStore.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/dialogs/CameraSelectionDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/dialogs/NewWidgetTreeDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/dialogs/NTSettingsDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/dialogs/WidgetDialogGenerator.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/dialogs/TabMaxSizeDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/dialogs/PreferencesDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/ui/MainWindow.ui",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/ui/NTSettingsDialog.ui",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/ui/WidgetDialogGenerator.ui",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/ui/NewWidgetTreeDialog.ui",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/ui/CameraSelectionDialog.ui",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/ui/TabMaxSizeDialog.ui",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/ui/PreferencesDialog.ui",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 4,
+			"path" : "/hdd/code/QFRCDashboard/lib/include/widgets/FMSInfoWidget.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 4,
+			"compileGroupIndex" : 0,
+			"path" : "/hdd/code/QFRCDashboard/lib/src/widgets/FMSInfoWidget.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include/ui/ui_MainWindow.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include/ui/ui_NTSettingsDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include/ui/ui_WidgetDialogGenerator.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include/ui/ui_NewWidgetTreeDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include/ui/ui_CameraSelectionDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include/ui/ui_TabMaxSizeDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/include/ui/ui_PreferencesDialog.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/timestamp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/EWIEGA46WW/qrc_fields.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/NOOQF42OT4/qrc_breeze.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/EWIEGA46WW/qrc_icons.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/timestamp.rule",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/EWIEGA46WW/qrc_fields.cpp.rule",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/NOOQF42OT4/qrc_breeze.cpp.rule",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Qt_6_6_0_qt6-Debug/lib/QFRCDashboardLib_autogen/EWIEGA46WW/qrc_icons.cpp.rule",
+			"sourceGroupIndex" : 3
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}
