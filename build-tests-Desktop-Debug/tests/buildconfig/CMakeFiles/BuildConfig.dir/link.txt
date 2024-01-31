@@ -1,2 +1,0 @@
-/usr/bin/ar qc libBuildConfig.a CMakeFiles/BuildConfig.dir/BuildConfig_autogen/mocs_compilation.cpp.o CMakeFiles/BuildConfig.dir/BuildConfig.cpp.o
-/usr/bin/ranlib libBuildConfig.a
