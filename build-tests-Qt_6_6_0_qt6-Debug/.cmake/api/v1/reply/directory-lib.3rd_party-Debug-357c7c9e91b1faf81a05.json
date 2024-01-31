@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "lib/3rd_party",
+		"source" : "/hdd/code/QFRCDashboard/lib/3rd_party"
+	}
+}

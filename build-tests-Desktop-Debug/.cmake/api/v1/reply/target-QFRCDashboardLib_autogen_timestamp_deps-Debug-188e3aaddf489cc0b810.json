@@ -1,0 +1,64 @@
+{
+	"backtrace" : 0,
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : 
+		[
+			"/hdd/code/QFRCDashboard/lib/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			}
+		]
+	},
+	"dependencies" : 
+	[
+		{
+			"id" : "BuildConfig::@42bdb40ab31f929ccba0"
+		}
+	],
+	"id" : "QFRCDashboardLib_autogen_timestamp_deps::@306ed2d68c6501e8728f",
+	"isGeneratorProvided" : true,
+	"name" : "QFRCDashboardLib_autogen_timestamp_deps",
+	"paths" : 
+	{
+		"build" : "lib",
+		"source" : "/hdd/code/QFRCDashboard/lib"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/CMakeFiles/QFRCDashboardLib_autogen_timestamp_deps",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/lib/CMakeFiles/QFRCDashboardLib_autogen_timestamp_deps.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

@@ -1,0 +1,481 @@
+{
+	"BUILD_DIR" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/tests/QFRCDashboardLib_autogen",
+	"CMAKE_BINARY_DIR" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/tests",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/hdd/code/QFRCDashboard/lib",
+	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/hdd/code/QFRCDashboard/lib/CMakeLists.txt",
+		"/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/.qtc/package-manager/auto-setup.cmake",
+		"/usr/share/ntcore/ntcore-config.cmake",
+		"/usr/share/cmake/Modules/CMakeFindDependencyMacro.cmake",
+		"/usr/share/ntcore/ntcore.cmake",
+		"/usr/lib/cmake/Qt6/Qt6ConfigVersion.cmake",
+		"/usr/lib/cmake/Qt6/Qt6ConfigVersionImpl.cmake",
+		"/usr/lib/cmake/Qt6/Qt6Config.cmake",
+		"/usr/lib/cmake/Qt6/Qt6ConfigExtras.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicCMakeVersionHelpers.cmake",
+		"/usr/lib/cmake/Qt6/Qt6Targets.cmake",
+		"/usr/lib/cmake/Qt6/Qt6VersionlessTargets.cmake",
+		"/usr/lib/cmake/Qt6/QtFeature.cmake",
+		"/usr/lib/cmake/Qt6/QtFeatureCommon.cmake",
+		"/usr/share/cmake/Modules/CheckCXXCompilerFlag.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicAppleHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicFinalizerHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicPluginHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicTargetHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicWalkLibsHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicFindPackageHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicTestHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicToolHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicCMakeHelpers.cmake",
+		"/usr/share/cmake/Modules/CMakeFindDependencyMacro.cmake",
+		"/usr/lib/cmake/Qt6/Qt6Dependencies.cmake",
+		"/usr/lib/cmake/Qt6/Qt6ConfigVersion.cmake",
+		"/usr/lib/cmake/Qt6/Qt6ConfigVersionImpl.cmake",
+		"/usr/lib/cmake/Qt6/Qt6Config.cmake",
+		"/usr/lib/cmake/Qt6/Qt6ConfigExtras.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicCMakeVersionHelpers.cmake",
+		"/usr/lib/cmake/Qt6/Qt6Targets.cmake",
+		"/usr/lib/cmake/Qt6/Qt6VersionlessTargets.cmake",
+		"/usr/lib/cmake/Qt6/QtFeature.cmake",
+		"/usr/lib/cmake/Qt6/QtFeatureCommon.cmake",
+		"/usr/share/cmake/Modules/CheckCXXCompilerFlag.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicAppleHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicFinalizerHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicPluginHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicTargetHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicWalkLibsHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicFindPackageHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicTestHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicToolHelpers.cmake",
+		"/usr/lib/cmake/Qt6/QtPublicCMakeHelpers.cmake",
+		"/usr/share/cmake/Modules/CMakeFindDependencyMacro.cmake",
+		"/usr/lib/cmake/Qt6/Qt6Dependencies.cmake",
+		"/usr/share/cmake/Modules/GNUInstallDirs.cmake",
+		"/hdd/code/QFRCDashboard/lib/fields.qrc",
+		"/hdd/code/QFRCDashboard/lib/theme/qrc/breeze.qrc",
+		"/hdd/code/QFRCDashboard/lib/icons.qrc"
+	],
+	"CMAKE_SOURCE_DIR" : "/hdd/code/QFRCDashboard/tests",
+	"DEP_FILE" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/tests/QFRCDashboardLib_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "QFRCDashboardLib_autogen/timestamp",
+	"HEADERS" : 
+	[
+		[
+			"/hdd/code/QFRCDashboard/lib/include/Constants.h",
+			"MU",
+			"6YEA5652QU/moc_Constants.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/Globals.h",
+			"MU",
+			"6YEA5652QU/moc_Globals.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/MainWindow.h",
+			"MU",
+			"6YEA5652QU/moc_MainWindow.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/dialogs/CameraSelectionDialog.h",
+			"MU",
+			"OFTFDIG4ME/moc_CameraSelectionDialog.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/dialogs/NTSettingsDialog.h",
+			"MU",
+			"OFTFDIG4ME/moc_NTSettingsDialog.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/dialogs/NewWidgetTreeDialog.h",
+			"MU",
+			"OFTFDIG4ME/moc_NewWidgetTreeDialog.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/dialogs/PreferencesDialog.h",
+			"MU",
+			"OFTFDIG4ME/moc_PreferencesDialog.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/dialogs/TabMaxSizeDialog.h",
+			"MU",
+			"OFTFDIG4ME/moc_TabMaxSizeDialog.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/dialogs/WidgetDialogGenerator.h",
+			"MU",
+			"OFTFDIG4ME/moc_WidgetDialogGenerator.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/misc/BetterDial.h",
+			"MU",
+			"LQ2V3VDZQL/moc_BetterDial.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/misc/ChartView.h",
+			"MU",
+			"LQ2V3VDZQL/moc_ChartView.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/misc/FieldImage.h",
+			"MU",
+			"LQ2V3VDZQL/moc_FieldImage.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/misc/GridLineWidget.h",
+			"MU",
+			"LQ2V3VDZQL/moc_GridLineWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/misc/ShapedFrame.h",
+			"MU",
+			"LQ2V3VDZQL/moc_ShapedFrame.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/stores/CameraStore.h",
+			"MU",
+			"M5LXFPYLQB/moc_CameraStore.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/stores/FilterStore.h",
+			"MU",
+			"M5LXFPYLQB/moc_FilterStore.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/stores/TopicStore.h",
+			"MU",
+			"M5LXFPYLQB/moc_TopicStore.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/stores/TypeStore.h",
+			"MU",
+			"M5LXFPYLQB/moc_TypeStore.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/BaseWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_BaseWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/BooleanCheckboxWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_BooleanCheckboxWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/BooleanDisplayWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_BooleanDisplayWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/CameraViewWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_CameraViewWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/CommandWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_CommandWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/DoubleDialWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_DoubleDialWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/DoubleDisplayWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_DoubleDisplayWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/EnumWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_EnumWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/FMSInfoWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_FMSInfoWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/FieldWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_FieldWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/GraphWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_GraphWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/IntegerDialWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_IntegerDialWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/IntegerDisplayWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_IntegerDisplayWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/SendableFieldWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_SendableFieldWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/StringChooserWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_StringChooserWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/StringDisplayWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_StringDisplayWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/TabWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_TabWidget.cpp",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/include/widgets/TextWidget.h",
+			"MU",
+			"MROXUFLNXW/moc_TextWidget.cpp",
+			null
+		]
+	],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/tests/QFRCDashboardLib_autogen/include",
+	"MOC_COMPILATION_FILE" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/tests/QFRCDashboardLib_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : 
+	[
+		"FMT_SHARED",
+		"QT_CHARTS_LIB",
+		"QT_CORE_LIB",
+		"QT_GUI_LIB",
+		"QT_MULTIMEDIAWIDGETS_LIB",
+		"QT_MULTIMEDIA_LIB",
+		"QT_NETWORK_LIB",
+		"QT_OPENGLWIDGETS_LIB",
+		"QT_OPENGL_LIB",
+		"QT_WIDGETS_LIB"
+	],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/hdd/code/QFRCDashboard/lib/ui",
+		"/hdd/code/QFRCDashboard/lib/include",
+		"/hdd/code/QFRCDashboard/lib/buildconfig",
+		"/usr/include/ntcore",
+		"/usr/include/wpinet",
+		"/usr/include/wpiutil",
+		"/usr/include/qt6/QtWidgets",
+		"/usr/include/qt6",
+		"/usr/include/qt6/QtCore",
+		"/usr/lib/qt6/mkspecs/linux-g++",
+		"/usr/include/qt6/QtGui",
+		"/usr/include/qt6/QtMultimediaWidgets",
+		"/usr/include/qt6/QtMultimedia",
+		"/usr/include/qt6/QtNetwork",
+		"/usr/include/qt6/QtCharts",
+		"/usr/include/qt6/QtOpenGL",
+		"/usr/include/qt6/QtOpenGLWidgets",
+		"/usr/include",
+		"/usr/include/c++/13.2.1",
+		"/usr/include/c++/13.2.1/x86_64-pc-linux-gnu",
+		"/usr/include/c++/13.2.1/backward",
+		"/usr/lib/gcc/x86_64-pc-linux-gnu/13.2.1/include",
+		"/usr/local/include",
+		"/usr/lib/gcc/x86_64-pc-linux-gnu/13.2.1/include-fixed"
+	],
+	"MOC_MACRO_NAMES" : 
+	[
+		"Q_OBJECT",
+		"Q_GADGET",
+		"Q_NAMESPACE",
+		"Q_NAMESPACE_EXPORT",
+		"Q_GADGET_EXPORT"
+	],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/usr/bin/g++",
+		"-std=gnu++17",
+		"-dM",
+		"-E",
+		"-c",
+		"/usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/tests/QFRCDashboardLib_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : [],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 2,
+	"PARSE_CACHE_FILE" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/tests/CMakeFiles/QFRCDashboardLib_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/usr/lib/qt6/moc",
+	"QT_UIC_EXECUTABLE" : "/usr/lib/qt6/uic",
+	"QT_VERSION_MAJOR" : 6,
+	"QT_VERSION_MINOR" : 6,
+	"SETTINGS_FILE" : "/hdd/code/QFRCDashboard/build-tests-Desktop-Debug/tests/CMakeFiles/QFRCDashboardLib_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[ "/hdd/code/QFRCDashboard/lib/src/Constants.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/Globals.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/MainWindow.cpp", "MU", null ],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/dialogs/CameraSelectionDialog.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/dialogs/NTSettingsDialog.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/dialogs/NewWidgetTreeDialog.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/dialogs/PreferencesDialog.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/dialogs/TabMaxSizeDialog.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/dialogs/WidgetDialogGenerator.cpp",
+			"MU",
+			null
+		],
+		[ "/hdd/code/QFRCDashboard/lib/src/misc/BetterDial.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/misc/ChartView.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/misc/FieldImage.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/misc/GridLineWidget.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/misc/ShapedFrame.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/stores/CameraStore.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/stores/FilterStore.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/stores/TopicStore.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/stores/TypeStore.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/widgets/BaseWidget.cpp", "MU", null ],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/BooleanCheckboxWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/BooleanDisplayWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/CameraViewWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/CommandWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/DoubleDialWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/DoubleDisplayWidget.cpp",
+			"MU",
+			null
+		],
+		[ "/hdd/code/QFRCDashboard/lib/src/widgets/EnumWidget.cpp", "MU", null ],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/FMSInfoWidget.cpp",
+			"MU",
+			null
+		],
+		[ "/hdd/code/QFRCDashboard/lib/src/widgets/FieldWidget.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/widgets/GraphWidget.cpp", "MU", null ],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/IntegerDialWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/IntegerDisplayWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/SendableFieldWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/StringChooserWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/hdd/code/QFRCDashboard/lib/src/widgets/StringDisplayWidget.cpp",
+			"MU",
+			null
+		],
+		[ "/hdd/code/QFRCDashboard/lib/src/widgets/TabWidget.cpp", "MU", null ],
+		[ "/hdd/code/QFRCDashboard/lib/src/widgets/TextWidget.cpp", "MU", null ]
+	],
+	"UIC_OPTIONS" : [],
+	"UIC_SEARCH_PATHS" : [ "/hdd/code/QFRCDashboard/lib/ui" ],
+	"UIC_SKIP" : [],
+	"UIC_UI_FILES" : [],
+	"VERBOSITY" : 0
+}
