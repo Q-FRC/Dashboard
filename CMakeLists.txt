@@ -86,13 +86,21 @@ target_include_directories(QFRCDashboard PRIVATE lib/include)
 target_include_directories(QFRCDashboard PRIVATE ${_Dashboard_AUTOGEN}/include)
 target_include_directories(QFRCDashboard PRIVATE lib/)
 
-# enable ccache support
-if(MSVC AND (
-   CMAKE_BUILD_TYPE STREQUAL Debug OR
-   CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
-)
-    target_compile_options(QFRCDashboard PRIVATE "/Zi" "/Z7")
-endif()
+# courtesy of Cristian Adam
+# enable CMake support for all targets (wpilib, protobuf, lib, tests...)
+function(ccache_handle_debug_msvc)
+  if (MSVC)
+    foreach(config DEBUG RELWITHDEBINFO)
+      foreach(lang C CXX)
+        set(flags_var "CMAKE_${lang}_FLAGS_${config}")
+        string(REPLACE "/Zi" "/Z7" ${flags_var} "${${flags_var}}")
+        set(${flags_var} "${${flags_var}}" PARENT_SCOPE)
+      endforeach()
+    endforeach()
+  endif()
+endfunction()
+
+ccache_handle_debug_msvc()
 
 include(GNUInstallDirs)
 install(TARGETS QFRCDashboard
