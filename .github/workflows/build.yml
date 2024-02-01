@@ -27,6 +27,11 @@ jobs:
             qt_version: '6.6.0'
             qt_modules: 'qtmultimedia qtcharts'
 
+          - os: macOS-12
+            qt_host: mac
+            qt_version: '6.6.0'
+            qt_modules: 'qtmultimedia qtcharts'
+
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -69,6 +74,13 @@ jobs:
         modules: ${{ matrix.qt_modules }}
         cache: true
 
+    - name: Set up Python 3.8 (macOS)
+      if: runner.os == 'macOS'
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.8
+        cache: 'pip'
+
     - name: Install Python Dependencies
       run: |
         pip install jinja2
@@ -87,6 +99,11 @@ jobs:
 
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+
+    - name: Install Build Dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install ninja
 
     - name: Configure CMake
       run: |
@@ -132,6 +149,20 @@ jobs:
         cp /usr/lib/x86_64-linux-gnu/libssl.so.1.1 ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
 
         ./linuxdeploy-x86_64.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt
+
+    - name: Package (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        cmake --install ${{ env.BUILD_DIR }}\_deps\ntcore-build --prefix ${{ env.NTCORE_INSTALL_DIR }}
+        cmake --install ${{ env.BUILD_DIR }}\_deps\protobuf-build --prefix ${{ env.PROTOBUF_INSTALL_DIR }}
+
+        set PATH=%PATH%;"${{ runner.workspace }}\Qt\6.6.0\*\bin"
+
+        cd ${{ env.BUILD_DIR }}
+        ls
+
+        macdeployqt QFRCDashboard* -dmg
+        ls
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'

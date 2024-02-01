@@ -118,6 +118,10 @@ if(WITH_TESTS)
     add_subdirectory(tests)
 endif()
 
+set_target_properties(QFRCDashboard PROPERTIES
+    MACOSX_BUNDLE TRUE
+)
+
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(QFRCDashboard)
 endif()
