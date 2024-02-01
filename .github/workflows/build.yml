@@ -104,8 +104,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew update
-        brew upgrade llvm
-        brew install ninja
+        brew install llvm ninja
 
     - name: Configure CMake
       run: |
