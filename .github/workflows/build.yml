@@ -166,6 +166,7 @@ jobs:
         cd ${{ env.BUILD_DIR }}
         macdeployqt QFRCDashboard.app -dmg
         cp QFRCDashboard.dmg ../
+        cp QFRCDashboard.app ../
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
@@ -218,7 +219,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}
-        path: QFRCDashboard.dmg
+        path: QFRCDashboard.app
 
     - name: Upload binary zip (Windows, portable)
       if: runner.os == 'Windows'
