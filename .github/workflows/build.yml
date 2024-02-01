@@ -49,6 +49,9 @@ jobs:
     - name: Install CMake
       uses: lukka/get-cmake@v3.28.1
 
+    - name: Install sccache
+      uses: mozilla-actions/sccache-action@v0.0.3
+
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
 
@@ -62,6 +65,7 @@ jobs:
       with:
         version: 6.6.0
         modules: ${{ matrix.qt_modules }}
+        cache: true
 
     - name: Install Python Dependencies
       run: |
@@ -74,11 +78,6 @@ jobs:
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage"
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
 
-    - name: Setup CCache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        key: ${{ runner.os }}-${{ inputs.build_type }}
-
     - name: Install Build Dependencies (Linux)
       if: runner.os == 'Linux'
       run: |
@@ -90,10 +89,14 @@ jobs:
     - name: Configure CMake
       run: |
         cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DUSE_SYSTEM_NTCORE=OFF -DUSE_SYSTEM_PROTOBUF=OFF -DBUILD_SHARED_LIBS=OFF
+      env:
+        SCCACHE_GHA_ENABLED: "true"
 
     - name: Build
       run: |
         cmake --build ${{ env.BUILD_DIR }} --parallel $(nproc) --config ${{ inputs.build_type }}
+      env:
+        SCCACHE_GHA_ENABLED: "true"
 
     - name: Test
       working-directory: ${{ env.BUILD_DIR }}/tests
