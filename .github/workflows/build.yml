@@ -50,6 +50,7 @@ jobs:
         echo "INSTALL_APPIMAGE_DIR=${{ github.workspace }}/install-appdir" >> $GITHUB_ENV
         echo "NTCORE_INSTALL_DIR=${{ github.workspace }}/install-ntcore" >> $GITHUB_ENV
         echo "PROTOBUF_INSTALL_DIR=${{ github.workspace }}/install-protobuf" >> $GITHUB_ENV
+        echo "DATE=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_ENV
 
     - name: Install CMake
       uses: lukka/get-cmake@v3.28.1
@@ -58,6 +59,12 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         key: ${{ runner.os }}-${{ inputs.build_type }}
+
+    - name: Cache Build Deps
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.BUILD_DIR }}/_deps/*-src
+        key: ${{ runner.os }}-${{ env.DATE }}
 
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
@@ -157,10 +164,8 @@ jobs:
         export PATH="$PATH;${{ runner.workspace }}/Qt/6.6.0/*/bin"
 
         cd ${{ env.BUILD_DIR }}
-        ls
-
-        macdeployqt QFRCDashboard* -dmg
-        ls
+        macdeployqt QFRCDashboard.app -dmg
+        cp QFRCDashboard.dmg ../
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
@@ -207,6 +212,13 @@ jobs:
       with:
         name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
         path: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
+
+    - name: Upload DMG (macOS)
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v3
+      with:
+        name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}
+        path: QFRCDashboard.dmg
 
     - name: Upload binary zip (Windows, portable)
       if: runner.os == 'Windows'
