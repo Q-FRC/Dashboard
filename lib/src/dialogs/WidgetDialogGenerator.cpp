@@ -280,9 +280,11 @@ QWidget *WidgetDialogGenerator::colorProperty(QMetaProperty property) {
 }
 
 QWidget *WidgetDialogGenerator::mapProperty(QMetaProperty property) {
-    // Table setup
-    // An insert button for certain types as well.
-    auto [table, addButton, removeButton] = setupTable({"Key", "Value"});
+    // macos sucks
+    auto tableVars = setupTable({"Topic", "Color"});
+    auto table = std::get<0>(tableVars);
+    auto addButton = std::get<1>(tableVars);
+    auto removeButton = std::get<2>(tableVars);
 
     serializeMap(property.read(m_widget).toMap(), table);
 
@@ -537,8 +539,7 @@ QWidget *WidgetDialogGenerator::xAxisProperty(QMetaProperty property) {
 }
 
 QWidget *WidgetDialogGenerator::topicColorMapProperty(QMetaProperty property) {
-    // macos sucks
-    auto [table, addButton, removeButton] = setupTable({"Key", "Value"});
+
 
     serializeMap(property.read(m_widget).value<QHash<Globals::Topic, QColor>>(), table);
 
