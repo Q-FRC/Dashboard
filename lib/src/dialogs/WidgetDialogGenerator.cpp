@@ -539,7 +539,11 @@ QWidget *WidgetDialogGenerator::xAxisProperty(QMetaProperty property) {
 }
 
 QWidget *WidgetDialogGenerator::topicColorMapProperty(QMetaProperty property) {
-
+    // macos sucks
+    auto tableVars = setupTable({"Topic", "Color"});
+    auto table = std::get<0>(tableVars);
+    auto addButton = std::get<1>(tableVars);
+    auto removeButton = std::get<2>(tableVars);
 
     serializeMap(property.read(m_widget).value<QHash<Globals::Topic, QColor>>(), table);
 
