@@ -166,7 +166,7 @@ jobs:
         cd ${{ env.BUILD_DIR }}
         macdeployqt QFRCDashboard.app -dmg
         cp QFRCDashboard.dmg ../
-        cp QFRCDashboard.app ../
+        cp -r QFRCDashboard.app ../
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
