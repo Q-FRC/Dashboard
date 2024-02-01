@@ -103,6 +103,8 @@ jobs:
     - name: Install Build Dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
+        brew update
+        brew upgrade llvm
         brew install ninja
 
     - name: Configure CMake
