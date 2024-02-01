@@ -11,7 +11,6 @@ if (NOT USE_SYSTEM_PROTOBUF)
     set(protobuf_BUILD_SHARED_LIBS ON)
     set(protobuf_BUILD_TESTS OFF)
     set(ABSL_PROPAGATE_CXX_STD ON)
-    set(ABSL_ENABLE_INSTALL OFF)
 
     FetchContent_Declare(
             protobuf
