@@ -154,10 +154,10 @@ jobs:
     - name: Package (macOS)
       if: runner.os == 'macOS'
       run: |
-        cmake --install ${{ env.BUILD_DIR }}\_deps\ntcore-build --prefix ${{ env.NTCORE_INSTALL_DIR }}
-        cmake --install ${{ env.BUILD_DIR }}\_deps\protobuf-build --prefix ${{ env.PROTOBUF_INSTALL_DIR }}
+        cmake --install ${{ env.BUILD_DIR }}/_deps/ntcore-build --prefix ${{ env.NTCORE_INSTALL_DIR }}
+        cmake --install ${{ env.BUILD_DIR }}/_deps/protobuf-build --prefix ${{ env.PROTOBUF_INSTALL_DIR }}
 
-        set PATH=%PATH%;"${{ runner.workspace }}\Qt\6.6.0\*\bin"
+        set PATH=%PATH%;"${{ runner.workspace }}/Qt/6.6.0/*/bin"
 
         cd ${{ env.BUILD_DIR }}
         ls
