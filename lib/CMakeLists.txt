@@ -153,6 +153,14 @@ target_include_directories(QFRCDashboardLib PRIVATE include/)
 
 set(_Dashboard_AUTOGEN "${CMAKE_CURRENT_BINARY_DIR}/QFRCDashboardLib_autogen" PARENT_SCOPE)
 
+# enable ccache support
+if(MSVC AND (
+   CMAKE_BUILD_TYPE STREQUAL Debug OR
+   CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
+)
+    target_compile_options(QFRCDashboardLib PRIVATE "/Zi" "/Z7")
+endif()
+
 include(GNUInstallDirs)
 install(TARGETS QFRCDashboardLib
     BUNDLE DESTINATION .

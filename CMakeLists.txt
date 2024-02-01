@@ -86,6 +86,14 @@ target_include_directories(QFRCDashboard PRIVATE lib/include)
 target_include_directories(QFRCDashboard PRIVATE ${_Dashboard_AUTOGEN}/include)
 target_include_directories(QFRCDashboard PRIVATE lib/)
 
+# enable ccache support
+if(MSVC AND (
+   CMAKE_BUILD_TYPE STREQUAL Debug OR
+   CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
+)
+    target_compile_options(QFRCDashboard PRIVATE "/Zi" "/Z7")
+endif()
+
 include(GNUInstallDirs)
 install(TARGETS QFRCDashboard
     BUNDLE DESTINATION .
@@ -98,7 +106,9 @@ install(
     COMPONENT Runtime
 )
 
-add_subdirectory(tests)
+if(WITH_TESTS)
+    add_subdirectory(tests)
+endif()
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(QFRCDashboard)
