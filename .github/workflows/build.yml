@@ -64,7 +64,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ env.BUILD_DIR }}/_deps/*-src
-        key: ${{ runner.os }}-${{ env.DATE }}
+        key: QFRCDashboard
 
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
