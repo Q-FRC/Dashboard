@@ -164,9 +164,12 @@ jobs:
         export PATH="$PATH;${{ runner.workspace }}/Qt/6.6.0/*/bin"
 
         cd ${{ env.BUILD_DIR }}
-        macdeployqt QFRCDashboard.app -dmg
-        cp QFRCDashboard.dmg ../
-        cp -r QFRCDashboard.app ../
+        macdeployqt QFRCDashboard.app
+        ls
+
+        chmod +x QFRCDashboard.app/Contents/MacOS/QFRCDashboard
+        sudo codesign --sign - --deep --force --entitlements ../program_info/App.entitlements --options runtime QFRCDashboard.app/Contents/MacOS/QFRCDashboard
+        cp ../program_info/QFRCDashboard.icns QFRCDashboard.app/Contents/Resources
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
