@@ -130,7 +130,7 @@ if(UNIX AND APPLE)
     set(MACOSX_BUNDLE_BUNDLE_VERSION "${Dashboard_GIT_TAG_NUMERO}")
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${Dashboard_GIT_TAG_NUMERO}")
     set(MACOSX_BUNDLE_LONG_VERSION_STRING "${Dashboard_GIT_TAG_NUMERO}")
-    set(MACOSX_BUNDLE_ICON_FILE program_info/${Dashboard_APP_NAME}.icns)
+    set(MACOSX_BUNDLE_ICON_FILE ${Dashboard_APP_NAME}.icns)
     set(MACOSX_BUNDLE_COPYRIGHT "Copyleft 2023-2024 ${Dashboard_ORG_NAME}")
 
     # install as bundle
