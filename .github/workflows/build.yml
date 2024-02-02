@@ -167,10 +167,10 @@ jobs:
         macdeployqt QFRCDashboard.app
         ls
 
-        chmod +x QFRCDashboard.app/Contents/MacOS/QFRCDashboard
         sudo codesign --sign - --deep --force --entitlements ../program_info/App.entitlements --options runtime QFRCDashboard.app/Contents/MacOS/QFRCDashboard
-        cp ../program_info/QFRCDashboard.icns QFRCDashboard.app/Contents/Resources
-        cp -r QFRCDashboard.app ..
+        chmod a+x QFRCDashboard.app/Contents/MacOS/QFRCDashboard
+        cp ../program_info/QFRCDashboard.icns QFRCDashboard.app/Contents/Resources/icon.icns
+        tar czf ../QFRCDashboard.tar.gz QFRCDashboard.app
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
@@ -218,12 +218,12 @@ jobs:
         name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
         path: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-x86_64.AppImage
 
-    - name: Upload DMG (macOS)
+    - name: Upload tarball (macOS)
       if: runner.os == 'macOS'
       uses: actions/upload-artifact@v3
       with:
         name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}
-        path: QFRCDashboard.app
+        path: QFRCDashboard.tar.gz
 
     - name: Upload binary zip (Windows, portable)
       if: runner.os == 'Windows'
