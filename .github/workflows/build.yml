@@ -170,6 +170,7 @@ jobs:
         chmod +x QFRCDashboard.app/Contents/MacOS/QFRCDashboard
         sudo codesign --sign - --deep --force --entitlements ../program_info/App.entitlements --options runtime QFRCDashboard.app/Contents/MacOS/QFRCDashboard
         cp ../program_info/QFRCDashboard.icns QFRCDashboard.app/Contents/Resources
+        cp -r QFRCDashboard.app ..
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
