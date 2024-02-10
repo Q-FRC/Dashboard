@@ -36,11 +36,6 @@ MainWindow::MainWindow() : QMainWindow(), Ui::MainWindow()
 {
     setupUi(this);
 
-    // i hate macos
-#ifdef Q_OS_MACOS
-    setStyle(QStyleFactory::create("Fusion"));
-#endif
-
     // this isn't available in the ui lol
     connect(centralwidget->tabBar(), &QTabBar::tabMoved, this, &MainWindow::moveTab);
 }
