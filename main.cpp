@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     parser.process(app);
     // i hate macos
 #ifdef Q_OS_MACOS
-    setStyle(QStyleFactory::create("Fusion"));
+    app.setStyle(QStyleFactory::create("Fusion"));
 #endif
 
     MainWindow *window = new MainWindow();
