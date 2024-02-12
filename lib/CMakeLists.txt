@@ -144,6 +144,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         theme/qrc/breeze.qrc
         icons.qrc
         ${PROJECT_SOURCES}
+
     )
 endif()
 
