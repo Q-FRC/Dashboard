@@ -14,7 +14,7 @@ BooleanCheckboxWidget::BooleanCheckboxWidget(const QString &topic, const bool &d
     m_layout->addWidget(m_checkbox, 1, 0, 3, 1, Qt::AlignHCenter);
 
     connect(m_checkbox, &QCheckBox::stateChanged, this, [this](int state) {
-        m_entry->SetBoolean(state == Qt::Checked);
+        if (m_entry) m_entry->SetBoolean(state == Qt::Checked);
         m_value = state == Qt::Checked;
     });
 
@@ -36,11 +36,11 @@ void BooleanCheckboxWidget::setCheckboxSize(int size) {
 }
 
 void BooleanCheckboxWidget::setTopic(const QString &topic) {
-    if (m_topic == topic) return;
+
 
     m_topic = topic;
-    if (m_entry) TopicStore::unsubscribe(m_entry, this);
-    m_entry = TopicStore::subscribe(topic.toStdString(), this, TopicTypes::Boolean);
+    if (m_entry) TopicStore::unsubscribe(m_topic, this);
+    m_entry = TopicStore::subscribe(topic.toStdString(), this, NT_BOOLEAN);
 }
 
 void BooleanCheckboxWidget::setValue(const nt::Value &value, QString label, bool force) {

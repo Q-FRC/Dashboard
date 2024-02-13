@@ -6,6 +6,8 @@
 
 IntegerDisplayWidget::IntegerDisplayWidget(const QString &topic, const int &defaultValue, const QString &title, const bool &ready) : TextWidget(WidgetTypes::IntegerDisplay, topic, QString::number(defaultValue), title)
 {
+    setTopic(topic);
+
     m_value = defaultValue;
     setReady(ready);
 }
@@ -15,11 +17,9 @@ IntegerDisplayWidget::~IntegerDisplayWidget() {
 }
 
 void IntegerDisplayWidget::setTopic(const QString &topic) {
-    if (m_topic == topic) return;
-
     m_topic = topic;
-    if (m_entry) TopicStore::unsubscribe(m_entry, this);
-    m_entry = TopicStore::subscribe(topic.toStdString(), this, TopicTypes::Int);
+    if (m_entry) TopicStore::unsubscribe(m_topic, this);
+    m_entry = TopicStore::subscribe(topic.toStdString(), this, NT_INTEGER);
 }
 
 void IntegerDisplayWidget::setValue(const nt::Value &value, QString label, bool force) {
@@ -31,7 +31,7 @@ void IntegerDisplayWidget::setValue(const nt::Value &value, QString label, bool 
 
 void IntegerDisplayWidget::keyPressEvent(QKeyEvent *event) {
     if (m_text->hasFocus()) {
-        m_entry->SetInteger(m_text->text().toInt());
+        if (m_entry) m_entry->SetInteger(m_text->text().toInt());
         m_value = m_text->text().toInt();
     }
 }

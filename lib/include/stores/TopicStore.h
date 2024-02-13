@@ -16,7 +16,8 @@ struct Listener {
     nt::NetworkTableEntry *entry;
     BaseWidget *subscriber;
     NT_Listener listenerHandle;
-    TopicTypes desiredType;
+    nt::ListenerCallback callback;
+    NT_Type desiredType;
     bool isNull;
 
     bool operator==(const Listener &other) const;
@@ -40,12 +41,15 @@ public:
 
     TopicStore();
 
-    static nt::NetworkTableEntry *subscribe(std::string ntTopic, BaseWidget *subscriber, TopicTypes desiredType = TopicTypes::None, QString label = "", bool writeOnly = false);
+    static nt::NetworkTableEntry *subscribe(std::string ntTopic, BaseWidget *subscriber, NT_Type desiredType = NT_UNASSIGNED, QString label = "", bool writeOnly = false);
 
     static void unsubscribe(std::string ntTopic, BaseWidget *subscriber);
+    static void unsubscribe(QString ntTopic, BaseWidget *subscriber);
     static void unsubscribe(nt::NetworkTableEntry *entry, BaseWidget *subscriber);
 
     static double getDoubleFromEntry(nt::NetworkTableEntry *entry);
+
+    static void updateTopic(std::string topic, BaseWidget *subscriber, QString label);
 };
 
 #endif // TopicStore_H

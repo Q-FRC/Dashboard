@@ -14,6 +14,9 @@ private:
     nt::NetworkTableEntry *m_locEntry;
     nt::NetworkTableEntry *m_stateEntry;
 
+    QString m_locTopic = "";
+    QString m_stateTopic = "";
+
     SwerveTrain *m_train;
 public:
     SwerveWidget(const QString &topic = "", const QString &title = "");

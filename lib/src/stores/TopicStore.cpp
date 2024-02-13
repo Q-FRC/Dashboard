@@ -1,6 +1,6 @@
 #include "stores/TopicStore.h"
-#include "stores/FilterStore.h"
 
+#include "qtimer.h"
 #include "widgets/BaseWidget.h"
 
 #include "Globals.h"
@@ -60,29 +60,35 @@ bool Listener::operator==(const Listener &other) const {
            (other.isNull == this->isNull);
 }
 
-nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *subscriber, TopicTypes desiredType, QString label, bool writeOnly) {
+nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *subscriber, NT_Type desiredType, QString label, bool writeOnly) {
+    qDebug() << (int) desiredType << ntTopic;
     Listener listener;
     nt::NetworkTableEntry *entry = nullptr;
-    if (hasEntry(ntTopic)) {
+    if (!hasEntry(ntTopic)) {
         entry = new nt::NetworkTableEntry(nt::GetEntry(Globals::inst.GetHandle(), ntTopic));
-
-        listener = {
-            ntTopic,
-            label,
-            entry,
-            subscriber,
-            0,
-            desiredType,
-            false
-        };
 
         topicEntryMap.insert(ntTopic, entry);
     }
 
-    if (!entry) entry = topicEntryMap.value(ntTopic);
+    if (entry == nullptr) entry = topicEntryMap.value(ntTopic);
+
+    listener = {
+        ntTopic,
+        label,
+        entry,
+        subscriber,
+        0,
+        nt::ListenerCallback(),
+        desiredType,
+        false
+    };
 
     if (!writeOnly) {
         nt::ListenerCallback updateWidget = [entry, subscriber, desiredType, label, ntTopic](const nt::Event &event = nt::Event()) {
+            if (!subscriber || !entry) {
+                qDebug() << "Waaaaaah" << entry;
+                return;
+            }
             nt::Value value;
             if (!event.Is(nt::EventFlags::kValueAll)) {
                 value = entry->GetValue();
@@ -94,8 +100,7 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *su
             // this is mild anal cancer
             if (value.IsValid()) {
                 QMetaObject::invokeMethod(subscriber, [subscriber, value, label, desiredType, ntTopic] {
-                    if (FilterStore::topicTypeForNTType((nt::NetworkTableType) value.type())
-                        != desiredType) {
+                    if (value.type() != desiredType) {
                         qCritical() << "Type for topic" <<
                             QString::fromStdString(ntTopic) <<
                             "for widget" <<
@@ -125,6 +130,11 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *su
         NT_Listener handle = Globals::inst.AddListener(Globals::inst.GetEntry(ntTopic), nt::EventFlags::kValueAll, updateWidget);
 
         listener.listenerHandle = handle;
+        listener.callback = updateWidget;
+
+        QTimer::singleShot(1000, subscriber, [updateWidget] {
+            updateWidget(nt::Event());
+        });
     }
 
     Listeners.append(listener);
@@ -138,8 +148,16 @@ void TopicStore::unsubscribe(std::string ntTopic, BaseWidget *subscriber) {
     Listener listener = getEntry(ntTopic, subscriber);
     Listeners.removeOne(listener);
 
-    if (!hasEntry(ntTopic)) listener.entry->Unpublish();
+    if (!hasEntry(ntTopic)) {
+        if (listener.entry) listener.entry->Unpublish();
+        topicEntryMap.remove(ntTopic);
+    }
+
     Globals::inst.RemoveListener(listener.listenerHandle);
+}
+
+void TopicStore::unsubscribe(QString ntTopic, BaseWidget *subscriber) {
+    unsubscribe(ntTopic.toStdString(), subscriber);
 }
 
 void TopicStore::unsubscribe(nt::NetworkTableEntry *entry, BaseWidget *subscriber) {
@@ -158,4 +176,12 @@ double TopicStore::getDoubleFromEntry(nt::NetworkTableEntry *entry) {
     }
 
     return 0.;
+}
+
+void TopicStore::updateTopic(std::string topic, BaseWidget *subscriber, QString label) {
+    Listener l = getEntry(topic, subscriber);
+    if (l.isNull) return;
+
+    nt::ListenerCallback callback = l.callback;
+    callback(nt::Event());
 }

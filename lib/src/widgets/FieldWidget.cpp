@@ -7,7 +7,8 @@
 FieldWidget::FieldWidget(const QString &topic, QVariantList defaultValue, const QString &title)
     : BaseWidget(WidgetTypes::Field, title, topic)
 {
-    m_entry = TopicStore::subscribe(topic.toStdString(), this);
+    setTopic(topic);
+
     m_value = defaultValue;
 
     m_imageLabel = new FieldImage(this);
@@ -50,11 +51,9 @@ void FieldWidget::setImage(Globals::File image) {
 }
 
 void FieldWidget::setTopic(const QString &topic) {
-    if (m_topic == topic) return;
-
     m_topic = topic;
-    if (m_entry) TopicStore::unsubscribe(m_entry, this);
-    m_entry = TopicStore::subscribe(topic.toStdString(), this, TopicTypes::DoubleArray);
+    if (m_entry) TopicStore::unsubscribe(m_topic, this);
+    m_entry = TopicStore::subscribe(topic.toStdString(), this, NT_DOUBLE_ARRAY);
 }
 
 void FieldWidget::setValue(const nt::Value &value, QString label, bool force) {

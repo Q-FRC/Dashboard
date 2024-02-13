@@ -42,11 +42,11 @@ void BooleanDisplayWidget::setShape(Globals::FrameShape shape) {
 }
 
 void BooleanDisplayWidget::setTopic(const QString &topic) {
-    if (m_topic == topic) return;
+
 
     m_topic = topic;
-    if (m_entry) TopicStore::unsubscribe(m_entry, this);
-    m_entry = TopicStore::subscribe(topic.toStdString(), this, TopicTypes::Boolean);
+    if (m_entry) TopicStore::unsubscribe(m_topic, this);
+    m_entry = TopicStore::subscribe(topic.toStdString(), this, NT_BOOLEAN);
 }
 
 void BooleanDisplayWidget::setValue(const nt::Value &value, QString label, bool force) {
