@@ -22,14 +22,7 @@ QMap<AllianceStation, QString> StationNames = {
 FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
     : BaseWidget(WidgetTypes::FMSInfo, title, table, true)
 {
-    m_event = TopicStore::subscribe(table.toStdString() + "/EventName", this);
-    m_controlWord = TopicStore::subscribe(table.toStdString() + "/FMSControlData", this);
-    m_gameSpecificMessage = TopicStore::subscribe(table.toStdString() + "/GameSpecificMessage", this);
-
-    m_redAlliance = TopicStore::subscribe(table.toStdString() + "/IsRedAlliance", this);
-    m_matchNumber = TopicStore::subscribe(table.toStdString() + "/MatchNumber", this);
-    m_matchType = TopicStore::subscribe(table.toStdString() + "/MatchType", this);
-    m_allianceStation = TopicStore::subscribe(table.toStdString() + "/StationNumber", this);
+    setTopic(table);
 
     m_matchLabel = new QLabel("Match: Unknown", this);
     m_stationLabel = new QLabel("Station: Unknown", this);
@@ -79,7 +72,6 @@ FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
 }
 
 FMSInfoWidget::~FMSInfoWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
     TopicStore::unsubscribe(m_event, this);
     TopicStore::unsubscribe(m_controlWord, this);
     TopicStore::unsubscribe(m_gameSpecificMessage, this);
@@ -89,71 +81,99 @@ FMSInfoWidget::~FMSInfoWidget() {
     TopicStore::unsubscribe(m_allianceStation, this);
 }
 
-void FMSInfoWidget::setValue(const nt::Value &value) {
-    m_eventString = QString::fromStdString(m_event->GetString("Unknown"));
-    m_eventLabel->setText("Event: " + m_eventString);
+void FMSInfoWidget::setTopic(const QString &topic) {
+    if (m_topic == topic) return;
 
-    m_gsm = QString::fromStdString(m_gameSpecificMessage->GetString("Unknown"));
-    m_gsmLabel->setText("Game Specific Message: " + m_gsm);
+    m_topic = topic;
 
-    int station = m_allianceStation->GetInteger(1);
-    if (!m_redAlliance->GetBoolean(false)) {
-        station += 3;
-    }
+    if (m_event) TopicStore::unsubscribe(m_event, this);
+    if (m_controlWord) TopicStore::unsubscribe(m_controlWord, this);
+    if (m_gameSpecificMessage) TopicStore::unsubscribe(m_gameSpecificMessage, this);
+    if (m_redAlliance) TopicStore::unsubscribe(m_redAlliance, this);
+    if (m_matchNumber) TopicStore::unsubscribe(m_matchNumber, this);
+    if (m_matchType) TopicStore::unsubscribe(m_matchType, this);
+    if (m_allianceStation) TopicStore::unsubscribe(m_allianceStation, this);
 
-    m_station = (AllianceStation) station;
-    m_stationLabel->setText("Station: " + StationNames.value(m_station));
+    m_event = TopicStore::subscribe(topic.toStdString() + "/EventName", this, TopicTypes::String, "Event");
+    m_controlWord = TopicStore::subscribe(topic.toStdString() + "/FMSControlData", this, TopicTypes::Int, "Control");
+    m_gameSpecificMessage = TopicStore::subscribe(topic.toStdString() + "/GameSpecificMessage", this, TopicTypes::String, "GSM");
 
-    m_number = m_matchNumber->GetInteger(0);
-    m_type = (MatchType) m_matchType->GetInteger(0);
-
-    m_matchLabel->setText("Match: " +
-                          MatchTypeNames.value(m_type) +
-                          " Match " +
-                          QString::number(m_number));
-
-    m_word = (ControlWord) m_controlWord->GetInteger(0);
-    ControlFlags flags(m_word);
-
-    QString state = "Robot State: ";
-
-    if (flags & ControlWord::Auto) {
-        state += "Autonomous";
-    }
-    else if (flags & ControlWord::Test) {
-        state += "Testing";
-    } else {
-        state += "Teleop";
-    }
-
-    if (flags & ControlWord::Enabled) {
-        state += " Enabled";
-    } else if (flags & ControlWord::EStop) {
-        state += " E-Stopped";
-    } else {
-        state += " Disabled";
-    }
-
-    m_controlLabel->setText(state);
-
-    if (flags & ControlWord::FMSAttached) {
-        m_fmsLabel->setText("FMS Attached");
-        m_fmsIconLabel->setPixmap(QIcon(":/icons/check.svg").pixmap(20, 20));
-    } else {
-        m_fmsLabel->setText("FMS Disconnected");
-        m_fmsIconLabel->setPixmap(QIcon(":/icons/xmark.svg").pixmap(20, 20));
-    }
-
-    if (flags & ControlWord::DSAttached) {
-        m_dsLabel->setText("DS Attached");
-        m_dsIconLabel->setPixmap(QIcon(":/icons/check.svg").pixmap(20, 20));
-    } else {
-        m_dsLabel->setText("DS Disconnected");
-        m_dsIconLabel->setPixmap(QIcon(":/icons/xmark.svg").pixmap(20, 20));
-    }
+    m_redAlliance = TopicStore::subscribe(topic.toStdString() + "/IsRedAlliance", this, TopicTypes::Boolean, "Red Alliance");
+    m_matchNumber = TopicStore::subscribe(topic.toStdString() + "/MatchNumber", this, TopicTypes::Int, "Match Number");
+    m_matchType = TopicStore::subscribe(topic.toStdString() + "/MatchType", this, TopicTypes::Int, "Match Type");
+    m_allianceStation = TopicStore::subscribe(topic.toStdString() + "/StationNumber", this, TopicTypes::Int, "Station Number");
 }
 
-void FMSInfoWidget::forceUpdate() {
-    auto placeholder = nt::Value::MakeString("");
-    setValue(placeholder);
+void FMSInfoWidget::setValue(const nt::Value &value, QString label, bool force) {
+    if (label == "Event" || force) {
+        m_eventString = QString::fromStdString(m_event->GetString("Unknown"));
+        m_eventLabel->setText("Event: " + m_eventString);
+    }
+
+    if (label == "GSM" || force) {
+        m_gsm = QString::fromStdString(m_gameSpecificMessage->GetString("Unknown"));
+        m_gsmLabel->setText("Game Specific Message: " + m_gsm);
+    }
+
+    if (label == "Station Number" || label == "Red Alliance" || force) {
+        int station = m_allianceStation->GetInteger(1);
+        if (!m_redAlliance->GetBoolean(false)) {
+            station += 3;
+        }
+
+        m_station = (AllianceStation) station;
+        m_stationLabel->setText("Station: " + StationNames.value(m_station));
+    }
+
+    if (label == "Match Number" || label == "Match Type" || force) {
+        m_number = m_matchNumber->GetInteger(0);
+        m_type = (MatchType) m_matchType->GetInteger(0);
+
+        m_matchLabel->setText("Match: " +
+                              MatchTypeNames.value(m_type) +
+                              " Match " +
+                              QString::number(m_number));
+    }
+
+    if (label == "Control" || force) {
+        m_word = (ControlWord) m_controlWord->GetInteger(0);
+        ControlFlags flags(m_word);
+
+        QString state = "Robot State: ";
+
+        if (flags & ControlWord::Auto) {
+            state += "Autonomous";
+        }
+        else if (flags & ControlWord::Test) {
+            state += "Testing";
+        } else {
+            state += "Teleop";
+        }
+
+        if (flags & ControlWord::Enabled) {
+            state += " Enabled";
+        } else if (flags & ControlWord::EStop) {
+            state += " E-Stopped";
+        } else {
+            state += " Disabled";
+        }
+
+        m_controlLabel->setText(state);
+
+        if (flags & ControlWord::FMSAttached) {
+            m_fmsLabel->setText("FMS Attached");
+            m_fmsIconLabel->setPixmap(QIcon(":/icons/check.svg").pixmap(20, 20));
+        } else {
+            m_fmsLabel->setText("FMS Disconnected");
+            m_fmsIconLabel->setPixmap(QIcon(":/icons/xmark.svg").pixmap(20, 20));
+        }
+
+        if (flags & ControlWord::DSAttached) {
+            m_dsLabel->setText("DS Attached");
+            m_dsIconLabel->setPixmap(QIcon(":/icons/check.svg").pixmap(20, 20));
+        } else {
+            m_dsLabel->setText("DS Disconnected");
+            m_dsIconLabel->setPixmap(QIcon(":/icons/xmark.svg").pixmap(20, 20));
+        }
+    }
 }

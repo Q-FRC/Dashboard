@@ -49,7 +49,15 @@ void FieldWidget::setImage(Globals::File image) {
     m_imageLabel->setImage(image);
 }
 
-void FieldWidget::setValue(const nt::Value &value) {
+void FieldWidget::setTopic(const QString &topic) {
+    if (m_topic == topic) return;
+
+    m_topic = topic;
+    if (m_entry) TopicStore::unsubscribe(m_entry, this);
+    m_entry = TopicStore::subscribe(topic.toStdString(), this, TopicTypes::DoubleArray);
+}
+
+void FieldWidget::setValue(const nt::Value &value, QString label, bool force) {
     m_value = decltype(m_value)(value.GetDoubleArray().begin(), value.GetDoubleArray().end());
 
     m_imageLabel->setValue(value.GetDoubleArray());

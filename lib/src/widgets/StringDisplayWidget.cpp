@@ -13,7 +13,15 @@ StringDisplayWidget::~StringDisplayWidget() {
     TopicStore::unsubscribe(m_topic.toStdString(), this);
 }
 
-void StringDisplayWidget::setValue(const nt::Value &value) {
+void StringDisplayWidget::setTopic(const QString &topic) {
+    if (m_topic == topic) return;
+
+    m_topic = topic;
+    if (m_entry) TopicStore::unsubscribe(m_entry, this);
+    m_entry = TopicStore::subscribe(topic.toStdString(), this, TopicTypes::String);
+}
+
+void StringDisplayWidget::setValue(const nt::Value &value, QString label, bool force) {
     if (!m_text->hasFocus()) {
         m_value = QString::fromStdString(std::string(value.GetString()));
         setText(m_value);

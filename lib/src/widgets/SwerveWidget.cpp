@@ -17,9 +17,15 @@ SwerveWidget::SwerveWidget(const QString &topic, const QString &title)
     setStatesTopic(Globals::DoubleArrayTopic{""});
 }
 
+SwerveWidget::~SwerveWidget() {
+    TopicStore::unsubscribe(m_locEntry, this);
+    TopicStore::unsubscribe(m_stateEntry, this);
+}
+
 void SwerveWidget::setLocationTopic(const Globals::DoubleArrayTopic &topic) {
     if (m_locEntry) TopicStore::unsubscribe(m_locEntry, this);
-    m_locEntry = TopicStore::subscribe(topic.Name.toStdString(), this);
+    m_locEntry = TopicStore::subscribe(topic.Name.toStdString(), this, TopicTypes::DoubleArray, "Locations");
+
     QTimer::singleShot(1000, this, &SwerveWidget::forceUpdate);
 }
 
@@ -29,7 +35,7 @@ Globals::DoubleArrayTopic SwerveWidget::locationTopic() {
 
 void SwerveWidget::setStatesTopic(const Globals::DoubleArrayTopic &topic) {
     if (m_stateEntry) TopicStore::unsubscribe(m_stateEntry, this);
-    m_stateEntry = TopicStore::subscribe(topic.Name.toStdString(), this);
+    m_stateEntry = TopicStore::subscribe(topic.Name.toStdString(), this, TopicTypes::DoubleArray, "States");
     QTimer::singleShot(1000, this, &SwerveWidget::forceUpdate);
 }
 
@@ -37,29 +43,22 @@ Globals::DoubleArrayTopic SwerveWidget::statesTopic() {
     return Globals::DoubleArrayTopic(QString::fromStdString(m_stateEntry->GetName()));
 }
 
-void SwerveWidget::setValue(const nt::Value &value) {
-    const nt::Value statesVal = m_stateEntry->GetValue();
-    const nt::Value locVal = m_locEntry->GetValue();
-
-    if (statesVal.IsValid()) {
+void SwerveWidget::setValue(const nt::Value &value, QString label, bool force) {
+    if (label == "States" || force) {
         QList<double> states;
-        for (const double state : statesVal.GetDoubleArray()) {
+        for (const double state : value.GetDoubleArray()) {
             states.append(state);
         }
         m_train->setStates(states);
     }
 
-    if (locVal.IsValid()) {
+    if (label == "Locations" || force) {
         QList<double> locations;
-        for (const double location : locVal.GetDoubleArray()) {
+        for (const double location : value.GetDoubleArray()) {
             locations.append(location);
         }
         m_train->setLocations(locations);
     }
 
     m_train->update();
-}
-
-void SwerveWidget::forceUpdate() {
-    setValue(nt::Value());
 }

@@ -33,7 +33,15 @@ void EnumWidget::setShape(Globals::FrameShape shape) {
     m_colorWidget->setShape(shape);
 }
 
-void EnumWidget::setValue(const nt::Value &value) {
+void EnumWidget::setTopic(const QString &topic) {
+    if (m_topic == topic) return;
+
+    m_topic = topic;
+    if (m_entry) TopicStore::unsubscribe(m_entry, this);
+    m_entry = TopicStore::subscribe(topic.toStdString(), this, TopicTypes::String);
+}
+
+void EnumWidget::setValue(const nt::Value &value, QString label, bool force) {
     m_value = QString::fromStdString(std::string(value.GetString()));
 
     if (m_colors.contains(m_value)) m_colorWidget->setColor(m_colors.value(m_value).value<QColor>());

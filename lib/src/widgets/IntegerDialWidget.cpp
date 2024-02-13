@@ -54,7 +54,15 @@ void IntegerDialWidget::setStartingAngle(double angle) {
     m_dial->setStartingAngle(angle * M_PI / 180.);
 }
 
-void IntegerDialWidget::setValue(const nt::Value &value) {
+void IntegerDialWidget::setTopic(const QString &topic) {
+    if (m_topic == topic) return;
+
+    m_topic = topic;
+    if (m_entry) TopicStore::unsubscribe(m_entry, this);
+    m_entry = TopicStore::subscribe(topic.toStdString(), this, TopicTypes::Int);
+}
+
+void IntegerDialWidget::setValue(const nt::Value &value, QString label, bool force) {
     if (!m_text->hasFocus()) {
         m_value = value.GetInteger();
         setText(QString::number(m_value));
