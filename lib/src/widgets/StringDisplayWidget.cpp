@@ -12,7 +12,7 @@ StringDisplayWidget::StringDisplayWidget(const QString &topic, const QString &de
 }
 
 StringDisplayWidget::~StringDisplayWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
+    TopicStore::unsubscribe(m_topic.toStdString(), shared_from_this());
 }
 
 void StringDisplayWidget::setTopic(const QString &topic) {

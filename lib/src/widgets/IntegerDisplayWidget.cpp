@@ -13,7 +13,7 @@ IntegerDisplayWidget::IntegerDisplayWidget(const QString &topic, const int &defa
 }
 
 IntegerDisplayWidget::~IntegerDisplayWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
+    TopicStore::unsubscribe(m_topic.toStdString(), shared_from_this());
 }
 
 void IntegerDisplayWidget::setTopic(const QString &topic) {

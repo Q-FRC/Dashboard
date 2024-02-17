@@ -21,7 +21,7 @@ TabWidget::TabWidget(const QPoint &maxSize, QWidget *parent) : QWidget(parent)
             m_gridLine->setValidSelection(false);
             m_gridLine->update();
 
-            emit dragCancelled(m_draggedWidget);
+            emit dragCancelled(m_draggedWidget.get());
         });
     }
 
@@ -30,31 +30,34 @@ TabWidget::TabWidget(const QPoint &maxSize, QWidget *parent) : QWidget(parent)
 
 TabWidget::~TabWidget() {}
 
-QList<BaseWidget *> TabWidget::widgets() {
+QList<WidgetPtr> TabWidget::widgets() {
     return m_widgets;
 }
 
-void TabWidget::addWidget(BaseWidget *widget, WidgetData data) {
+void TabWidget::addWidget(WidgetPtr widget, WidgetData data) {
     if (m_widgets.contains(widget)) {
-        m_layout->removeWidget(widget);
+        m_layout->removeWidget(widget.get());
     } else {
         m_widgets.append(widget);
         widget->setParent(this);
     }
-    m_layout->addWidget(widget, data.row, data.col, data.rowSpan, data.colSpan);
+    m_layout->addWidget(widget.get(), data.row, data.col, data.rowSpan, data.colSpan);
     m_gridLine->lower();
 }
 
-void TabWidget::deleteWidget(BaseWidget *widget) {
+void TabWidget::addWidget(BaseWidget *widget, WidgetData data) {
+    addWidget(WidgetPtr(widget), data);
+}
+
+void TabWidget::deleteWidget(WidgetPtr widget) {
     if (m_widgets.contains(widget)) {
         m_widgets.removeAll(widget);
-        m_layout->removeWidget(widget);
-        widget->deleteLater();
+        m_layout->removeWidget(widget.get());
     }
 }
 
-WidgetData TabWidget::widgetData(BaseWidget *widget) {
-    int idx = m_layout->indexOf(widget);
+WidgetData TabWidget::widgetData(WidgetPtr widget) {
+    int idx = m_layout->indexOf(widget.get());
     if (idx == -1) {
         return WidgetData{0, 0, 0, 0};
     }
@@ -145,7 +148,7 @@ QJsonObject TabWidget::saveObject() {
 
     QJsonArray widgets{};
 
-    for (BaseWidget *widget : m_widgets) {
+    for (WidgetPtr widget : m_widgets) {
         QJsonObject widgetObj = widget->saveObject();
         WidgetData data = widgetData(widget);
 
@@ -184,9 +187,9 @@ void TabWidget::loadObject(const QJsonObject &object) {
 /* DRAG AND DROP */
 
 void TabWidget::mousePressEvent(QMouseEvent *event) {
-    BaseWidget *widgetPressed = nullptr;
+    WidgetPtr widgetPressed;
 
-    for (BaseWidget *widget : widgets())
+    for (WidgetPtr widget : widgets())
     {
         // map to tab widget as the base widget's geometry is relative to the tab widget
         if (widget->geometry().contains(mapFromGlobal(event->globalPosition()).toPoint())) {
@@ -201,11 +204,11 @@ void TabWidget::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         QMenu *menu = widgetPressed->constructContextMenu(widgetData(widgetPressed));
 
-        connect(widgetPressed, &BaseWidget::reconfigRequested, this, [this](BaseWidget *widget, WidgetData data) {
+        connect(widgetPressed.get(), &BaseWidget::reconfigRequested, this, [this](BaseWidget *widget, WidgetData data) {
             addWidget(widget, data);
         });
 
-        connect(widgetPressed, &BaseWidget::deleteRequested, this, [this, widgetPressed] {
+        connect(widgetPressed.get(), &BaseWidget::deleteRequested, this, [this, widgetPressed] {
             deleteWidget(widgetPressed);
         });
 
@@ -217,7 +220,7 @@ void TabWidget::mousePressEvent(QMouseEvent *event) {
         return;
     }
 
-    setDragData(widgetPressed, widgetData(widgetPressed));
+    setDragData(widgetPressed.get(), widgetData(widgetPressed));
 
     m_dragStart = event->pos();
     widgetPressed->raise();
@@ -251,7 +254,7 @@ void TabWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
 
     if (m_dragging) {
-        emit dragDone(m_draggedWidget, m_draggedWidgetData);
+        emit dragDone(m_draggedWidget.get(), m_draggedWidgetData);
     } else if (!m_resizing) {
         goto end;
     }
@@ -263,12 +266,16 @@ end:
     cancelDrags();
 }
 
-void TabWidget::setDragData(BaseWidget *widget, WidgetData data) {
+void TabWidget::setDragData(WidgetPtr widget, WidgetData data) {
     cancelDrags();
-    emit dragCancelled(m_draggedWidget);
+    emit dragCancelled(m_draggedWidget.get());
 
     m_draggedWidget = widget;
     m_draggedWidgetData = data;
+}
+
+void TabWidget::setDragData(BaseWidget *widget, WidgetData data) {
+    setDragData(WidgetPtr(widget), data);
 }
 
 void TabWidget::cancelDrags() {
@@ -298,12 +305,12 @@ void TabWidget::dragStart(QPoint point, QPoint offset) {
 }
 
 void TabWidget::dragMove(QPoint point) {
-    if (m_draggedWidget && m_draggedWidget->isVisible() && m_draggedWidget->isEnabled()) {
+    if (m_draggedWidget->isVisible() && m_draggedWidget->isEnabled()) {
         QPoint offset = point - m_dragOffset;
         m_draggedWidget->move(offset);
 
         if (!m_gridLine->hasSelection()) {
-            m_layout->removeWidget(m_draggedWidget);
+            m_layout->removeWidget(m_draggedWidget.get());
             m_widgets.removeAll(m_draggedWidget);
         }
     }
@@ -338,7 +345,7 @@ void TabWidget::resizeMove(QPoint point) {
         return;
 
     if (!m_gridLine->hasSelection()) {
-        layout()->removeWidget(m_draggedWidget);
+        layout()->removeWidget(m_draggedWidget.get());
         m_widgets.removeAll(m_draggedWidget);
     }
 
@@ -413,6 +420,6 @@ void TabWidget::resizeMove(QPoint point) {
                                   (col >= 0));
 }
 
-bool TabWidget::hasWidget(BaseWidget *widget) {
+bool TabWidget::hasWidget(WidgetPtr widget) {
     return (widgetData(widget) != WidgetData{0, 0, 0, 0});
 }

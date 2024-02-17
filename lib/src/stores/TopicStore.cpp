@@ -60,7 +60,7 @@ bool Listener::operator==(const Listener &other) const {
            (other.isNull == this->isNull);
 }
 
-nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *subscriber, NT_Type desiredType, QString label, bool writeOnly) {
+nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, WidgetPtr subscriber, NT_Type desiredType, QString label, bool writeOnly) {
     qDebug() << (int) desiredType << ntTopic;
     Listener listener;
     nt::NetworkTableEntry *entry = nullptr;
@@ -142,10 +142,10 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *su
     return entry;
 }
 
-void TopicStore::unsubscribe(std::string ntTopic, BaseWidget *subscriber) {
-    if (!hasEntry(ntTopic) || !widgetSubscribed(ntTopic, subscriber)) return;
+void TopicStore::unsubscribe(std::string ntTopic, WidgetPtr subscriber) {
+    if (!hasEntry(ntTopic) || !widgetSubscribed(ntTopic, subscriber.get())) return;
 
-    Listener listener = getEntry(ntTopic, subscriber);
+    Listener listener = getEntry(ntTopic, subscriber.get());
     Listeners.removeOne(listener);
 
     if (!hasEntry(ntTopic)) {
@@ -156,11 +156,11 @@ void TopicStore::unsubscribe(std::string ntTopic, BaseWidget *subscriber) {
     Globals::inst.RemoveListener(listener.listenerHandle);
 }
 
-void TopicStore::unsubscribe(QString ntTopic, BaseWidget *subscriber) {
+void TopicStore::unsubscribe(QString ntTopic, WidgetPtr subscriber) {
     unsubscribe(ntTopic.toStdString(), subscriber);
 }
 
-void TopicStore::unsubscribe(nt::NetworkTableEntry *entry, BaseWidget *subscriber) {
+void TopicStore::unsubscribe(nt::NetworkTableEntry *entry, WidgetPtr subscriber) {
     unsubscribe(entry->GetName(), subscriber);
 }
 
@@ -178,8 +178,8 @@ double TopicStore::getDoubleFromEntry(nt::NetworkTableEntry *entry) {
     return 0.;
 }
 
-void TopicStore::updateTopic(std::string topic, BaseWidget *subscriber, QString label) {
-    Listener l = getEntry(topic, subscriber);
+void TopicStore::updateTopic(std::string topic, WidgetPtr subscriber, QString label) {
+    Listener l = getEntry(topic, subscriber.get());
     if (l.isNull) return;
 
     nt::ListenerCallback callback = l.callback;

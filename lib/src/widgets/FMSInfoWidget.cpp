@@ -72,13 +72,13 @@ FMSInfoWidget::FMSInfoWidget(const QString &table, const QString &title)
 }
 
 FMSInfoWidget::~FMSInfoWidget() {
-    TopicStore::unsubscribe(m_event, this);
-    TopicStore::unsubscribe(m_controlWord, this);
-    TopicStore::unsubscribe(m_gameSpecificMessage, this);
-    TopicStore::unsubscribe(m_redAlliance, this);
-    TopicStore::unsubscribe(m_matchNumber, this);
-    TopicStore::unsubscribe(m_matchType, this);
-    TopicStore::unsubscribe(m_allianceStation, this);
+    TopicStore::unsubscribe(m_event, shared_from_this());
+    TopicStore::unsubscribe(m_controlWord, shared_from_this());
+    TopicStore::unsubscribe(m_gameSpecificMessage, shared_from_this());
+    TopicStore::unsubscribe(m_redAlliance, shared_from_this());
+    TopicStore::unsubscribe(m_matchNumber, shared_from_this());
+    TopicStore::unsubscribe(m_matchType, shared_from_this());
+    TopicStore::unsubscribe(m_allianceStation, shared_from_this());
 }
 
 void FMSInfoWidget::setTopic(const QString &topic) {

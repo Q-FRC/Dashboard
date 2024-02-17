@@ -23,14 +23,14 @@ private:
 
     QString m_name;
 
-    QList<BaseWidget *> m_widgets;
+    QList<WidgetPtr> m_widgets;
 
     // drag and drop
 
     // Dragging
     QPoint m_dragStart;
     QPoint m_dragOffset;
-    BaseWidget *m_draggedWidget = nullptr;
+    WidgetPtr m_draggedWidget;
     WidgetData m_draggedWidgetData;
     bool m_dragging = false;
 
@@ -55,11 +55,11 @@ public:
     TabWidget(const QPoint &maxSize, QWidget *parent = nullptr);
     virtual ~TabWidget();
 
-    QList<BaseWidget *> widgets();
+    QList<WidgetPtr> widgets();
 
     bool widgetAtPoint(WidgetData data);
 
-    WidgetData widgetData(BaseWidget *widget);
+    WidgetData widgetData(WidgetPtr widget);
 
     QGridLayout *layout();
 
@@ -73,16 +73,18 @@ public:
     void loadObject(const QJsonObject &object);
 
     // drag and drop epic edition
+    void setDragData(WidgetPtr widget, WidgetData data);
     void setDragData(BaseWidget *widget, WidgetData data);
     void dragStart(QPoint point, QPoint offset);
 
     // awesome
-    bool hasWidget(BaseWidget *widget);
+    bool hasWidget(WidgetPtr widget);
     void cancelDrags();
 
 public slots:
+    void addWidget(WidgetPtr widget, WidgetData data);
     void addWidget(BaseWidget *widget, WidgetData data);
-    void deleteWidget(BaseWidget *widget);
+    void deleteWidget(WidgetPtr widget);
 
 signals:
     void dragDone(BaseWidget *widget, WidgetData data);

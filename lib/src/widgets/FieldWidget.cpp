@@ -8,7 +8,6 @@ FieldWidget::FieldWidget(const QString &topic, QVariantList defaultValue, const 
     : BaseWidget(WidgetTypes::Field, title, topic)
 {
     setTopic(topic);
-
     m_value = defaultValue;
 
     m_imageLabel = new FieldImage(this);

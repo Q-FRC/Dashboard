@@ -54,7 +54,7 @@ void WidgetDeletion::cleanupTestCase() {
 
 void WidgetDeletion::testDelete() {
     TabWidget *tab = m_window->currentTab();
-    BaseWidget *widget = tab->widgets().at(0);
+    WidgetPtr widget = tab->widgets().at(0);
     tab->deleteWidget(widget);
     m_testEntry.SetBoolean(true);
 

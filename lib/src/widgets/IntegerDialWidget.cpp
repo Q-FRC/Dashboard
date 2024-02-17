@@ -25,7 +25,7 @@ IntegerDialWidget::IntegerDialWidget(const QString &topic, const int &defaultVal
 }
 
 IntegerDialWidget::~IntegerDialWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
+    TopicStore::unsubscribe(m_topic.toStdString(), shared_from_this());
 }
 
 int IntegerDialWidget::min() {

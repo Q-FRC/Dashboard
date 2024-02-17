@@ -16,7 +16,7 @@ TextWidget::TextWidget(const WidgetTypes &type, const QString &topic, const QStr
 }
 
 TextWidget::~TextWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
+    TopicStore::unsubscribe(m_topic.toStdString(), shared_from_this());
 }
 
 QString TextWidget::text() {

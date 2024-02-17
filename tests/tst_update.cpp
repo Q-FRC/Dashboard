@@ -54,7 +54,7 @@ void WidgetUpdate::cleanupTestCase() {
 
 void WidgetUpdate::testUpdate() {
     TabWidget *tab = m_window->currentTab();
-    BaseWidget *widget = tab->widgets().at(7);
+    WidgetPtr widget = tab->widgets().at(7);
     m_testEntry.SetBoolean(true);
 
     QTest::qWait(2000);

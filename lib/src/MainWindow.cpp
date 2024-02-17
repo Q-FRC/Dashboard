@@ -117,7 +117,7 @@ void MainWindow::loadObject(const QJsonDocument &doc) {
         centralwidget->addTab(tab, tab->name());
         m_tabs.append(tab);
 
-        for (BaseWidget *widget : tab->widgets()) {
+        for (WidgetPtr widget : tab->widgets()) {
             if (centralwidget->currentWidget() != tab) {
                 widget->setDisabled(true);
             }
@@ -148,11 +148,11 @@ void MainWindow::makeNewWidget(WidgetTypes type) {
 void MainWindow::forceUpdateTab(int idx) {
     if (m_tabs.length() <= idx || idx == -1) return;
 
-    for (BaseWidget *widget : m_tabs.at(m_lastIdx)->widgets()) {
+    for (WidgetPtr &widget : m_tabs.at(m_lastIdx)->widgets()) {
         widget->setDisabled(true);
     }
 
-    for (BaseWidget *widget : m_tabs.at(idx)->widgets()) {
+    for (WidgetPtr &widget : m_tabs.at(idx)->widgets()) {
         widget->setEnabled(true);
         widget->forceUpdate();
     }
@@ -417,15 +417,10 @@ void MainWindow::beginNewWidgetDrag(BaseWidget *widget, WidgetData data) {
         }, Qt::SingleShotConnection);
 
     *cancelConn = connect(tab, &TabWidget::dragCancelled, this, [doneConn, cancelConn, widget](BaseWidget *draggedWidget) {
-            if (draggedWidget == widget) {
-                delete widget;
-
-                disconnect(*doneConn);
-                delete doneConn;
-                disconnect(*cancelConn);
-                delete cancelConn;
-            }
-
+            disconnect(*doneConn);
+            delete doneConn;
+            disconnect(*cancelConn);
+            delete cancelConn;
         }, Qt::SingleShotConnection);
 }
 

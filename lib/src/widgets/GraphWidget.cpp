@@ -70,7 +70,7 @@ void GraphWidget::setTopics(QHash<Globals::NumberTopic, QColor> topics) {
         Globals::Topic topic = iter.key();
 
         if (!newHash.contains(topic)) {
-            TopicStore::unsubscribe(topic.Name.toStdString(), this);
+            TopicStore::unsubscribe(topic.Name.toStdString(), shared_from_this());
             m_entryMap.remove(topic);
 
             QLineSeries *series = m_seriesMap.take(topic);

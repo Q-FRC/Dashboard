@@ -16,10 +16,10 @@ StringChooserWidget::StringChooserWidget(const QString &topic, const QString &de
 }
 
 StringChooserWidget::~StringChooserWidget() {
-    TopicStore::unsubscribe(m_active, this);
-    TopicStore::unsubscribe(m_default, this);
-    TopicStore::unsubscribe(m_choices, this);
-    TopicStore::unsubscribe(m_selected, this);
+    TopicStore::unsubscribe(m_active, shared_from_this());
+    TopicStore::unsubscribe(m_default, shared_from_this());
+    TopicStore::unsubscribe(m_choices, shared_from_this());
+    TopicStore::unsubscribe(m_selected, shared_from_this());
 }
 
 void StringChooserWidget::setTopic(const QString &topic) {

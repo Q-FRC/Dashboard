@@ -13,7 +13,7 @@ EnumWidget::EnumWidget(const QString &topic, const QString &defaultValue, const 
 }
 
 EnumWidget::~EnumWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
+    TopicStore::unsubscribe(m_topic.toStdString(), shared_from_this());
 }
 
 QVariantMap EnumWidget::colors() {
@@ -34,7 +34,7 @@ void EnumWidget::setShape(Globals::FrameShape shape) {
 }
 
 void EnumWidget::setTopic(const QString &topic) {
-    
+
 
     m_topic = topic;
     if (m_entry) TopicStore::unsubscribe(m_topic, this);

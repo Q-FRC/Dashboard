@@ -21,8 +21,8 @@ CommandWidget::CommandWidget(const QString &topic, const QString &title) : BaseW
 }
 
 CommandWidget::~CommandWidget() {
-    TopicStore::unsubscribe(m_name, this);
-    TopicStore::unsubscribe(m_running, this);
+    TopicStore::unsubscribe(m_name, shared_from_this());
+    TopicStore::unsubscribe(m_running, shared_from_this());
 }
 
 void CommandWidget::setTopic(const QString &topic) {

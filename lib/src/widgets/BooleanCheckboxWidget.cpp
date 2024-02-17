@@ -22,7 +22,7 @@ BooleanCheckboxWidget::BooleanCheckboxWidget(const QString &topic, const bool &d
 }
 
 BooleanCheckboxWidget::~BooleanCheckboxWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
+    TopicStore::unsubscribe(m_topic.toStdString(), shared_from_this());
 }
 
 int BooleanCheckboxWidget::checkboxSize() {

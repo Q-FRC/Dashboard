@@ -13,7 +13,7 @@ BooleanDisplayWidget::BooleanDisplayWidget(const QString &topic, const bool &def
 }
 
 BooleanDisplayWidget::~BooleanDisplayWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
+    TopicStore::unsubscribe(m_topic.toStdString(), shared_from_this());
 }
 
 QColor BooleanDisplayWidget::trueColor() {

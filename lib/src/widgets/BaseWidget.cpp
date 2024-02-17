@@ -29,6 +29,7 @@
 #include <QApplication>
 #include <QMouseEvent>
 
+
 BaseWidget::BaseWidget(const WidgetTypes &type, const QString &title, const QString &topic, const bool sendable)
     : QFrame()
 {
@@ -59,7 +60,7 @@ BaseWidget::BaseWidget(const WidgetTypes &type, const QString &title, const QStr
 }
 
 BaseWidget::~BaseWidget() {
-    TopicStore::unsubscribe(m_topic.toStdString(), this);
+    TopicStore::unsubscribe(m_topic.toStdString(), shared_from_this());
 }
 
 bool BaseWidget::ready() {

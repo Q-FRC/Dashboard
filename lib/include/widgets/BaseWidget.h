@@ -9,6 +9,8 @@
 #include <QLineEdit>
 #include <QJsonObject>
 
+#include <memory>
+
 enum ResizeFlags {
     NONE = 0,
     TOP = 1 << 0,
@@ -20,7 +22,7 @@ enum ResizeFlags {
 Q_DECLARE_FLAGS(ResizeDirection, ResizeFlags)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ResizeDirection)
 
-class BaseWidget : public QFrame
+class BaseWidget : public QFrame, protected std::enable_shared_from_this<BaseWidget>
 {
     Q_OBJECT
 
@@ -113,3 +115,5 @@ private:
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
 };
+
+using WidgetPtr = std::shared_ptr<BaseWidget>;
