@@ -59,8 +59,8 @@ void IntegerDialWidget::setTopic(const QString &topic) {
     
 
     m_topic = topic;
-    if (m_entry) TopicStore::unsubscribe(m_topic, this);
-    m_entry = TopicStore::subscribe(topic.toStdString(), this, NT_INTEGER);
+    if (m_entry) TopicStore::unsubscribe(m_topic, shared_from_this());
+    m_entry = TopicStore::subscribe(topic.toStdString(), shared_from_this(), NT_INTEGER);
 }
 
 void IntegerDialWidget::setValue(const nt::Value &value, QString label, bool force) {

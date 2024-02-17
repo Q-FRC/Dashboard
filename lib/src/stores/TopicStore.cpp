@@ -36,7 +36,7 @@ bool TopicStore::widgetSubscribed(QString topic, BaseWidget *subscriber) {
 
 Listener TopicStore::getEntry(std::string topic, BaseWidget *subscriber) {
     for (Listener listener : Listeners) {
-        if (listener.topic == topic && listener.subscriber == subscriber) {
+        if (listener.topic == topic && listener.subscriber.get() == subscriber) {
             return listener;
         }
     }
@@ -99,7 +99,7 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, WidgetPtr subs
             // ensure thread-safety
             // this is mild anal cancer
             if (value.IsValid()) {
-                QMetaObject::invokeMethod(subscriber, [subscriber, value, label, desiredType, ntTopic] {
+                QMetaObject::invokeMethod(subscriber.get(), [subscriber, value, label, desiredType, ntTopic] {
                     if (value.type() != desiredType) {
                         qCritical() << "Type for topic" <<
                             QString::fromStdString(ntTopic) <<
@@ -118,7 +118,7 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, WidgetPtr subs
                             subscriber->update();
                         }
                     } else {
-                        connect(subscriber, &BaseWidget::isReady, subscriber, [subscriber, value, label] {
+                        connect(subscriber.get(), &BaseWidget::isReady, subscriber.get(), [subscriber, value, label] {
                                 subscriber->setValue(value, label);
                                 subscriber->update();
                             }, Qt::SingleShotConnection);
@@ -132,7 +132,7 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, WidgetPtr subs
         listener.listenerHandle = handle;
         listener.callback = updateWidget;
 
-        QTimer::singleShot(1000, subscriber, [updateWidget] {
+        QTimer::singleShot(1000, subscriber.get(), [updateWidget] {
             updateWidget(nt::Event());
         });
     }

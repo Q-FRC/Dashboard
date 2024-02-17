@@ -84,22 +84,22 @@ FMSInfoWidget::~FMSInfoWidget() {
 void FMSInfoWidget::setTopic(const QString &topic) {
     m_topic = topic;
 
-    if (m_event) TopicStore::unsubscribe(topic.toStdString() + "/EventName", this);
-    if (m_controlWord) TopicStore::unsubscribe(topic.toStdString() + "/FMSControlData", this);
-    if (m_gameSpecificMessage) TopicStore::unsubscribe(topic.toStdString() + "/GameSpecificMessage", this);
-    if (m_redAlliance) TopicStore::unsubscribe(topic.toStdString() + "/IsRedAlliance", this);
-    if (m_matchNumber) TopicStore::unsubscribe(topic.toStdString() + "/MatchNumber", this);
-    if (m_matchType) TopicStore::unsubscribe(topic.toStdString() + "/MatchType", this);
-    if (m_allianceStation) TopicStore::unsubscribe(topic.toStdString() + "/StationNumber", this);
+    if (m_event) TopicStore::unsubscribe(topic.toStdString() + "/EventName", shared_from_this());
+    if (m_controlWord) TopicStore::unsubscribe(topic.toStdString() + "/FMSControlData", shared_from_this());
+    if (m_gameSpecificMessage) TopicStore::unsubscribe(topic.toStdString() + "/GameSpecificMessage", shared_from_this());
+    if (m_redAlliance) TopicStore::unsubscribe(topic.toStdString() + "/IsRedAlliance", shared_from_this());
+    if (m_matchNumber) TopicStore::unsubscribe(topic.toStdString() + "/MatchNumber", shared_from_this());
+    if (m_matchType) TopicStore::unsubscribe(topic.toStdString() + "/MatchType", shared_from_this());
+    if (m_allianceStation) TopicStore::unsubscribe(topic.toStdString() + "/StationNumber", shared_from_this());
 
-    m_event = TopicStore::subscribe(topic.toStdString() + "/EventName", this, NT_STRING, "Event");
-    m_controlWord = TopicStore::subscribe(topic.toStdString() + "/FMSControlData", this, NT_INTEGER, "Control");
-    m_gameSpecificMessage = TopicStore::subscribe(topic.toStdString() + "/GameSpecificMessage", this, NT_STRING, "GSM");
+    m_event = TopicStore::subscribe(topic.toStdString() + "/EventName", shared_from_this(), NT_STRING, "Event");
+    m_controlWord = TopicStore::subscribe(topic.toStdString() + "/FMSControlData", shared_from_this(), NT_INTEGER, "Control");
+    m_gameSpecificMessage = TopicStore::subscribe(topic.toStdString() + "/GameSpecificMessage", shared_from_this(), NT_STRING, "GSM");
 
-    m_redAlliance = TopicStore::subscribe(topic.toStdString() + "/IsRedAlliance", this, NT_BOOLEAN, "Red Alliance");
-    m_matchNumber = TopicStore::subscribe(topic.toStdString() + "/MatchNumber", this, NT_INTEGER, "Match Number");
-    m_matchType = TopicStore::subscribe(topic.toStdString() + "/MatchType", this, NT_INTEGER, "Match Type");
-    m_allianceStation = TopicStore::subscribe(topic.toStdString() + "/StationNumber", this, NT_INTEGER, "Station Number");
+    m_redAlliance = TopicStore::subscribe(topic.toStdString() + "/IsRedAlliance", shared_from_this(), NT_BOOLEAN, "Red Alliance");
+    m_matchNumber = TopicStore::subscribe(topic.toStdString() + "/MatchNumber", shared_from_this(), NT_INTEGER, "Match Number");
+    m_matchType = TopicStore::subscribe(topic.toStdString() + "/MatchType", shared_from_this(), NT_INTEGER, "Match Type");
+    m_allianceStation = TopicStore::subscribe(topic.toStdString() + "/StationNumber", shared_from_this(), NT_INTEGER, "Station Number");
 }
 
 void FMSInfoWidget::setValue(const nt::Value &value, QString label, bool force) {
@@ -116,7 +116,7 @@ void FMSInfoWidget::setValue(const nt::Value &value, QString label, bool force) 
         QMapIterator iter(map);
         while (iter.hasNext()) {
             iter.next();
-            TopicStore::updateTopic(m_topic.toStdString() + iter.key(), this, iter.value());
+            TopicStore::updateTopic(m_topic.toStdString() + iter.key(), shared_from_this(), iter.value());
         }
 
         return;

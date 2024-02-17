@@ -25,15 +25,15 @@ StringChooserWidget::~StringChooserWidget() {
 void StringChooserWidget::setTopic(const QString &topic) {
     m_topic = topic;
 
-    if (m_active != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/active", this);
-    if (m_default != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/default", this);
-    if (m_choices != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/options", this);
-    if (m_selected != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/selected", this);
+    if (m_active != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/active", shared_from_this());
+    if (m_default != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/default", shared_from_this());
+    if (m_choices != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/options", shared_from_this());
+    if (m_selected != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/selected", shared_from_this());
 
-    m_active = TopicStore::subscribe(topic.toStdString() + "/active", this, NT_STRING, "Active");
-    m_default = TopicStore::subscribe(topic.toStdString() + "/default", this, NT_STRING, "Default", true);
-    m_choices = TopicStore::subscribe(topic.toStdString() + "/options", this, NT_STRING_ARRAY, "Choices");
-    m_selected = TopicStore::subscribe(topic.toStdString() + "/selected", this, NT_STRING, "Selected", true);
+    m_active = TopicStore::subscribe(topic.toStdString() + "/active", shared_from_this(), NT_STRING, "Active");
+    m_default = TopicStore::subscribe(topic.toStdString() + "/default", shared_from_this(), NT_STRING, "Default", true);
+    m_choices = TopicStore::subscribe(topic.toStdString() + "/options", shared_from_this(), NT_STRING_ARRAY, "Choices");
+    m_selected = TopicStore::subscribe(topic.toStdString() + "/selected", shared_from_this(), NT_STRING, "Selected", true);
 }
 
 void StringChooserWidget::setValue(const nt::Value &value, QString label, bool force) {
@@ -46,7 +46,7 @@ void StringChooserWidget::setValue(const nt::Value &value, QString label, bool f
         QMapIterator iter(map);
         while (iter.hasNext()) {
             iter.next();
-            TopicStore::updateTopic(m_topic.toStdString() + iter.key(), this, iter.value());
+            TopicStore::updateTopic(m_topic.toStdString() + iter.key(), shared_from_this(), iter.value());
         }
 
         return;

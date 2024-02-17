@@ -20,13 +20,13 @@ SwerveWidget::SwerveWidget(const QString &topic, const QString &title)
 }
 
 SwerveWidget::~SwerveWidget() {
-    TopicStore::unsubscribe(m_locEntry, this);
-    TopicStore::unsubscribe(m_stateEntry, this);
+    TopicStore::unsubscribe(m_locEntry, shared_from_this());
+    TopicStore::unsubscribe(m_stateEntry, shared_from_this());
 }
 
 void SwerveWidget::setLocationTopic(const Globals::DoubleArrayTopic &topic) {
-    if (m_locEntry) TopicStore::unsubscribe(m_locTopic.toStdString(), this);
-    m_locEntry = TopicStore::subscribe(topic.Name.toStdString(), this, NT_DOUBLE_ARRAY, "Locations");
+    if (m_locEntry) TopicStore::unsubscribe(m_locTopic.toStdString(), shared_from_this());
+    m_locEntry = TopicStore::subscribe(topic.Name.toStdString(), shared_from_this(), NT_DOUBLE_ARRAY, "Locations");
     m_locTopic = topic.Name;
     QTimer::singleShot(1000, this, &SwerveWidget::forceUpdate);
 }
@@ -36,8 +36,8 @@ Globals::DoubleArrayTopic SwerveWidget::locationTopic() {
 }
 
 void SwerveWidget::setStatesTopic(const Globals::DoubleArrayTopic &topic) {
-    if (m_stateEntry) TopicStore::unsubscribe(m_stateTopic.toStdString(), this);
-    m_stateEntry = TopicStore::subscribe(topic.Name.toStdString(), this, NT_DOUBLE_ARRAY, "States");
+    if (m_stateEntry) TopicStore::unsubscribe(m_stateTopic.toStdString(), shared_from_this());
+    m_stateEntry = TopicStore::subscribe(topic.Name.toStdString(), shared_from_this(), NT_DOUBLE_ARRAY, "States");
     m_stateTopic = topic.Name;
     QTimer::singleShot(1000, this, &SwerveWidget::forceUpdate);
 }
@@ -55,7 +55,7 @@ void SwerveWidget::setValue(const nt::Value &value, QString label, bool force) {
         QMapIterator iter(map);
         while (iter.hasNext()) {
             iter.next();
-            TopicStore::updateTopic(m_topic.toStdString() + iter.key(), this, iter.value());
+            TopicStore::updateTopic(m_topic.toStdString() + iter.key(), shared_from_this(), iter.value());
         }
 
         return;

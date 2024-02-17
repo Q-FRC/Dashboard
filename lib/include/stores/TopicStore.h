@@ -27,7 +27,6 @@ struct Listener {
 class TopicStore : public QObject
 {
     Q_OBJECT
-<<<<<<< HEAD
 private:
     static bool hasEntry(std::string topic);
     static bool hasEntry(QString topic);
@@ -48,23 +47,6 @@ public:
     static void unsubscribe(std::string ntTopic, WidgetPtr subscriber);
     static void unsubscribe(QString ntTopic, WidgetPtr subscriber);
     static void unsubscribe(nt::NetworkTableEntry *entry, WidgetPtr subscriber);
-=======
-public:
-    static QHash<std::string, nt::NetworkTableEntry *> topicEntryMap;
-    static QMultiHash<std::string, WidgetPtr> topicSubscriberMap;
-
-    // little messy but its alright
-    static QHash<std::pair<std::string, WidgetPtr >, NT_Listener> topicListenerMap;
-
-    TopicStore();
-
-    static nt::NetworkTableEntry *subscribe(std::string ntTopic, WidgetPtr subscriber);
-    static nt::NetworkTableEntry *subscribeWriteOnly(std::string ntTopic, WidgetPtr subscriber);
-
-    static void unsubscribe(std::string ntTopic, WidgetPtr subscriber);
-    static void unsubscribe(nt::NetworkTableEntry *entry, WidgetPtr subscriber);
->>>>>>> e27ebd3 (initial smart pointers & fix field stuff)
-
     static double getDoubleFromEntry(nt::NetworkTableEntry *entry);
 
     static void updateTopic(std::string topic, WidgetPtr subscriber, QString label);

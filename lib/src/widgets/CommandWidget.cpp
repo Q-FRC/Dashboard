@@ -30,11 +30,11 @@ void CommandWidget::setTopic(const QString &topic) {
 
     m_topic = topic;
 
-    if (m_name != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/.name", this);
-    if (m_running != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/.running", this);
+    if (m_name != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/.name", shared_from_this());
+    if (m_running != nullptr) TopicStore::unsubscribe(topic.toStdString() + "/.running", shared_from_this());
 
-    m_name = TopicStore::subscribe(topic.toStdString() + "/.name", this, NT_STRING, "Name");
-    m_running = TopicStore::subscribe(topic.toStdString() + "/running", this, NT_BOOLEAN, "Running", true);
+    m_name = TopicStore::subscribe(topic.toStdString() + "/.name", shared_from_this(), NT_STRING, "Name");
+    m_running = TopicStore::subscribe(topic.toStdString() + "/running", shared_from_this(), NT_BOOLEAN, "Running", true);
 }
 
 void CommandWidget::setValue(const nt::Value &value, QString label, bool force) {
@@ -45,7 +45,7 @@ void CommandWidget::setValue(const nt::Value &value, QString label, bool force) 
         QMapIterator iter(map);
         while (iter.hasNext()) {
             iter.next();
-            TopicStore::updateTopic(m_topic.toStdString() + iter.key(), this, iter.value());
+            TopicStore::updateTopic(m_topic.toStdString() + iter.key(), shared_from_this(), iter.value());
         }
 
         return;
