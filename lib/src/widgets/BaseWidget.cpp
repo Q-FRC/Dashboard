@@ -143,8 +143,8 @@ QMenu *BaseWidget::constructContextMenu(WidgetData data) {
 void BaseWidget::setValue(const nt::Value &value, QString label, bool force) {}
 
 void BaseWidget::forceUpdate() {
-    if (m_sendable) return;
-    setValue(nt::Value{}, "", true);
+    if (m_sendable) return setValue(nt::Value{}, "", true);
+    TopicStore::updateTopic(m_topic.toStdString(), this, "");
 }
 
 void BaseWidget::paintEvent(QPaintEvent *event) {
