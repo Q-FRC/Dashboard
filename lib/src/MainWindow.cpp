@@ -160,6 +160,14 @@ void MainWindow::forceUpdateTab(int idx) {
     m_lastIdx = idx;
 }
 
+void MainWindow::forceUpdateAllTabs() {
+    for (TabWidget *tab : m_tabs) {
+        for (BaseWidget *widget : tab->widgets()) {
+            widget->forceUpdate();
+        }
+    }
+}
+
 void MainWindow::moveTab(int from, int to) {
     m_tabs.move(from, to);
 }

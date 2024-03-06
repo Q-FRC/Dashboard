@@ -1,5 +1,6 @@
 #include "widgets/StringChooserWidget.h"
 #include "Globals.h"
+#include "qtimer.h"
 #include "stores/TopicStore.h"
 
 #include <QApplication>
@@ -11,9 +12,7 @@ StringChooserWidget::StringChooserWidget(const QString &topic, const QString &de
     m_chooser = new QComboBox(this);
     m_layout->addWidget(m_chooser, 1, 0);
 
-    connect(m_chooser, &QComboBox::currentTextChanged, this, [this](const QString &text) {
-        if (m_selected) m_selected->SetString(text.toStdString());
-    });
+    connect(m_chooser, &QComboBox::currentTextChanged, this, &StringChooserWidget::updateSelected);
 
     m_layout->setColumnStretch(0, -1);
     setReady(true);
@@ -43,7 +42,7 @@ void StringChooserWidget::setTopic(const QString &topic) {
 void StringChooserWidget::setValue(const nt::Value &value, QString label, bool force) {
     if (force) {
         QMap<std::string, QString> map{};
-        map.insert("/active", "Active");
+        // map.insert("/active", "Active");
         map.insert("/options", "Choices");
 
         QMapIterator iter(map);
@@ -52,6 +51,8 @@ void StringChooserWidget::setValue(const nt::Value &value, QString label, bool f
             TopicStore::updateTopic(m_topic.toStdString() + iter.key(), this, iter.value());
         }
 
+        updateSelected(m_chooser->currentText());
+
         return;
     }
 
@@ -59,20 +60,7 @@ void StringChooserWidget::setValue(const nt::Value &value, QString label, bool f
         QString activeValue = m_chooser->currentText();
         std::string activeValueStd = activeValue.toStdString();
 
-        if (m_active->GetString(activeValueStd) != activeValueStd) {
-            if (m_flashCounter == 5) {
-                setStyleSheet("background-color: red;");
-            }
-
-            if (m_flashCounter == 10) {
-                setStyleSheet("BaseWidget { background-color: " + qApp->palette().color(QPalette::ColorRole::Base).darker(150).name() + "; border: 1px solid white; color: white; }");
-                m_flashCounter = -1;
-            }
-
-            ++m_flashCounter;
-        } else {
-            setStyleSheet("BaseWidget { background-color: " + qApp->palette().color(QPalette::ColorRole::Base).darker(150).name() + "; border: 1px solid white; color: white; }");
-        }
+        m_chooser->setCurrentText(QString::fromStdString(m_active->GetString(activeValueStd)));
     }
 
     // this is an interesting way to do things
@@ -100,4 +88,33 @@ void StringChooserWidget::setValue(const nt::Value &value, QString label, bool f
             m_chooser->setCurrentText(m_value);
         }
     }
+}
+
+void StringChooserWidget::updateSelected(const QString &text) {
+    if (m_selected) m_selected->SetString(text.toStdString());
+
+    std::string activeValueStd = m_chooser->currentText().toStdString();
+
+    QTimer *timer = new QTimer;
+    timer->callOnTimeout([this, timer, activeValueStd] {
+        if (m_active->GetString(activeValueStd) != activeValueStd) {
+            if (m_flashCounter == 0) {
+                setStyleSheet("BaseWidget { background-color: red; }");
+            }
+
+            if (m_flashCounter == 5) {
+                setStyleSheet("BaseWidget { background-color: " + qApp->palette().color(QPalette::ColorRole::Base).darker(150).name() + "; border: 1px solid white; color: white; }");
+                m_flashCounter = -1;
+            }
+
+            ++m_flashCounter;
+        } else {
+            setStyleSheet("BaseWidget { background-color: " + qApp->palette().color(QPalette::ColorRole::Base).darker(150).name() + "; border: 1px solid white; color: white; }");
+
+            timer->deleteLater();
+            m_flashCounter = 0;
+        }
+    });
+
+    timer->start(100);
 }

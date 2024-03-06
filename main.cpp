@@ -68,6 +68,10 @@ int main(int argc, char **argv) {
                          QString(connected ? "" : "Not ") + "Connected")
                 );
         });
+
+        if (connected) QMetaObject::invokeMethod(window, [window] {
+                QTimer::singleShot(1000, window, &MainWindow::forceUpdateAllTabs);
+            });
     });
 
     Globals::inst.StartClient4(BuildConfig.APP_NAME.toStdString());

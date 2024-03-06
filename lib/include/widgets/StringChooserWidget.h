@@ -35,6 +35,9 @@ public:
     inline static TopicTypes TopicType = TopicTypes::SendableChooser;
     inline static QString SendableName = "String Chooser";
     inline static QString DisplayName = "Sendable Chooser";
+
+public slots:
+    void updateSelected(const QString &text);
 };
 
 #endif // STRINGCHOOSERWIDGET_H
