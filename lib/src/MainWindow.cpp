@@ -160,11 +160,9 @@ void MainWindow::forceUpdateTab(int idx) {
     m_lastIdx = idx;
 }
 
-void MainWindow::forceUpdateAllTabs() {
+void MainWindow::reconnect() {
     for (TabWidget *tab : m_tabs) {
-        for (BaseWidget *widget : tab->widgets()) {
-            widget->forceUpdate();
-        }
+        tab->reconnect();
     }
 }
 

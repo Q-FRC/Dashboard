@@ -24,12 +24,16 @@ protected:
     QComboBox *m_chooser;
 
     qsizetype m_flashCounter = 0;
+
+    bool m_reconnect = false;
+    QString m_lastSelected = "";
 public:
     StringChooserWidget(const QString &topic = "", const QString &defaultValue = "", const QString &title = "");
     ~StringChooserWidget();
 
     void setTopic(const QString &topic) override;
     void setValue(const nt::Value &value, QString label = "", bool force = false) override;
+    void reconnect() override;
 
     inline static WidgetTypes WidgetType = WidgetTypes::SendableChooser;
     inline static TopicTypes TopicType = TopicTypes::SendableChooser;
@@ -37,7 +41,7 @@ public:
     inline static QString DisplayName = "Sendable Chooser";
 
 public slots:
-    void updateSelected(const QString &text);
+    void updateSelected(const QString text);
 };
 
 #endif // STRINGCHOOSERWIDGET_H

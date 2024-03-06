@@ -51,32 +51,27 @@ void StringChooserWidget::setValue(const nt::Value &value, QString label, bool f
             TopicStore::updateTopic(m_topic.toStdString() + iter.key(), this, iter.value());
         }
 
-        updateSelected(m_chooser->currentText());
-
         return;
     }
 
-    if (label == "Active") {
-        QString activeValue = m_chooser->currentText();
-        std::string activeValueStd = activeValue.toStdString();
+    // only update active if we're not reconnecting
+    // to send the current choice to NT.
+    if (m_reconnect) m_reconnect = false;
 
-        m_chooser->setCurrentText(QString::fromStdString(m_active->GetString(activeValueStd)));
-    }
+    else {
+        if (label == "Active") {
+            QString activeValue = m_chooser->currentText();
+            std::string activeValueStd = activeValue.toStdString();
 
-    // this is an interesting way to do things
-    if (label == "Choices") {
-        std::vector<std::string> choices = m_choices->GetStringArray({});
-
-        std::vector<std::string> currentChoices{};
-
-        for (int i = 0; i < m_chooser->count(); ++i) {
-            currentChoices.push_back(m_chooser->itemText(i).toStdString());
+            // TODO: either fix or remove
+            qDebug() << "bruh";
+            m_chooser->setCurrentText(QString::fromStdString(std::string{value.GetString()}));
         }
 
-        std::sort(choices.begin(), choices.end());
-        std::sort(currentChoices.begin(), currentChoices.end());
+        // this is an interesting way to do things
+        else if (label == "Choices") {
+            std::span<const std::string> choices = value.GetStringArray();
 
-        if (choices != currentChoices) {
             m_chooser->clear();
 
             QStringList qchoices{};
@@ -90,20 +85,24 @@ void StringChooserWidget::setValue(const nt::Value &value, QString label, bool f
     }
 }
 
-void StringChooserWidget::updateSelected(const QString &text) {
+void StringChooserWidget::updateSelected(const QString text) {
     if (m_selected) m_selected->SetString(text.toStdString());
 
-    std::string activeValueStd = m_chooser->currentText().toStdString();
+    m_lastSelected = text;
 
     QTimer *timer = new QTimer;
-    timer->callOnTimeout([this, timer, activeValueStd] {
-        if (m_active->GetString(activeValueStd) != activeValueStd) {
+    timer->callOnTimeout([this, timer] {
+        qDebug() << m_active->GetString(m_lastSelected.toStdString()) << m_lastSelected.toStdString();
+        if (m_active->GetString(m_lastSelected.toStdString()) != m_lastSelected.toStdString()) {
             if (m_flashCounter == 0) {
                 setStyleSheet("BaseWidget { background-color: red; }");
             }
 
             if (m_flashCounter == 5) {
                 setStyleSheet("BaseWidget { background-color: " + qApp->palette().color(QPalette::ColorRole::Base).darker(150).name() + "; border: 1px solid white; color: white; }");
+            }
+
+            if (m_flashCounter == 10) {
                 m_flashCounter = -1;
             }
 
@@ -111,10 +110,16 @@ void StringChooserWidget::updateSelected(const QString &text) {
         } else {
             setStyleSheet("BaseWidget { background-color: " + qApp->palette().color(QPalette::ColorRole::Base).darker(150).name() + "; border: 1px solid white; color: white; }");
 
+            timer->stop();
             timer->deleteLater();
             m_flashCounter = 0;
         }
     });
 
     timer->start(100);
+}
+
+void StringChooserWidget::reconnect() {
+    m_reconnect = true;
+    updateSelected(m_lastSelected);
 }

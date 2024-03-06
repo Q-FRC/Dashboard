@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
         });
 
         if (connected) QMetaObject::invokeMethod(window, [window] {
-                QTimer::singleShot(1000, window, &MainWindow::forceUpdateAllTabs);
+                QTimer::singleShot(1000, window, &MainWindow::reconnect);
             });
     });
 
