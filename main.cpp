@@ -67,11 +67,9 @@ int main(int argc, char **argv) {
                          QString::fromStdString(Globals::server.server),
                          QString(connected ? "" : "Not ") + "Connected")
                 );
-        });
 
-        if (connected) QMetaObject::invokeMethod(window, [window] {
-                QTimer::singleShot(1000, window, &MainWindow::reconnect);
-            });
+            if (connected) window->reconnect();
+        });
     });
 
     Globals::inst.StartClient4(BuildConfig.APP_NAME.toStdString());

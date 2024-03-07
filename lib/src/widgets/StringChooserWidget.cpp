@@ -63,8 +63,6 @@ void StringChooserWidget::setValue(const nt::Value &value, QString label, bool f
             QString activeValue = m_chooser->currentText();
             std::string activeValueStd = activeValue.toStdString();
 
-            // TODO: either fix or remove
-            qDebug() << "bruh";
             m_chooser->setCurrentText(QString::fromStdString(std::string{value.GetString()}));
         }
 
@@ -92,7 +90,6 @@ void StringChooserWidget::updateSelected(const QString text) {
 
     QTimer *timer = new QTimer;
     timer->callOnTimeout([this, timer] {
-        qDebug() << m_active->GetString(m_lastSelected.toStdString()) << m_lastSelected.toStdString();
         if (m_active->GetString(m_lastSelected.toStdString()) != m_lastSelected.toStdString()) {
             if (m_flashCounter == 0) {
                 setStyleSheet("BaseWidget { background-color: red; }");
@@ -120,6 +117,10 @@ void StringChooserWidget::updateSelected(const QString text) {
 }
 
 void StringChooserWidget::reconnect() {
+    if (m_chooser->currentText().isEmpty()) {
+        return forceUpdate();
+    }
+
     m_reconnect = true;
     updateSelected(m_lastSelected);
 }
