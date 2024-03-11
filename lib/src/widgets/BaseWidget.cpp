@@ -147,7 +147,9 @@ void BaseWidget::forceUpdate() {
     TopicStore::updateTopic(m_topic.toStdString(), this, "");
 }
 
-void BaseWidget::reconnect() {}
+void BaseWidget::setConnected(bool connected) {
+    m_connected = connected;
+}
 
 void BaseWidget::paintEvent(QPaintEvent *event) {
     QStyleOption opt;

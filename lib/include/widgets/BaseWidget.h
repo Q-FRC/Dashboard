@@ -37,6 +37,7 @@ protected:
     ResizeDirection m_resize = NONE;
 
     bool m_sendable = false;
+    bool m_connected = true;
 
     nt::NetworkTableEntry *m_entry;
 public:
@@ -62,7 +63,7 @@ public:
 
     virtual void setValue(const nt::Value &value, QString label = "", bool force = false);
     void forceUpdate();
-    virtual void reconnect();
+    virtual void setConnected(bool connected = true);
 
     void paintEvent(QPaintEvent *event);
 
