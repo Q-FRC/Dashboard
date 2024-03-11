@@ -25,6 +25,7 @@ class BaseWidget : public QFrame
     Q_OBJECT
 
     Q_PROPERTY(QString title READ title WRITE setTitle)
+    Q_PROPERTY(QFont titleFont READ titleFont WRITE setTitleFont)
 protected:
     WidgetTypes m_type;
     QGridLayout *m_layout;
@@ -62,7 +63,7 @@ public:
     virtual QMenu *constructContextMenu(WidgetData data);
 
     virtual void setValue(const nt::Value &value, QString label = "", bool force = false);
-    void forceUpdate();
+    virtual void forceUpdate();
     virtual void setConnected(bool connected = true);
 
     void paintEvent(QPaintEvent *event);

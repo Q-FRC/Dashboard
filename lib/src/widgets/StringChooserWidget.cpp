@@ -100,6 +100,7 @@ void StringChooserWidget::setValue(const nt::Value &value, QString label, bool f
 }
 
 void StringChooserWidget::updateSelected(const QString text) {
+    if (text.isEmpty() || text.isNull()) return;
     if (m_selected) m_selected->SetString(text.toStdString());
 
     m_lastSelected = text;

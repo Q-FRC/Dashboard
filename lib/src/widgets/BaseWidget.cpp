@@ -324,7 +324,10 @@ QVariant BaseWidget::readFileProperty(const QMetaProperty &property, const QJson
 }
 
 QVariant BaseWidget::readFontProperty(const QMetaProperty &property, const QJsonValue &value) {
-    return QVariant::fromValue<QFont>(QFont(value.toString(property.read(this).value<QFont>().toString())));
+    QFont font;
+    font.fromString(value.toString(property.read(this).value<QString>()));
+
+    return QVariant::fromValue<QFont>(font);
 }
 
 QVariant BaseWidget::readStringProperty(const QMetaProperty &property, const QJsonValue &value) {
