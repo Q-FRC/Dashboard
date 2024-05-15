@@ -69,16 +69,6 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
 
-    - name: "golly"
-      if: runner.os == 'Windows'
-      run: |
-        echo 1
-        dir "C:\Program Files (x86)"
-        echo 2
-        dir "C:\Program Files (x86)\Microsoft Visual Studio"
-        echo 3
-        dir "C:\Program Files (x86)\Microsoft Visual Studio\Shared"
-
     - uses: repolevedavaj/install-nsis@v1.0.1
       if: runner.os == 'Windows'
       with:
