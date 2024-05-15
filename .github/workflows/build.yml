@@ -69,6 +69,10 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
 
+    - name: "golly"
+      if: runner.os == 'Windows'
+      run:
+        dir C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC
     - uses: repolevedavaj/install-nsis@v1.0.1
       if: runner.os == 'Windows'
       with:
