@@ -71,7 +71,21 @@ jobs:
 
     - name: "golly"
       if: runner.os == 'Windows'
+      shell: cmd
       run:
+        echo "1"
+        dir "C:\Program Files (x86)"
+        echo "2"
+        dir "C:\Program Files (x86)\Microsoft Visual Studio"
+        echo "3"
+        dir "C:\Program Files (x86)\Microsoft Visual Studio\2019"
+        echo "4"
+        dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community"
+        echo "5"
+        dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC"
+        echo "6"
+        dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist"
+        echo "7"
         dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC"
 
     - uses: repolevedavaj/install-nsis@v1.0.1
