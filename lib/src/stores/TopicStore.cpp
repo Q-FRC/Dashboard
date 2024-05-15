@@ -88,22 +88,6 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *su
                 return;
             }
 
-            if (event.Is(nt::EventFlags::kUnpublish)) {
-                QMetaObject::invokeMethod(subscriber, [subscriber] {
-                    subscriber->setConnected(false);
-                });
-
-                return;
-            }
-
-            if (event.Is(nt::EventFlags::kPublish)) {
-                QMetaObject::invokeMethod(subscriber, [subscriber] {
-                    subscriber->setConnected(true);
-                });
-
-                return;
-            }
-
             nt::Value value;
             if (!event.Is(nt::EventFlags::kValueAll)) {
                 value = entry->GetValue();
