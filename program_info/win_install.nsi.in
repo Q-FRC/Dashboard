@@ -47,9 +47,9 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductVersion" "@Dashboard_GIT_TAG@"
 
 Section "Visual Studio Runtime"
   SetOutPath "$INSTDIR"
-  File "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\vcredist_x86.exe"
-  ExecWait "$INSTDIR\vcredist_x86.exe"
-  Delete "$INSTDIR\vcredist_x86.exe"
+  File "C:\Program Files (x86)\Microsoft Visual Studio\*\Community\VC\Redist\MSVC\*\vcredist_x64.exe"
+  ExecWait "$INSTDIR\vcredist_x64.exe"
+  Delete "$INSTDIR\vcredist_x64.exe"
 SectionEnd
 
 ;--------------------------------
