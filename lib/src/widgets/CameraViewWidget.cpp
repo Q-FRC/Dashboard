@@ -40,7 +40,6 @@ void CameraViewWidget::forceUpdate() {
 }
 
 void CameraViewWidget::setConnected(bool connected) {
-    qDebug() << connected;
     if (connected) setUrl(m_url);
     else m_player->stop();
 }

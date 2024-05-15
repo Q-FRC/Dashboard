@@ -126,7 +126,7 @@ nt::NetworkTableEntry *TopicStore::subscribe(std::string ntTopic, BaseWidget *su
             }
         };
 
-        NT_Listener handle = Globals::inst.AddListener(Globals::inst.GetEntry(ntTopic), nt::EventFlags::kValueAll | nt::EventFlags::kPublish | nt::EventFlags::kUnpublish, updateWidget);
+        NT_Listener handle = Globals::inst.AddListener(Globals::inst.GetEntry(ntTopic), nt::EventFlags::kValueAll, updateWidget);
 
         listener.listenerHandle = handle;
         listener.callback = updateWidget;
