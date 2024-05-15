@@ -77,17 +77,7 @@ jobs:
         echo 2
         dir "C:\Program Files (x86)\Microsoft Visual Studio"
         echo 3
-        dir "C:\Program Files (x86)\Microsoft Visual Studio\*"
-        echo 4
-        dir "C:\Program Files (x86)\Microsoft Visual Studio\*\Community"
-        echo 5
-        dir "C:\Program Files (x86)\Microsoft Visual Studio\*\Community\VC"
-        echo 6
-        dir "C:\Program Files (x86)\Microsoft Visual Studio\*\Community\VC\Redist"
-        echo 7
-        dir "C:\Program Files (x86)\Microsoft Visual Studio\*\Community\VC\Redist\MSVC"
-        echo 8
-        dir "C:\Program Files (x86)\Microsoft Visual Studio\*\Community\VC\Redist\MSVC\*"
+        dir "C:\Program Files (x86)\Microsoft Visual Studio\Shared"
 
     - uses: repolevedavaj/install-nsis@v1.0.1
       if: runner.os == 'Windows'
