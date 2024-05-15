@@ -46,6 +46,7 @@ jobs:
 
           tar xf QFRCDashboard-macOS*/QFRCDashboard.tar.gz
           mv QFRCDashboard.app QFRCDashboard-macOS-${{ env.VERSION }}.app
+          mv QFRCDashboard-macOS*/QFRCDashboard.app QFRCDashboard-macOS-${{ env.VERSION }}.app
 
           zip -r QFRCDashboard-Windows-Portable-${{ env.VERSION }}.zip QFRCDashboard-Windows-Portable*/* QFRCDashboard-Windows-Portable-${{ env.VERSION }}.zip
 
