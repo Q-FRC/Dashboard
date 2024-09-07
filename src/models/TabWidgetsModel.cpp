@@ -1,6 +1,5 @@
 #include "models/TabWidgetsModel.h"
 #include <QRect>
-#include <random>
 
 TabWidgetsModel::TabWidgetsModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -56,15 +55,12 @@ Qt::ItemFlags TabWidgetsModel::flags(const QModelIndex &index) const
 
 void TabWidgetsModel::add(QString title)
 {
-    qDebug() << "CPP: add";
     static char i = 0;
     Widget w;
     w.title = title;
     w.row = i / 3;
     w.col = i % 3;
     ++i;
-
-    qDebug() << "CPP:" << w.row << w.col;
 
     w.rowSpan = 1;
     w.colSpan = 1;

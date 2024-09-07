@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 6.6
+import QtQuick.Dialogs
 
 import QFRCDashboard
 
@@ -9,89 +10,122 @@ Rectangle {
     height: Constants.height
     color: Constants.bg
 
-    function add(title) {
-        twm.add(title)
-    }
+    Dialog {
+        id: tabNameDialog
 
-    TabWidgetsModel {
-        id: twm
+        anchors.centerIn: parent
 
-        rows: 3
-        cols: 3
-    }
-
-    // GRIDLAYOUT
-    // WITH REPEATER
-    GridLayout {
-        id: grid
-        rows: 4
-        columns: 4
-
-        anchors.fill: parent
-
-        columnSpacing: 0
-        rowSpacing: 0
-
-        function colWidth() {
-            return grid.width / grid.columns
+        function openUp() {
+            open()
+            tabName.focus = true
+            tabName.text = ""
         }
 
-        function rowWidth() {
-            return grid.height / grid.rows;
-        }
+        Column {
+            anchors.fill: parent
+            spacing: 5
 
-        function prefWidth(item){
-            return colWidth() * item.Layout.columnSpan
-        }
+            Text {
+                text: "Input new tab name:"
+                font.pixelSize: 20
+                color: "white"
+            }
 
-        function prefHeight(item){
-            return rowWidth() * item.Layout.rowSpan
-        }
+            TextField {
+                id: tabName
+                font.pixelSize: 20
+                placeholderText: "New Tab"
+            }
 
-        Repeater {
-            model: twm
+            DialogButtonBox {
+                Shortcut {
+                    context: Qt.WidgetWithChildrenShortcut
+                    sequences: [Qt.Key_Escape]
 
-            delegate: TextWidget {
-                Layout.row: model.row
-                Layout.column: model.column
-                Layout.rowSpan: model.rowSpan
-                Layout.columnSpan: model.colSpan
+                    onActivated: tabNameDialog.reject()
+                }
 
-                Layout.margins: 8
+                Button {
+                    text: qsTr("Ok")
+                    DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+                }
+                Button {
+                    text: qsTr("Cancel")
+                    DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+                }
 
-                Layout.preferredWidth: grid.prefWidth(this)
-                Layout.preferredHeight: grid.prefHeight(this)
+                width: tabName.width
+                font.pixelSize: 15
 
-                z: 1
+                onAccepted: tabNameDialog.accept()
+                onRejected: tabNameDialog.reject()
             }
         }
+    }
+
+    TabListModel {
+        id: tlm
+    }
+
+    function addTab() {
+        tabNameDialog.accepted.disconnect(addTab)
+        tlm.add(tabName.text);
+        swipe.setCurrentIndex(swipe.count - 1)
+    }
+
+    function newTab() {
+        tabNameDialog.accepted.connect(addTab)
+        tabNameDialog.openUp()
+    }
+
+    function currentTab() {
+        return swipe.currentItem
+    }
+
+    SwipeView {
+        id: swipe
+
+        z: 0
+
+        anchors {
+            top: tabs.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+
+        currentIndex: tabs.currentIndex
+        Repeater {
+            id: swRep
+            model: tlm
+
+            Tab {
+                width: swipe.width
+                height: swipe.height
+            }
+        }
+    }
+
+    TabBar {
+        id: tabs
+
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+        }
+
+        position: TabBar.Footer
+        currentIndex: swipe.currentIndex
 
         Repeater {
-            model: grid.rows * grid.columns
+            id: tabRep
+            model: tlm
 
-            delegate: Rectangle {
-                required property int modelData
-
-                color: Constants.bg
-                z: 0
-                border {
-                    color: "gray"
-                    width: 2
-                }
-
-                Layout.row: modelData % grid.rows
-                Layout.column: modelData / grid.columns
-
-                Layout.preferredWidth: grid.prefWidth(this)
-                Layout.preferredHeight: grid.prefHeight(this)
-
-                Component.onCompleted: {
-                    Layout.minimumWidth = grid.prefWidth(this)
-                    Layout.minimumHeight = grid.prefHeight(this)
-
-                    console.log(width + " " + height)
-                    console.log(Layout.row + " " + Layout.column)
-                }
+            TabButton {
+                text: model.title
+                font.pixelSize: 18
+                width: Math.max(100, tabs.width / 6)
             }
         }
     }

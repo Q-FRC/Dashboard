@@ -13,10 +13,18 @@ ApplicationWindow {
         Menu {
             title: qsTr("&Widgets")
             Action {
-                id: newWidget
                 text: qsTr("&New Widget")
-                onTriggered: screen.add("Test")
+                onTriggered: screen.currentTab().add("Test")
                 shortcut: "Ctrl+N"
+            }
+        }
+
+        Menu {
+            title: qsTr("&Tab")
+            Action {
+                text: qsTr("&New Tab")
+                onTriggered: screen.newTab()
+                shortcut: "Ctrl+T"
             }
         }
     }

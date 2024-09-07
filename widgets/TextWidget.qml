@@ -11,5 +11,8 @@ Rectangle {
         font.pixelSize: 20
         text: model.title
         color: "#FFFFFF"
+
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
     }
 }
