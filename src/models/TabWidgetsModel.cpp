@@ -38,7 +38,25 @@ QVariant TabWidgetsModel::data(const QModelIndex &index, int role) const
 bool TabWidgetsModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (data(index, role) != value) {
-        // FIXME: Implement me!
+        Widget &w = m_data[index.row()];
+
+        switch (role) {
+        case TITLE:
+            w.title = value.toString();
+            break;
+        case COL:
+            w.col = value.toInt();
+            break;
+        case ROW:
+            w.row = value.toInt();
+            break;
+        case COLSPAN:
+            w.colSpan = value.toInt();
+            break;
+        case ROWSPAN:
+            w.rowSpan = value.toInt();
+            break;
+        }
         emit dataChanged(index, index, {role});
         return true;
     }
@@ -103,11 +121,11 @@ void TabWidgetsModel::setCols(int newCols)
     emit colsChanged();
 }
 
-bool TabWidgetsModel::cellOccupied(int row, int col)
+bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan)
 {
     for (const Widget &w : m_data) {
         QRect dataRect = QRect(w.row, w.col, w.rowSpan, w.colSpan);
-        QRect itemRect = QRect(row, col, 1, 1);
+        QRect itemRect = QRect(row, col, rowSpan, colSpan);
 
         if (dataRect.intersects(itemRect)) {
             return true;
@@ -115,7 +133,9 @@ bool TabWidgetsModel::cellOccupied(int row, int col)
     }
 
     return false;
+
 }
+
 
 QHash<int, QByteArray> TabWidgetsModel::roleNames() const
 {

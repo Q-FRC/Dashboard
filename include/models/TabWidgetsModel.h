@@ -56,7 +56,7 @@ public:
     int cols() const;
     void setCols(int newCols);
 
-    Q_INVOKABLE bool cellOccupied(int row, int col);
+    Q_INVOKABLE bool cellOccupied(int row, int col, int rowSpan = 0, int colSpan = 0);
 
     int unoccupiedCells() const;
     void setUnoccupiedCells(int newUnoccupiedCells);

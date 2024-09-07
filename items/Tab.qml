@@ -68,6 +68,7 @@ Rectangle {
             model: grid.rows * grid.columns
 
             delegate: Rectangle {
+                id: delRect
                 required property int modelData
 
                 color: Constants.bg
@@ -82,6 +83,36 @@ Rectangle {
 
                 Layout.preferredWidth: grid.prefWidth(this)
                 Layout.preferredHeight: grid.prefHeight(this)
+
+                DropArea {
+                    anchors.fill: parent
+                    onEntered: (drag) => {
+                                   if (twm.cellOccupied(parent.Layout.row, parent.Layout.column) &&
+                                       !(parent.Layout.column === drag.source.mcolumn && parent.Layout.row === drag.source.mrow)) {
+                                       drag.source.caught = false;
+                                       parent.border.color = "red"
+                                   } else {
+                                       drag.source.caught = true;
+                                       parent.border.color = "light green"
+                                   }
+                               }
+                    onExited: {
+                        drag.source.caught = false;
+                        parent.border.color = "gray"
+                    }
+                    onDropped: (drag) => {
+                                   drag.source.mrow = parent.Layout.row
+                                   drag.source.mcolumn = parent.Layout.column
+                                   drag.source.Layout.row = parent.Layout.row
+                                   drag.source.Layout.column = parent.Layout.column
+
+                                   drag.accept()
+
+                                   parent.border.color = "gray"
+
+                                   drag.source.anchors.centerIn = delRect
+                               }
+                }
             }
         }
     }
