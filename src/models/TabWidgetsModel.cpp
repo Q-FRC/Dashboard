@@ -28,6 +28,8 @@ QVariant TabWidgetsModel::data(const QModelIndex &index, int role) const
         return w.colSpan;
     case ROWSPAN:
         return w.rowSpan;
+    case TYPE:
+        return w.type;
     default:
         break;
     }
@@ -71,11 +73,12 @@ Qt::ItemFlags TabWidgetsModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-void TabWidgetsModel::add(QString title)
+void TabWidgetsModel::add(QString title, QString type)
 {
     static char i = 0;
     Widget w;
     w.title = title;
+    w.type = type;
     w.row = i / 3;
     w.col = i % 3;
     ++i;
@@ -146,6 +149,7 @@ QHash<int, QByteArray> TabWidgetsModel::roleNames() const
 {
     QHash<int,QByteArray> rez;
     rez[TITLE] = "title";
+    rez[TYPE] = "type";
     rez[COL] = "column";
     rez[ROW] = "row";
     rez[ROWSPAN] = "rowSpan";

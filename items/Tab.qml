@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 6.6
 
+import Qt.labs.qmlmodels
+
 import QFRCDashboard
 
 Rectangle {
@@ -9,8 +11,8 @@ Rectangle {
     height: Constants.height
     color: Constants.bg
 
-    function add(title) {
-        twm.add(title)
+    function add(title, type) {
+        twm.add(title, type)
     }
 
     TabWidgetsModel {
@@ -49,35 +51,37 @@ Rectangle {
         Repeater {
             model: twm
 
-            delegate: TextWidget {
-                Layout.row: model.row
-                Layout.column: model.column
-                Layout.rowSpan: model.rowSpan
-                Layout.columnSpan: model.colSpan
+            delegate: DelegateChooser {
+                id: chooser
+                role: "type"
+                DelegateChoice {
+                    roleValue: "int"
+                    IntWidget {
+                        Layout.row: model.row
+                        Layout.column: model.column
+                        Layout.rowSpan: model.rowSpan
+                        Layout.columnSpan: model.colSpan
 
-                Layout.margins: 8
+                        Layout.margins: 8
 
-                Layout.preferredWidth: grid.prefWidth(this)
-                Layout.preferredHeight: grid.prefHeight(this)
+                        Layout.preferredWidth: grid.prefWidth(this)
+                        Layout.preferredHeight: grid.prefHeight(this)
+                    }
+                }
+                DelegateChoice {
+                    roleValue: "string"
+                    TextWidget {
+                        Layout.row: model.row
+                        Layout.column: model.column
+                        Layout.rowSpan: model.rowSpan
+                        Layout.columnSpan: model.colSpan
 
-                z: 2
+                        Layout.margins: 8
 
-                onResizeBegin: (drag) => {
-                                   drag.source = this
-                                   rep.beginResize(drag)
-                               }
-
-                onResizeEnd: (drag) => {
-                                   drag.source = this
-                                   rep.endResize(drag)
-                               }
-
-                onDragEnd: (drag) => {
-                               let source = Qt.rect(drag.source.mcolumn, drag.source.mrow, drag.source.mcolumnSpan, drag.source.mrowSpan)
-                               rep.intersectionCheck(drag, source)
-                           }
-
-                onCancelDrag: rep.fullCancelDrag()
+                        Layout.preferredWidth: grid.prefWidth(this)
+                        Layout.preferredHeight: grid.prefHeight(this)
+                    }
+                }
             }
         }
 

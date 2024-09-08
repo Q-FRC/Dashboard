@@ -13,9 +13,15 @@ ApplicationWindow {
         Menu {
             title: qsTr("&Widgets")
             Action {
-                text: qsTr("&New Widget")
-                onTriggered: screen.currentTab().add("Test")
-                shortcut: "Ctrl+N"
+                text: qsTr("New &String Widget")
+                onTriggered: screen.currentTab().add("Test", "string")
+                shortcut: "Ctrl+S"
+            }
+
+            Action {
+                text: qsTr("New &Integer Widget")
+                onTriggered: screen.currentTab().add("Test", "int")
+                shortcut: "Ctrl+I"
             }
         }
 

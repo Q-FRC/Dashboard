@@ -2,10 +2,10 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 BaseWidget {
-    TextField {
-        id: textField
+    SpinBox {
+        id: spin
 
-        text: "yoo"
+        value: 5
 
         anchors {
             verticalCenter: parent.verticalCenter
