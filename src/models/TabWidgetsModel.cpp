@@ -121,13 +121,13 @@ void TabWidgetsModel::setCols(int newCols)
     emit colsChanged();
 }
 
-bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan)
+bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan, QRectF ignore)
 {
     for (const Widget &w : m_data) {
-        QRect dataRect = QRect(w.row, w.col, w.rowSpan, w.colSpan);
-        QRect itemRect = QRect(row, col, rowSpan, colSpan);
+        QRect dataRect = QRect(w.col, w.row, w.colSpan, w.rowSpan);
+        QRect itemRect = QRect(col, row, colSpan, rowSpan);
 
-        if (dataRect.intersects(itemRect)) {
+        if (dataRect.intersects(itemRect) && itemRect != ignore) {
             return true;
         }
     }

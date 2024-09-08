@@ -3,6 +3,7 @@
 
 #include <QAbstractItemModel>
 #include <QQmlEngine>
+#include <QRectF>
 
 typedef struct {
     QString title;
@@ -56,7 +57,7 @@ public:
     int cols() const;
     void setCols(int newCols);
 
-    Q_INVOKABLE bool cellOccupied(int row, int col, int rowSpan = 0, int colSpan = 0);
+    Q_INVOKABLE bool cellOccupied(int row, int col, int rowSpan = 1, int colSpan = 1, QRectF ignore = QRectF(-1, -1, -1, -1));
 
     int unoccupiedCells() const;
     void setUnoccupiedCells(int newUnoccupiedCells);

@@ -61,11 +61,31 @@ Rectangle {
                 Layout.preferredHeight: grid.prefHeight(this)
 
                 z: 2
+
+                onResizeBegin: (drag) => {
+                                   drag.source = this
+                                   rep.beginDrag(drag)
+                               }
             }
         }
 
         Repeater {
+            id: rep
             model: grid.rows * grid.columns
+
+            signal dragBegin(var drag, var valid)
+
+            function beginDrag(drag) {
+                let valid = true
+                for (var x in validResize) {
+                    if (x === false) valid = false
+                }
+
+                dragBegin(drag, valid)
+                drag.source.caught = valid
+            }
+
+            property list<bool> validResize
 
             delegate: Rectangle {
                 id: delRect
@@ -84,21 +104,75 @@ Rectangle {
                 Layout.preferredWidth: grid.prefWidth(this)
                 Layout.preferredHeight: grid.prefHeight(this)
 
+                function valueInRange(value, min, max) {
+                    return (value >= min) && (value <= max)
+                }
+
+                function intersects(A, B) {
+                    let xOverlap = valueInRange(A.x, B.x, B.x + B.width) ||
+                        valueInRange(B.x, A.x, A.x + A.width);
+
+                    let yOverlap = valueInRange(A.y, B.y, B.y + B.height) ||
+                        valueInRange(B.y, A.y, A.y + A.height);
+
+                    return xOverlap && yOverlap;
+                }
+
+                function rectDrag(drag) {
+                    let sourceRect = Qt.rect(drag.source.x, drag.source.y, drag.source.width, drag.source.height)
+                    let myRect = Qt.rect(x, y, width, height)
+
+                    if (intersects(sourceRect, myRect)) {
+                        drop.dragEnter(drag)
+                    } else {
+                        border.color = "gray"
+                        border.width = 2
+                    }
+                }
+
+                Component.onCompleted: {
+                    rep.dragBegin.connect(rectDrag)
+                }
+
                 DropArea {
+                    id: drop
                     anchors.fill: parent
+
+                    function validSpot(drag) {
+                        return twm.cellOccupied(parent.Layout.row, parent.Layout.column, parent.Layout.rowSpan, parent.Layout.columnSpan) &&
+                                !(parent.Layout.column === drag.source.mcolumn && parent.Layout.row === drag.source.mrow)
+                    }
+
+                    function validResize(drag) {
+                        return twm.cellOccupied(parent.Layout.row, parent.Layout.column, parent.Layout.rowSpan, parent.Layout.columnSpan) &&
+                                !(parent.Layout.columnSpan === drag.source.mcolumnSpan && parent.Layout.rowSpan === drag.source.mrowSpan)
+                    }
+
+                    function dragEnter(drag, valid) {
+                        parent.border.width = 5
+
+                        rep.validResize[modelData] = validResize(drag)
+                        parent.border.color = valid ? "light green" : "red"
+                    }
+
                     onEntered: (drag) => {
-                                   if (twm.cellOccupied(parent.Layout.row, parent.Layout.column) &&
-                                       !(parent.Layout.column === drag.source.mcolumn && parent.Layout.row === drag.source.mrow)) {
-                                       drag.source.caught = false;
-                                       parent.border.color = "red"
-                                   } else {
-                                       drag.source.caught = true;
-                                       parent.border.color = "light green"
+                                   {
+                                       parent.border.width = 5
+
+                                       if (validSpot(drag)) {
+                                           drag.source.caught = false
+                                           parent.border.color = "red"
+                                       } else {
+                                           drag.source.caught = true
+                                           parent.border.color = "light green"
+                                       }
                                    }
                                }
+
                     onExited: {
                         drag.source.caught = false;
                         parent.border.color = "gray"
+                        parent.border.width = 2
                     }
                     onDropped: (drag) => {
                                    drag.source.mrow = parent.Layout.row
@@ -109,8 +183,7 @@ Rectangle {
                                    drag.accept()
 
                                    parent.border.color = "gray"
-
-                                   drag.source.anchors.centerIn = delRect
+                                   parent.border.width = 2
                                }
                 }
             }
