@@ -13,9 +13,12 @@ Rectangle {
     Drag.active: dragArea.drag.active
 
     signal resizeBegin(var drag)
+    signal resizeEnd(var drag)
+    signal dragEnd(var drag)
+    signal cancelDrag()
 
     property point beginDrag
-    property point beginResize
+    property rect beginResize
 
     property bool caught: false
 
@@ -56,6 +59,8 @@ Rectangle {
                        rect.beginDrag = Qt.point(parent.x, parent.y);
                        rect.Drag.hotSpot = Qt.point(mouse.x, mouse.y)
                        parent.z = 3
+
+                       resizeBegin(rect.Drag)
                    }
 
         onReleased: {
@@ -65,8 +70,13 @@ Rectangle {
                 backAnimY.from = rect.y;
                 backAnimY.to = beginDrag.y;
                 backAnim.start()
+
+                cancelDrag()
             } else {
                 rect.Drag.drop()
+
+                // dragEnd(rect.Drag)
+
                 parent.z = 2
             }
         }
@@ -85,18 +95,22 @@ Rectangle {
 
     ParallelAnimation {
         id: resizeBackAnim
-        SmoothedAnimation { id: resizeBackAnimX; target: rect; property: "width"; duration: 250 }
-        SmoothedAnimation { id: resizeBackAnimY; target: rect; property: "height"; duration: 250 }
+        SmoothedAnimation { id: resizeBackAnimX; target: rect; property: "x"; duration: 250 }
+        SmoothedAnimation { id: resizeBackAnimY; target: rect; property: "y"; duration: 250 }
+        SmoothedAnimation { id: resizeBackAnimWidth; target: rect; property: "width"; duration: 250 }
+        SmoothedAnimation { id: resizeBackAnimHeight; target: rect; property: "height"; duration: 250 }
 
         onFinished: {
-            width = rect.beginResize.x
-            height = rect.beginResize.y
+            width = rect.beginResize.width
+            height = rect.beginResize.height
+            x = rect.beginResize.x
+            y = rect.beginResize.y
         }
     }
 
     function resetResize(mouse) {
         rect.beginDrag = Qt.point(rect.x, rect.y)
-        rect.beginResize = Qt.point(rect.width, rect.height);
+        rect.beginResize = Qt.rect(rect.x, rect.y, rect.width, rect.height);
         rect.Drag.hotSpot = Qt.point(mouse.x, mouse.y)
         rect.z = 3
 
@@ -105,13 +119,22 @@ Rectangle {
 
     function releaseResize() {
         if (!rect.caught) {
-            resizeBackAnimX.from = rect.width;
+            resizeBackAnimX.from = rect.x;
             resizeBackAnimX.to = beginResize.x;
-            resizeBackAnimY.from = rect.height;
+            resizeBackAnimY.from = rect.y;
             resizeBackAnimY.to = beginResize.y;
+            resizeBackAnimWidth.from = rect.width;
+            resizeBackAnimWidth.to = beginResize.width;
+            resizeBackAnimHeight.from = rect.height;
+            resizeBackAnimHeight.to = beginResize.height;
             resizeBackAnim.start()
+
+            cancelDrag()
         } else {
             rect.Drag.drop()
+
+            resizeEnd(rect.Drag)
+
             rect.z = 2
         }
     }

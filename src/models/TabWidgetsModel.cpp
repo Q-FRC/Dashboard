@@ -123,11 +123,16 @@ void TabWidgetsModel::setCols(int newCols)
 
 bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan, QRectF ignore)
 {
+    QRect itemRect = QRect(col, row, colSpan, rowSpan);
+
     for (const Widget &w : m_data) {
         QRect dataRect = QRect(w.col, w.row, w.colSpan, w.rowSpan);
-        QRect itemRect = QRect(col, row, colSpan, rowSpan);
 
-        if (dataRect.intersects(itemRect) && itemRect != ignore) {
+        if (dataRect.intersects(ignore.toRect())) {
+            continue;
+        }
+
+        if (dataRect.intersects(itemRect)) {
             return true;
         }
     }

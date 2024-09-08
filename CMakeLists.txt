@@ -32,6 +32,7 @@ qt_add_qml_module(${Dashboard_EXEC_NAME}
     SOURCES include/models/TabListModel.h src/models/TabListModel.cpp
     QML_FILES widgets/ResizeAnchor.qml
     SOURCES widgets/include/DirectionFlags.h
+    QML_FILES items/GridHandler.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
