@@ -69,7 +69,6 @@ Section "@Dashboard_APP_NAME@"
   File /r "imageformats"
   File /r "multimedia"
   File /r "platforms"
-  File /r "styles"
   File /r "tls"
   File /r "qml"
 
