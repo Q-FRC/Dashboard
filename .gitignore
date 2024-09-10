@@ -75,4 +75,4 @@ CMakeLists.txt.user*
 CMakeLists.txt.user
 appdir
 *.AppImage
-build*
+build
