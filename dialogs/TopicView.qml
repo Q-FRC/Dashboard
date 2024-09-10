@@ -10,7 +10,7 @@ Row {
 
     Rectangle {
         id: topicView
-        width: 320
+        width: parent.width - 40
         height: parent.height
         color: "#222222"
         border {

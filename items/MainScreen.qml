@@ -16,24 +16,24 @@ Rectangle {
 
         anchors {
             left: parent.left
-            leftMargin: -320
+            leftMargin: -(parent.width / 4)
             top: parent.top
             bottom: parent.bottom
         }
 
-        width: 360
+        width: (parent.width / 4) + 40
         height: parent.height
 
         SmoothedAnimation { id: menuAnim; target: topicView; property: "anchors.leftMargin"; duration: 500 }
 
         onOpen: {
-            menuAnim.from = -320
+            menuAnim.from = -(parent.width / 4)
             menuAnim.to = 0
             menuAnim.start()
         }
 
         onClose: {
-            menuAnim.to = -320
+            menuAnim.to = -(parent.width / 4)
             menuAnim.from = 0
             menuAnim.start()
         }
