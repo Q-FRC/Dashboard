@@ -16,6 +16,4 @@ typedef struct {
 namespace Globals {
 extern nt::NetworkTableInstance inst;
 extern ServerData server;
-
-extern QStringList ntTopics;
 }

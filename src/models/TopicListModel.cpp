@@ -1,25 +1,12 @@
 #include "TopicListModel.h"
 
 TopicListModel::TopicListModel(QObject *parent)
-    : QAbstractListModel(parent)
-{}
-
-QVariant TopicListModel::headerData(int section, Qt::Orientation orientation, int role) const
+    : QStandardItemModel(parent)
 {
-    if (role != Qt::DisplayRole)
-        return QVariant();
+    QHash<int, QByteArray> rez = QStandardItemModel::roleNames();
+    rez.insert(TLMRoleTypes::NAME, "name");
 
-    switch (section) {
-    case 0:
-        return "Topic";
-    default:
-        return "unknown";
-    }
-}
-
-int TopicListModel::rowCount(const QModelIndex &parent) const
-{
-    return m_data.count();
+    QStandardItemModel::setItemRoleNames(rez);
 }
 
 QVariant TopicListModel::data(const QModelIndex &index, int role) const
@@ -28,11 +15,10 @@ QVariant TopicListModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == TLMRoleTypes::NAME) {
-        return m_data.at(index.row());
-    } else
-        return QVariant();
+        return itemFromIndex(index)->text();
+    }
 
-    return QVariant();
+    return QStandardItemModel::data(index, role);
 }
 
 void TopicListModel::reload()
@@ -42,23 +28,63 @@ void TopicListModel::reload()
 
 void TopicListModel::add(const QString &toAdd)
 {
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_data << toAdd;
-    endInsertRows();
+    if (toAdd.isEmpty()) return;
+
+    QStringList split = toAdd.split('/');
+    if (split.at(0).isEmpty()) split.remove(0);
+
+    QStandardItem *parentItem = invisibleRootItem();
+    qDebug() << split;
+    for (const QString &sub : split) {
+        auto results = findItems(sub, Qt::MatchRecursive | Qt::MatchExactly | Qt::MatchWrap);
+        qDebug() << results << sub;
+        if (results.isEmpty()) {
+            QStandardItem *item = new QStandardItem(sub);
+            parentItem->appendRow(item);
+            parentItem = item;
+        } else {
+            for (QStandardItem *item : results) {
+                if (item->parent() == nullptr || item->parent()->text() == parentItem->text()) {
+                    qDebug() << item->text() << parentItem->text();
+                    parentItem = item;
+                }
+            }
+        }
+    }
 }
 
 void TopicListModel::remove(const QString &toRemove)
 {
-    int idx = m_data.indexOf(toRemove);
-    beginRemoveRows(QModelIndex(), idx, idx);
-    m_data.remove(idx);
-    endRemoveRows();
-}
+    if (toRemove.isEmpty()) return;
 
-QHash<int, QByteArray> TopicListModel::roleNames() const
-{
-    QHash<int, QByteArray> rez;
-    rez.insert(TLMRoleTypes::NAME, "name");
+    QStringList split = toRemove.split('/');
+    if (split.at(0).isEmpty()) split.remove(0);
 
-    return rez;
+    QStandardItem *parentItem = invisibleRootItem();
+    for (const QString &sub : split) {
+        auto results = findItems(sub, Qt::MatchRecursive | Qt::MatchExactly | Qt::MatchWrap);
+
+        if (results.isEmpty()) return;
+        else {
+            for (QStandardItem *item : results) {
+                if (item == nullptr) continue;
+
+                if (item->parent() == nullptr || item->parent() == parentItem) {
+                    if (!item->hasChildren()) {
+                        parentItem->removeRow(item->row());
+                        if (!parentItem->hasChildren()) {
+                            if (parentItem->parent() == nullptr) {
+                                removeRow(parentItem->row());
+                            } else {
+                                parentItem->parent()->removeRow(parentItem->row());
+                            }
+                        }
+                    }
+
+                    parentItem = item;
+
+                }
+            }
+        }
+    }
 }
