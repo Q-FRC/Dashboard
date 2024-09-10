@@ -10,57 +10,37 @@ Rectangle {
     height: Constants.height
     color: Constants.bg
 
-    Dialog {
+    TopicView {
+        id: topicView
+        z: 4
+
+        anchors {
+            left: parent.left
+            leftMargin: -320
+            top: parent.top
+            bottom: parent.bottom
+        }
+
+        width: 360
+        height: parent.height
+
+        SmoothedAnimation { id: menuAnim; target: topicView; property: "anchors.leftMargin"; duration: 500 }
+
+        onOpen: {
+            menuAnim.from = -320
+            menuAnim.to = 0
+            menuAnim.start()
+        }
+
+        onClose: {
+            menuAnim.to = -320
+            menuAnim.from = 0
+            menuAnim.start()
+        }
+    }
+
+    TabNameDialog {
         id: tabNameDialog
-
-        anchors.centerIn: parent
-
-        function openUp() {
-            open()
-            tabName.focus = true
-            tabName.text = ""
-        }
-
-        Column {
-            anchors.fill: parent
-            spacing: 5
-
-            Text {
-                text: "Input new tab name:"
-                font.pixelSize: 20
-                color: "white"
-            }
-
-            TextField {
-                id: tabName
-                font.pixelSize: 20
-                placeholderText: "New Tab"
-            }
-
-            DialogButtonBox {
-                Shortcut {
-                    context: Qt.WidgetWithChildrenShortcut
-                    sequences: [Qt.Key_Escape]
-
-                    onActivated: tabNameDialog.reject()
-                }
-
-                Button {
-                    text: qsTr("Ok")
-                    DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
-                }
-                Button {
-                    text: qsTr("Cancel")
-                    DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
-                }
-
-                width: tabName.width
-                font.pixelSize: 15
-
-                onAccepted: tabNameDialog.accept()
-                onRejected: tabNameDialog.reject()
-            }
-        }
     }
 
     TabListModel {
@@ -69,7 +49,7 @@ Rectangle {
 
     function addTab() {
         tabNameDialog.accepted.disconnect(addTab)
-        tlm.add(tabName.text);
+        tlm.add(tabNameDialog.tabName.text);
         swipe.setCurrentIndex(swipe.count - 1)
     }
 
@@ -111,7 +91,7 @@ Rectangle {
 
         anchors {
             top: parent.top
-            left: parent.left
+            left: topicView.right
             right: parent.right
         }
 

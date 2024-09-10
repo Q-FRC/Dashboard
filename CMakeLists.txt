@@ -78,6 +78,7 @@ set(QML_FILES
     widgets/IntWidget.qml
 
     dialogs/TopicView.qml
+    dialogs/TabNameDialog.qml
 )
 
 set(ELEMENTS

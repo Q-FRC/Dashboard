@@ -9,10 +9,6 @@ ApplicationWindow {
     visible: true
     title: qsTr("Hello World")
 
-    TopicView {
-        id: topicView
-    }
-
     menuBar: MenuBar {
         Menu {
             title: qsTr("&Widgets")
@@ -26,12 +22,6 @@ ApplicationWindow {
                 text: qsTr("New &Integer Widget")
                 onTriggered: screen.currentTab().add("Test", "int")
                 shortcut: "Ctrl+I"
-            }
-
-            Action {
-                text: qsTr("&New Widget")
-                onTriggered: topicView.openUp()
-                shortcut: "Ctrl+N"
             }
         }
 

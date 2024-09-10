@@ -34,10 +34,10 @@ void TopicListModel::add(const QString &toAdd)
     if (split.at(0).isEmpty()) split.remove(0);
 
     QStandardItem *parentItem = invisibleRootItem();
-    qDebug() << split;
+
     for (const QString &sub : split) {
         auto results = findItems(sub, Qt::MatchRecursive | Qt::MatchExactly | Qt::MatchWrap);
-        qDebug() << results << sub;
+
         if (results.isEmpty()) {
             QStandardItem *item = new QStandardItem(sub);
             parentItem->appendRow(item);
@@ -45,7 +45,6 @@ void TopicListModel::add(const QString &toAdd)
         } else {
             for (QStandardItem *item : results) {
                 if (item->parent() == nullptr || item->parent()->text() == parentItem->text()) {
-                    qDebug() << item->text() << parentItem->text();
                     parentItem = item;
                 }
             }

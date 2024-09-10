@@ -127,6 +127,7 @@ void TabWidgetsModel::setCols(int newCols)
 bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan, QRectF ignore)
 {
     QRect itemRect = QRect(col, row, colSpan, rowSpan);
+    if (col + colSpan > cols() || row + rowSpan > rows()) return true;
 
     for (const Widget &w : m_data) {
         QRect dataRect = QRect(w.col, w.row, w.colSpan, w.rowSpan);
