@@ -21,7 +21,7 @@ jobs:
             qt_host: linux
             qt_version: '6.8.0'
             qt_modules: 'qtmultimedia qtcharts qtwaylandcompositor'
-            qt_arch: 'gcc_64'
+            qt_arch: 'linux_gcc_64'
 
           - os: windows-2022
             qt_host: windows
@@ -33,7 +33,7 @@ jobs:
             qt_host: mac
             qt_version: '6.8.0'
             qt_modules: 'qtmultimedia qtcharts'
-            qt_arch: 'mac'
+            qt_arch: 'clang_64'
 
     runs-on: ${{ matrix.os }}
 
