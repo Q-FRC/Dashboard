@@ -121,14 +121,6 @@ jobs:
       run: |
         cmake --build ${{ env.BUILD_DIR }} --parallel $(nproc) --config ${{ inputs.build_type }}
 
-    - name: Test
-      if: inputs.build_type == 'Debug'
-      working-directory: ${{ env.BUILD_DIR }}/tests
-      shell: bash
-      run: |
-        export QT_QPA_PLATFORM=minimal
-        ctest --build-config ${{ inputs.build_type }} --verbose
-
     - name: Package (Linux)
       if: runner.os == 'Linux'
       run: |

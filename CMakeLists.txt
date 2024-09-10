@@ -2,14 +2,58 @@ cmake_minimum_required(VERSION 3.16)
 
 set(Dashboard_APP_NAME QFRCDashboard)
 set(Dashboard_EXEC_NAME Dashboard)
+set(Dashboard_ORG_NAME "Q-FRC")
+set(Dashboard_GIT_REPO https://github.com/${Dashboard_ORG_NAME}/${Dashboard_EXEC_NAME})
 
 project(QFRCDashboard VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
+add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
 
 qt_standard_project_setup(REQUIRES 6.5)
+
+if(WIN32)
+    set(RCS_FILE ${CMAKE_CURRENT_BINARY_DIR}/program_info/${Dashboard_APP_NAME}.rc)
+    set(Dashboard_BUILD_PLATFORM "win32")
+else()
+    set(Dashboard_BUILD_PLATFORM "lin64")
+endif()
+
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
+
+# Git
+include(GetGitRevisionDescription)
+git_get_exact_tag(Dashboard_GIT_TAG)
+get_git_head_revision(Dashboard_GIT_REFSPEC Dashboard_GIT_COMMIT)
+
+message(STATUS "Git commit: ${Dashboard_GIT_COMMIT}")
+message(STATUS "Git tag: ${Dashboard_GIT_TAG}")
+message(STATUS "Git refspec: ${Dashboard_GIT_REFSPEC}")
+
+string(REPLACE "-beta" "." Dashboard_GIT_TAG_NUMERO ${Dashboard_GIT_TAG})
+
+string(REPLACE "." " " Dashboard_SPLIT_VERSION ${Dashboard_GIT_TAG_NUMERO})
+
+separate_arguments(Dashboard_SPLIT_VERSION)
+
+list(GET Dashboard_SPLIT_VERSION 0 Dashboard_VERSION_MAJOR)
+list(GET Dashboard_SPLIT_VERSION 1 Dashboard_VERSION_MINOR)
+list(GET Dashboard_SPLIT_VERSION 2 Dashboard_VERSION_HOTFIX)
+
+project(QFRCDashboard VERSION ${Dashboard_GIT_TAG_NUMERO} LANGUAGES CXX)
+
+# Build Date
+string(TIMESTAMP TODAY "%Y-%m-%d")
+set(Dashboard_BUILD_TIMESTAMP "${TODAY}")
+
+add_subdirectory("program_info")
+find_package(ntcore)
+find_package(Protobuf)
+
+set(QAPPLICATION_CLASS QApplication)
+add_subdirectory("SingleApplication")
 
 qt_add_executable(${Dashboard_EXEC_NAME}
     main.cpp
@@ -20,21 +64,54 @@ set_source_files_properties(Constants.qml
     QT_QML_SINGLETON_TYPE true
 )
 
+set(QML_FILES
+    Main.qml
+    Constants.qml
+
+    items/MainScreen.qml
+    items/Tab.qml
+    items/GridHandler.qml
+
+    widgets/BaseWidget.qml
+    widgets/ResizeAnchor.qml
+    widgets/TextWidget.qml
+    widgets/IntWidget.qml
+
+    dialogs/TopicView.qml
+)
+
+set(ELEMENTS
+    Globals
+    Constants
+
+    models/TabWidgetsModel
+    models/TabListModel
+    models/TopicListModel
+
+    # stores/FilterStore
+    # stores/TopicStore
+    # stores/CameraStore
+    # stores/TypeStore
+)
+
+foreach(ELEMENT ${ELEMENTS})
+    set(HEADERS ${HEADERS} include/${ELEMENT}.h)
+    set(SOURCES ${SOURCES} src/${ELEMENT}.cpp)
+endforeach()
+
+set(HEADERS
+    ${HEADERS}
+    include/DirectionFlags.h
+)
+
+add_subdirectory(buildconfig)
+
 qt_add_qml_module(${Dashboard_EXEC_NAME}
     URI QFRCDashboard
     VERSION 1.0
-    QML_FILES Main.qml
-    QML_FILES items/MainScreen.qml
-    QML_FILES Constants.qml
-    SOURCES include/models/TabWidgetsModel.h src/models/TabWidgetsModel.cpp
-    QML_FILES widgets/BaseWidget.qml
-    QML_FILES items/Tab.qml
-    SOURCES include/models/TabListModel.h src/models/TabListModel.cpp
-    QML_FILES widgets/ResizeAnchor.qml
-    SOURCES widgets/include/DirectionFlags.h
-    QML_FILES items/GridHandler.qml
-    QML_FILES widgets/TextWidget.qml
-    QML_FILES widgets/IntWidget.qml
+    QML_FILES ${QML_FILES}
+
+    SOURCES ${SOURCES} ${HEADERS}
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -50,10 +127,13 @@ set_target_properties(${Dashboard_EXEC_NAME} PROPERTIES
 
 target_link_libraries(${Dashboard_EXEC_NAME}
     PRIVATE Qt6::Quick
+    BuildConfig
+    ntcore
 )
 
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/)
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/models)
+target_include_directories(${Dashboard_EXEC_NAME} PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
 
 include(GNUInstallDirs)
 install(TARGETS ${Dashboard_EXEC_NAME}
