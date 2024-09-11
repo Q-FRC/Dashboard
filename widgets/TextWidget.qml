@@ -29,6 +29,7 @@ BaseWidget {
         Component.onCompleted: {
             topicStore.topicUpdate.connect(updateTopic)
             topicStore.subscribe(topic)
+            text = topicStore.getValue(topic)
         }
 
         Component.onDestruction: {

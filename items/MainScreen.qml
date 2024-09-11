@@ -16,27 +16,29 @@ Rectangle {
 
         anchors {
             left: parent.left
-            leftMargin: -(parent.width / 4)
+            leftMargin: -(parent.width / 3)
             top: parent.top
             bottom: parent.bottom
         }
 
-        width: (parent.width / 4) + 40
+        width: (parent.width / 3) + 40
         height: parent.height
 
         SmoothedAnimation { id: menuAnim; target: topicView; property: "anchors.leftMargin"; duration: 500 }
 
         onOpen: {
-            menuAnim.from = -(parent.width / 4)
+            menuAnim.from = -(parent.width / 3)
             menuAnim.to = 0
             menuAnim.start()
         }
 
         onClose: {
-            menuAnim.to = -(parent.width / 4)
+            menuAnim.to = -(parent.width / 3)
             menuAnim.from = 0
             menuAnim.start()
         }
+
+        onAddWidget: (title, topic, type) => currentTab().add(title, topic, type)
     }
 
     TabNameDialog {

@@ -195,3 +195,19 @@ void TopicStore::setValue(QString topic, const QVariant &value)
     entry.SetValue(toValue(value));
 
 }
+
+QString TopicStore::typeString(QString topic)
+{
+    nt::NetworkTableEntry entry = Globals::inst.GetEntry(topic.toStdString());
+    nt::NetworkTableType type = entry.GetType();
+
+    switch (type) {
+    case nt::NetworkTableType::kBoolean: return "bool";
+    case nt::NetworkTableType::kDouble: return "double";
+    case nt::NetworkTableType::kFloat: return "double";
+    case nt::NetworkTableType::kString: return "string";
+    case nt::NetworkTableType::kInteger: return "int";
+    default:
+        return "";
+    }
+}

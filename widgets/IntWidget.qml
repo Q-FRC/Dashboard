@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 BaseWidget {
-    property string topic: "/FMSInfo/MatchNumber"
+    property string topic
     SpinBox {
         id: spin
 
@@ -28,6 +28,7 @@ BaseWidget {
         Component.onCompleted: {
             topicStore.topicUpdate.connect(updateTopic)
             topicStore.subscribe(topic)
+            value = topicStore.getValue(topic)
         }
 
         Component.onDestruction: {

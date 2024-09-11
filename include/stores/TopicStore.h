@@ -44,6 +44,8 @@ public:
 
     Q_INVOKABLE QVariant getValue(QString topic);
     Q_INVOKABLE void setValue(QString topic, const QVariant &value);
+
+    QString typeString(QString topic);
 signals:
     void topicUpdate(QString topic, QVariant newValue);
 };

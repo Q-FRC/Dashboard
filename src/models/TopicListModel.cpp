@@ -1,10 +1,13 @@
 #include "TopicListModel.h"
 
-TopicListModel::TopicListModel(QObject *parent)
+TopicListModel::TopicListModel(TopicStore &store, QObject *parent)
     : QStandardItemModel(parent)
+    , m_store(&store)
 {
     QHash<int, QByteArray> rez = QStandardItemModel::roleNames();
     rez.insert(TLMRoleTypes::NAME, "name");
+    rez.insert(TLMRoleTypes::TYPE, "type");
+    rez.insert(TLMRoleTypes::TOPIC, "topic");
 
     QStandardItemModel::setItemRoleNames(rez);
 }
@@ -36,10 +39,21 @@ void TopicListModel::add(const QString &toAdd)
     QStandardItem *parentItem = invisibleRootItem();
 
     for (const QString &sub : split) {
+        bool isLast = sub == split.last();
+
         auto results = findItems(sub, Qt::MatchRecursive | Qt::MatchExactly | Qt::MatchWrap);
 
         if (results.isEmpty()) {
             QStandardItem *item = new QStandardItem(sub);
+
+            if (isLast) {
+                item->setData(toAdd, TLMRoleTypes::TOPIC);
+                item->setData(m_store->typeString(toAdd), TYPE);
+            } else {
+                item->setData("theseNuts", TLMRoleTypes::TOPIC);
+                item->setData("", TYPE);
+            }
+
             parentItem->appendRow(item);
             parentItem = item;
         } else {

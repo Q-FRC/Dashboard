@@ -11,8 +11,8 @@ Rectangle {
     height: Constants.height
     color: Constants.bg
 
-    function add(title, type) {
-        twm.add(title, type)
+    function add(title, topic, type) {
+        twm.add(title, topic, type)
     }
 
     TabWidgetsModel {
@@ -57,6 +57,8 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "int"
                     IntWidget {
+                        topic: model.topic
+
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan
@@ -71,6 +73,8 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "string"
                     TextWidget {
+                        topic: model.topic
+
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan

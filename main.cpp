@@ -12,7 +12,9 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    TopicListModel *topics = new TopicListModel(&app);
+
+    TopicStore store(&app);
+    TopicListModel *topics = new TopicListModel(store, &app);
 
     Globals::inst.AddConnectionListener(true, [topics] (const nt::Event &event) {
         bool connected = event.Is(nt::EventFlags::kConnected);
@@ -48,8 +50,6 @@ int main(int argc, char *argv[])
         );
 
     QQmlApplicationEngine engine;
-
-    TopicStore store(&app);
 
     engine.rootContext()->setContextProperty("topics", topics);
     engine.rootContext()->setContextProperty("topicStore", &store);

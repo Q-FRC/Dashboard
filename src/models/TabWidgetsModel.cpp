@@ -20,6 +20,8 @@ QVariant TabWidgetsModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case TITLE:
         return w.title;
+    case TOPIC:
+        return w.topic;
     case COL:
         return w.col;
     case ROW:
@@ -73,11 +75,12 @@ Qt::ItemFlags TabWidgetsModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
 }
 
-void TabWidgetsModel::add(QString title, QString type)
+void TabWidgetsModel::add(QString title, QString topic, QString type)
 {
     static char i = 0;
     Widget w;
     w.title = title;
+    w.topic = topic;
     w.type = type;
     w.row = i / 3;
     w.col = i % 3;
@@ -150,6 +153,7 @@ QHash<int, QByteArray> TabWidgetsModel::roleNames() const
 {
     QHash<int,QByteArray> rez;
     rez[TITLE] = "title";
+    rez[TOPIC] = "topic";
     rez[TYPE] = "type";
     rez[COL] = "column";
     rez[ROW] = "row";

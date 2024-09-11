@@ -7,6 +7,7 @@
 
 typedef struct {
     QString title;
+    QString topic;
 
     QMetaType dataType;
     QString type;
@@ -32,6 +33,7 @@ public:
         ROWSPAN,
         COLSPAN,
         TYPE,
+        TOPIC
     };
 
     explicit TabWidgetsModel(QObject *parent = nullptr);
@@ -47,7 +49,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     // Add data:
-    Q_INVOKABLE void add(QString title, QString type);
+    Q_INVOKABLE void add(QString title, QString topic, QString type);
 
     // Remove data:
     Q_INVOKABLE bool remove(int row, int column, const QModelIndex &parent = QModelIndex());

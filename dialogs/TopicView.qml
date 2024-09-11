@@ -8,6 +8,14 @@ Row {
     signal open
     signal close
 
+    signal addWidget(string name, string topic, string type)
+
+    function widgetAdd(name, topic, type) {
+        button.text = ">>"
+        close()
+        addWidget(name, topic, type)
+    }
+
     Rectangle {
         id: topicView
         width: parent.width - 40
@@ -33,6 +41,10 @@ Row {
             model: topics
 
             delegate: Item {
+                TapHandler {
+                    onDoubleTapped: if (!hasChildren) widgetAdd(model.name, model.topic, model.type)
+                }
+
                 // implicitWidth: padding + label.x + label.implicitWidth + padding
                 implicitHeight: label.implicitHeight * 1.5
 
@@ -94,9 +106,19 @@ Row {
                     id: label
                     x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
                     anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - padding - x
+                    width: parent.width - padding - x - typeLabel.width
                     clip: true
                     text: model.name
+
+                    font.pixelSize: 17
+                }
+
+                Label {
+                    id: typeLabel
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    clip: true
+                    text: model.type
 
                     font.pixelSize: 17
                 }
@@ -105,6 +127,7 @@ Row {
     }
 
     Button {
+        id: button
         text: ">>"
 
         width: 40
