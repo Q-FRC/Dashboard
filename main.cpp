@@ -6,6 +6,7 @@
 #include "DirectionFlags.h"
 #include "Globals.h"
 #include "TopicListModel.h"
+#include "TopicStore.h"
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +49,10 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+    TopicStore store(&app);
+
     engine.rootContext()->setContextProperty("topics", topics);
+    engine.rootContext()->setContextProperty("topicStore", &store);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

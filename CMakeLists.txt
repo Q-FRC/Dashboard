@@ -90,7 +90,7 @@ set(ELEMENTS
     models/TopicListModel
 
     # stores/FilterStore
-    # stores/TopicStore
+    stores/TopicStore
     # stores/CameraStore
     # stores/TypeStore
 )
@@ -134,6 +134,7 @@ target_link_libraries(${Dashboard_EXEC_NAME}
 
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/)
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/models)
+target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/stores)
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
 
 include(GNUInstallDirs)

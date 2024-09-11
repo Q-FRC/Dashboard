@@ -2,10 +2,18 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 BaseWidget {
+    property string topic: "/FMSInfo/.type"
+
     TextField {
         id: textField
 
-        text: "yoo"
+        function updateTopic(ntTopic, value) {
+            if (ntTopic === topic) {
+                text = value
+            }
+        }
+
+        text: ""
 
         anchors {
             verticalCenter: parent.verticalCenter
@@ -17,5 +25,19 @@ BaseWidget {
             leftMargin: 10
             rightMargin: 10
         }
+
+        Component.onCompleted: {
+            topicStore.topicUpdate.connect(updateTopic)
+            topicStore.subscribe(topic)
+        }
+
+        Component.onDestruction: {
+            if (topicStore !== null) {
+                topicStore.topicUpdate.disconnect(updateTopic)
+                topicStore.unsubscribe(topic)
+            }
+        }
+
+        onTextEdited: topicStore.setValue(topic, text)
     }
 }

@@ -7,17 +7,13 @@
 #include <QMultiHash>
 #include <QHash>
 #include <QObject>
-
-class BaseWidget;
+#include <qqmlintegration.h>
 
 struct Listener {
-    std::string topic;
-    QString label;
-    nt::NetworkTableEntry entry;
-    BaseWidget *subscriber;
+    QString topic;
     NT_Listener listenerHandle;
     nt::ListenerCallback callback;
-    NT_Type desiredType;
+    int numSubscribed;
     bool isNull;
 
     bool operator==(const Listener &other) const;
@@ -26,30 +22,30 @@ struct Listener {
 class TopicStore : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
 private:
-    static bool hasEntry(std::string topic);
-    static bool hasEntry(QString topic);
+    bool hasEntry(QString topic);
 
-    static bool widgetSubscribed(std::string topic, BaseWidget *subscriber);
-    static bool widgetSubscribed(QString topic, BaseWidget *subscriber);
+    Q_INVOKABLE Listener entry(QString topic);
 
-    static Listener getEntry(std::string topic, BaseWidget *subscriber);
-    static Listener getEntry(QString topic, BaseWidget *subscriber);
+    QList<Listener> Listeners;
+    QHash<QString, nt::NetworkTableEntry> topicEntryMap;
+
 public:
-    static QList<Listener> Listeners;
-    static QHash<std::string, nt::NetworkTableEntry> topicEntryMap;
+    static QVariant toVariant(const nt::Value &value);
+    static nt::Value toValue(const QVariant &value);
 
-    TopicStore();
+    TopicStore(QObject *parent = nullptr);
 
-    static nt::NetworkTableEntry subscribe(std::string ntTopic, BaseWidget *subscriber, NT_Type desiredType = NT_UNASSIGNED, QString label = "", bool writeOnly = false);
+    Q_INVOKABLE void subscribe(QString ntTopic);
+    Q_INVOKABLE void unsubscribe(QString ntTopic);
 
-    static void unsubscribe(std::string ntTopic, BaseWidget *subscriber);
-    static void unsubscribe(QString ntTopic, BaseWidget *subscriber);
-    static void unsubscribe(nt::NetworkTableEntry entry, BaseWidget *subscriber);
+    double getDoubleFromEntry(nt::NetworkTableEntry entry);
 
-    static double getDoubleFromEntry(nt::NetworkTableEntry entry);
-
-    static void updateTopic(std::string topic, BaseWidget *subscriber, QString label);
+    Q_INVOKABLE QVariant getValue(QString topic);
+    Q_INVOKABLE void setValue(QString topic, const QVariant &value);
+signals:
+    void topicUpdate(QString topic, QVariant newValue);
 };
 
 #endif // TopicStore_H

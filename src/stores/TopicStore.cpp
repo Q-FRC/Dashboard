@@ -1,19 +1,15 @@
 #include "stores/TopicStore.h"
 
-#include "qtimer.h"
-#include "widgets/BaseWidget.h"
-
 #include "Globals.h"
 
-QList<Listener> TopicStore::Listeners{};
-QHash<std::string, nt::NetworkTableEntry> TopicStore::topicEntryMap{};
+#include <QVariant>
 
-TopicStore::TopicStore()
+TopicStore::TopicStore(QObject *parent)
+    : QObject(parent)
 {
-    throw std::runtime_error("TopicStore is a static class.");
 }
 
-bool TopicStore::hasEntry(std::string topic) {
+bool TopicStore::hasEntry(QString topic) {
     for (const Listener &listener : Listeners) {
         if (topic == listener.topic) {
             return true;
@@ -22,21 +18,9 @@ bool TopicStore::hasEntry(std::string topic) {
     return false;
 }
 
-bool TopicStore::hasEntry(QString topic) {
-    return hasEntry(topic.toStdString());
-}
-
-bool TopicStore::widgetSubscribed(std::string topic, BaseWidget *subscriber) {
-    return !getEntry(topic, subscriber).isNull;
-}
-
-bool TopicStore::widgetSubscribed(QString topic, BaseWidget *subscriber) {
-    return !getEntry(topic, subscriber).isNull;
-}
-
-Listener TopicStore::getEntry(std::string topic, BaseWidget *subscriber) {
+Listener TopicStore::entry(QString topic) {
     for (Listener listener : Listeners) {
-        if (listener.topic == topic && listener.subscriber == subscriber) {
+        if (listener.topic == topic) {
             return listener;
         }
     }
@@ -46,48 +30,104 @@ Listener TopicStore::getEntry(std::string topic, BaseWidget *subscriber) {
     return l;
 }
 
-Listener TopicStore::getEntry(QString topic, BaseWidget *subscriber) {
-    return getEntry(topic.toStdString(), subscriber);
+QVariant TopicStore::toVariant(const nt::Value &value)
+{
+    QVariant v;
+    if (!value.IsValid()) return v;
+
+    if (value.IsBoolean()) v = value.GetBoolean();
+    else if (value.IsString()) v = QString::fromStdString(std::string(value.GetString()));
+    else if (value.IsDouble()) v = value.GetDouble();
+    else if (value.IsFloat()) v = value.GetFloat();
+    else if (value.IsInteger()) v = QVariant::fromValue(value.GetInteger());
+
+    else if (value.IsBooleanArray()) {
+        const std::span<const int> a = value.GetBooleanArray();
+        QList<int> newList;
+        for (const int i : a) {
+            newList << i;
+        }
+        v = QVariant::fromValue(newList);
+    }
+    else if (value.IsStringArray()) {
+        const std::span<const std::string> a = value.GetStringArray();
+        QStringList newList;
+        for (const std::string &s : a) {
+            newList << QString::fromStdString(s);
+        }
+        v = QVariant::fromValue(newList);
+    }
+    else if (value.IsDoubleArray()) {
+        const std::span<const double> a = value.GetDoubleArray();
+        QList<double> newList;
+        for (const double d : a) {
+            newList << d;
+        }
+        v = QVariant::fromValue(newList);
+    }
+    else if (value.IsIntegerArray()) {
+        const std::span<const int64_t> a = value.GetIntegerArray();
+        QList<int64_t> newList;
+        for (const size_t i : a) {
+            newList << i;
+        }
+        v = QVariant::fromValue(newList);
+    }
+
+    return v;
+}
+
+nt::Value TopicStore::toValue(const QVariant &value)
+{
+    if (!value.isValid()) goto end;
+
+    switch (value.typeId()) {
+    case QMetaType::Type::QString:
+        return nt::Value::MakeString(std::string_view{value.toString().toStdString()});
+    case QMetaType::Type::QStringList: {
+        std::vector<std::string> v;
+        for (const QString &s : value.toStringList()) {
+            v.emplace_back(s.toStdString());
+        }
+
+        return nt::Value::MakeStringArray(v);
+    } case QMetaType::Type::Bool:
+        return nt::Value::MakeBoolean(value.toBool());
+    case QMetaType::Type::Double:
+        return nt::Value::MakeDouble(value.toDouble());
+    case QMetaType::Type::Float:
+        return nt::Value::MakeFloat(value.toFloat());
+    case QMetaType::Type::Int:
+        return nt::Value::MakeInteger(value.toInt());
+    }
+
+end:
+    return nt::Value();
 }
 
 bool Listener::operator==(const Listener &other) const {
     return (other.topic == this->topic) &&
-           (other.entry == this->entry) &&
-           (other.label == this->label) &&
-           (other.subscriber == this->subscriber) &&
-           (other.listenerHandle == this->listenerHandle) &&
-           (other.desiredType == this->desiredType) &&
            (other.isNull == this->isNull);
 }
 
-nt::NetworkTableEntry TopicStore::subscribe(std::string ntTopic, BaseWidget *subscriber, NT_Type desiredType, QString label, bool writeOnly) {
+void TopicStore::subscribe(QString ntTopic) {
     Listener listener;
-    nt::NetworkTableEntry entry;
-    if (!hasEntry(ntTopic)) {
-        entry = Globals::inst.GetEntry(ntTopic);
+
+    listener = this->entry(ntTopic);
+    if (listener.isNull) {
+        listener = {
+            ntTopic,
+            0,
+            nt::ListenerCallback(),
+            1,
+            false
+        };
+
+        nt::NetworkTableEntry entry = Globals::inst.GetEntry(ntTopic.toStdString());
 
         topicEntryMap.insert(ntTopic, entry);
-    } else {
-        entry = topicEntryMap.value(ntTopic);
-    }
 
-    listener = {
-        ntTopic,
-        label,
-        entry,
-        subscriber,
-        0,
-        nt::ListenerCallback(),
-        desiredType,
-        false
-    };
-
-    if (!writeOnly) {
-        nt::ListenerCallback updateWidget = [entry, subscriber, desiredType, label, ntTopic](const nt::Event &event = nt::Event()) {
-            if (!subscriber) {
-                return;
-            }
-
+        nt::ListenerCallback updateWidget = [entry, ntTopic, this](const nt::Event &event = nt::Event()) {
             nt::Value value;
             if (!event.Is(nt::EventFlags::kValueAll)) {
                 value = entry.GetValue();
@@ -95,72 +135,33 @@ nt::NetworkTableEntry TopicStore::subscribe(std::string ntTopic, BaseWidget *sub
                 value = event.GetValueEventData()->value;
             }
 
-            // ensure thread-safety
-            // this is mild anal cancer
             if (value.IsValid()) {
-                QMetaObject::invokeMethod(subscriber, [subscriber, value, label, desiredType, ntTopic] {
-                    if (value.type() != desiredType) {
-                        qCritical() << "Type for topic" <<
-                            QString::fromStdString(ntTopic) <<
-                            "for widget" <<
-                            subscriber->title() <<
-                            "is of incorrect type" <<
-                            (int) value.type() <<
-                            "; expected" <<
-                            (int) desiredType;
-                        return;
-                    }
-
-                    if (subscriber->ready()) {
-                        if (subscriber->isEnabled()) {
-                            subscriber->setValue(value, label);
-                            subscriber->update();
-                        }
-                    } else {
-                        connect(subscriber, &BaseWidget::isReady, subscriber, [subscriber, value, label] {
-                                subscriber->setValue(value, label);
-                                subscriber->update();
-                            }, Qt::SingleShotConnection);
-                    }
-                }); // QMetaObject and its consequences have been a disaster for the human race
+                emit topicUpdate(ntTopic, toVariant(value));
             }
         };
 
-        NT_Listener handle = Globals::inst.AddListener(Globals::inst.GetEntry(ntTopic), nt::EventFlags::kValueAll, updateWidget);
+        NT_Listener handle = Globals::inst.AddListener(entry, nt::EventFlags::kValueAll, updateWidget);
 
         listener.listenerHandle = handle;
         listener.callback = updateWidget;
 
-        QTimer::singleShot(1000, subscriber, [updateWidget] {
-            updateWidget(nt::Event());
-        });
+        Listeners.append(listener);
+    } else {
+        listener.numSubscribed += 1;
     }
-
-    Listeners.append(listener);
-
-    return entry;
 }
 
-void TopicStore::unsubscribe(std::string ntTopic, BaseWidget *subscriber) {
-    if (!hasEntry(ntTopic) || !widgetSubscribed(ntTopic, subscriber)) return;
+void TopicStore::unsubscribe(QString ntTopic) {
+    if (!hasEntry(ntTopic)) return;
 
-    Listener listener = getEntry(ntTopic, subscriber);
-    Listeners.removeOne(listener);
+    Listener listener = entry(ntTopic);
+    listener.numSubscribed -= 1;
 
-    if (!hasEntry(ntTopic)) {
-        listener.entry.Unpublish();
+    if (listener.numSubscribed <= 0) {
+        topicEntryMap.value(ntTopic).Unpublish();
         topicEntryMap.remove(ntTopic);
+        Globals::inst.RemoveListener(listener.listenerHandle);
     }
-
-    Globals::inst.RemoveListener(listener.listenerHandle);
-}
-
-void TopicStore::unsubscribe(QString ntTopic, BaseWidget *subscriber) {
-    unsubscribe(ntTopic.toStdString(), subscriber);
-}
-
-void TopicStore::unsubscribe(nt::NetworkTableEntry entry, BaseWidget *subscriber) {
-    unsubscribe(entry.GetName(), subscriber);
 }
 
 double TopicStore::getDoubleFromEntry(nt::NetworkTableEntry entry) {
@@ -177,10 +178,20 @@ double TopicStore::getDoubleFromEntry(nt::NetworkTableEntry entry) {
     return 0.;
 }
 
-void TopicStore::updateTopic(std::string topic, BaseWidget *subscriber, QString label) {
-    Listener l = getEntry(topic, subscriber);
+QVariant TopicStore::getValue(QString topic) {
+    Listener l = entry(topic);
+    if (l.isNull) return QVariant{};
+
+    nt::NetworkTableEntry entry = topicEntryMap.value(topic);
+    return toVariant(entry.GetValue());
+}
+
+void TopicStore::setValue(QString topic, const QVariant &value)
+{
+    Listener l = entry(topic);
     if (l.isNull) return;
 
-    nt::ListenerCallback callback = l.callback;
-    callback(nt::Event());
+    nt::NetworkTableEntry entry = topicEntryMap.value(topic);
+    entry.SetValue(toValue(value));
+
 }
