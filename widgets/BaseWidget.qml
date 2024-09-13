@@ -65,9 +65,20 @@ Rectangle {
         anchors.fill: parent
     }
 
+    Menu {
+        id: rcMenu
+
+        MenuItem {
+            text: "Delete Widget"
+            onTriggered: twm.remove(model.row, model.column)
+        }
+    }
+
     MouseArea {
         id: dragArea
         z: 0
+
+        acceptedButtons: Qt.AllButtons
 
         anchors {
             fill: parent
@@ -77,12 +88,22 @@ Rectangle {
 
         drag.target: parent
 
-        onPressed: (mouse) => {
-                       rect.beginDrag = Qt.point(parent.x, parent.y);
-                       rect.Drag.hotSpot = Qt.point(mouse.x, mouse.y)
-                       parent.z = 3
+        pressAndHoldInterval: 100
 
-                       resizeBegin(rect.Drag)
+        onPressed: (mouse) => {
+                       if (mouse.button === Qt.RightButton) {
+                           drag.target = null
+                           rcMenu.popup()
+                       }
+                       else if (mouse.button === Qt.LeftButton) {
+                           drag.target = parent
+
+                           rect.beginDrag = Qt.point(parent.x, parent.y);
+                           rect.Drag.hotSpot = Qt.point(mouse.x, mouse.y)
+                           parent.z = 3
+
+                           resizeBegin(rect.Drag)
+                       }
                    }
 
         onReleased: {
@@ -100,6 +121,7 @@ Rectangle {
                 // dragEnd(rect.Drag)
 
                 parent.z = 2
+                cancelDrag()
             }
         }
 

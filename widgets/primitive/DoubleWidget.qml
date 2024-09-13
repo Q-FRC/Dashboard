@@ -1,14 +1,17 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+import QFRCDashboard
+
 BaseWidget {
     property string topic
-    SpinBox {
+
+    DoubleSpinBox {
         id: spin
 
         function updateTopic(ntTopic, ntValue) {
             if (ntTopic === topic) {
-                value = ntValue
+                value = ntValue * 100.0
             }
         }
 
@@ -38,7 +41,10 @@ BaseWidget {
             }
         }
 
-        onValueModified: topicStore.setValue(topic, value)
+        onValueModified: {
+            realValue = value / 100.0
+            topicStore.setValue(topic, realValue)
+        }
 
     }
 }

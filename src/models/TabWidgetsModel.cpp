@@ -98,6 +98,19 @@ void TabWidgetsModel::add(QString title, QString topic, QString type)
 
 bool TabWidgetsModel::remove(int row, int column, const QModelIndex &parent)
 {
+    for (size_t i = 0; i < rowCount(); ++i) {
+        Widget w = m_data[i];
+        if ((column >= w.col && column <= w.col + w.colSpan) &&
+            (row >= w.row && row <= w.row + w.colSpan)) {
+
+            beginRemoveRows(parent, i, i);
+            m_data.remove(i);
+            endRemoveRows();
+
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -145,7 +158,6 @@ bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan, Q
     }
 
     return false;
-
 }
 
 

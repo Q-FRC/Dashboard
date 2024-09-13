@@ -74,8 +74,12 @@ set(QML_FILES
 
     widgets/BaseWidget.qml
     widgets/ResizeAnchor.qml
-    widgets/TextWidget.qml
-    widgets/IntWidget.qml
+    widgets/DoubleSpinBox.qml
+
+    widgets/primitive/TextWidget.qml
+    widgets/primitive/IntWidget.qml
+    widgets/primitive/DoubleWidget.qml
+    widgets/primitive/BoolWidget.qml
 
     dialogs/TopicView.qml
     dialogs/TabNameDialog.qml

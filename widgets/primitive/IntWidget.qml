@@ -1,19 +1,21 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+import QFRCDashboard
+
 BaseWidget {
-    property string topic: "/FMSInfo/.type"
+    property string topic
 
-    TextField {
-        id: textField
+    SpinBox {
+        id: spin
 
-        function updateTopic(ntTopic, value) {
+        function updateTopic(ntTopic, ntValue) {
             if (ntTopic === topic) {
-                text = value
+                value = ntValue
             }
         }
 
-        text: ""
+        value: 0
 
         anchors {
             verticalCenter: parent.verticalCenter
@@ -29,7 +31,7 @@ BaseWidget {
         Component.onCompleted: {
             topicStore.topicUpdate.connect(updateTopic)
             topicStore.subscribe(topic)
-            text = topicStore.getValue(topic)
+            value = topicStore.getValue(topic)
         }
 
         Component.onDestruction: {
@@ -39,6 +41,7 @@ BaseWidget {
             }
         }
 
-        onTextEdited: topicStore.setValue(topic, text)
+        onValueModified: topicStore.setValue(topic, value)
+
     }
 }
