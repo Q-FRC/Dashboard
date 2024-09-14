@@ -10,6 +10,10 @@ Rectangle {
     height: Constants.height
     color: Constants.bg
 
+    function openConf(item) {
+        widgetConf.openUp(item)
+    }
+
     TopicView {
         id: topicView
         z: 4
@@ -43,6 +47,10 @@ Rectangle {
 
     TabNameDialog {
         id: tabNameDialog
+    }
+
+    WidgetConfig {
+        id: widgetConf
     }
 
     TabListModel {

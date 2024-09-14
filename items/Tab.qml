@@ -57,7 +57,7 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "int"
                     IntWidget {
-                        topic: model.topic
+                        item_topic: model.topic
 
                         Layout.row: model.row
                         Layout.column: model.column
@@ -73,7 +73,7 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "string"
                     TextWidget {
-                        topic: model.topic
+                        item_topic: model.topic
 
                         Layout.row: model.row
                         Layout.column: model.column
@@ -90,7 +90,7 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "double"
                     DoubleWidget {
-                        topic: model.topic
+                        item_topic: model.topic
 
                         Layout.row: model.row
                         Layout.column: model.column
@@ -107,7 +107,8 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "bool"
                     BoolWidget {
-                        topic: model.topic
+                        item_topic: model.topic
+                        item_checkboxSize: typeof model.properties.checkboxSize === "undefined" ? 20 : model.properties.checkboxSize
 
                         Layout.row: model.row
                         Layout.column: model.column

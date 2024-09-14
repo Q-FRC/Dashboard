@@ -4,10 +4,15 @@ import QtQuick.Controls 2.15
 import QFRCDashboard
 
 BaseWidget {
-    property string topic
+    property string item_topic
+
+    property int item_fontSize: 15
+    property double item_stepSize: 0.1
 
     DoubleSpinBox {
         id: spin
+
+        font.pixelSize: item_fontSize
 
         function updateTopic(ntTopic, ntValue) {
             if (ntTopic === topic) {
@@ -16,6 +21,7 @@ BaseWidget {
         }
 
         value: 0
+        stepSize: item_stepSize * 100.0
 
         anchors {
             verticalCenter: parent.verticalCenter

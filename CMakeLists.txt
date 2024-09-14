@@ -83,6 +83,7 @@ set(QML_FILES
 
     dialogs/TopicView.qml
     dialogs/TabNameDialog.qml
+    dialogs/WidgetConfig.qml
 )
 
 set(ELEMENTS
@@ -107,6 +108,7 @@ endforeach()
 set(HEADERS
     ${HEADERS}
     include/DirectionFlags.h
+    include/MetaObjectHelper.h
 )
 
 add_subdirectory(buildconfig)

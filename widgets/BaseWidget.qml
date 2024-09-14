@@ -11,6 +11,8 @@ Rectangle {
     height: 100
     z: 2
 
+    property int item_titleFontSize: 20
+
     property alias titleField: titleField
 
     color: Constants.widgetBg
@@ -71,6 +73,11 @@ Rectangle {
         MenuItem {
             text: "Delete Widget"
             onTriggered: twm.remove(model.row, model.column)
+        }
+
+        MenuItem {
+            text: "Configure"
+            onTriggered: openConf(rcMenu.parent)
         }
     }
 
@@ -207,7 +214,7 @@ Rectangle {
 
     TextField {
         id: titleField
-        font.pixelSize: 20
+        font.pixelSize: item_titleFontSize
         font.bold: true
 
         text: model.title

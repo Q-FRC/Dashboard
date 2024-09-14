@@ -32,6 +32,8 @@ QVariant TabWidgetsModel::data(const QModelIndex &index, int role) const
         return w.rowSpan;
     case TYPE:
         return w.type;
+    case PROPERTIES:
+        return w.properties;
     default:
         break;
     }
@@ -88,6 +90,8 @@ void TabWidgetsModel::add(QString title, QString topic, QString type)
 
     w.rowSpan = 1;
     w.colSpan = 1;
+
+    w.properties = QVariantMap({{"checkboxSize", 40}});
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data << w;
@@ -171,6 +175,7 @@ QHash<int, QByteArray> TabWidgetsModel::roleNames() const
     rez[ROW] = "row";
     rez[ROWSPAN] = "rowSpan";
     rez[COLSPAN] = "colSpan";
+    rez[PROPERTIES] = "properties";
 
     return rez;
 }

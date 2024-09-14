@@ -4,10 +4,14 @@ import QtQuick.Controls 2.15
 import QFRCDashboard
 
 BaseWidget {
-    property string topic
+    property string item_topic
+
+    property int item_fontSize: 15
 
     TextField {
         id: textField
+
+        font.pixelSize: item_fontSize
 
         function updateTopic(ntTopic, value) {
             if (ntTopic === topic) {

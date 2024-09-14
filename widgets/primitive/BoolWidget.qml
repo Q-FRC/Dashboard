@@ -4,7 +4,9 @@ import QtQuick.Controls 2.15
 import QFRCDashboard
 
 BaseWidget {
-    property string topic
+    property string item_topic
+
+    property int item_checkboxSize: 20
 
     CheckBox {
         id: control
@@ -21,8 +23,8 @@ BaseWidget {
             centerIn: parent
         }
 
-        indicator.implicitHeight: 20
-        indicator.implicitWidth: 20
+        indicator.implicitHeight: item_checkboxSize
+        indicator.implicitWidth: item_checkboxSize
 
         Component.onCompleted: {
             topicStore.topicUpdate.connect(updateTopic)

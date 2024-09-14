@@ -33,7 +33,8 @@ public:
         ROWSPAN,
         COLSPAN,
         TYPE,
-        TOPIC
+        TOPIC,
+        PROPERTIES
     };
 
     explicit TabWidgetsModel(QObject *parent = nullptr);
