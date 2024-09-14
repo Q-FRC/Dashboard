@@ -67,7 +67,6 @@ Section "@Dashboard_APP_NAME@"
   File *.dll
   File /r "iconengines"
   File /r "imageformats"
-  File /r "multimedia"
   File /r "platforms"
   File /r "tls"
   File /r "qml"

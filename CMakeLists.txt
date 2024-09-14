@@ -149,3 +149,22 @@ install(TARGETS ${Dashboard_EXEC_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+set_target_properties(${Dashboard_EXEC_NAME} PROPERTIES
+    MACOSX_BUNDLE TRUE
+)
+
+if(UNIX AND APPLE)
+    # Mac bundle settings
+    set(MACOSX_BUNDLE_BUNDLE_NAME "${Dashboard_APP_NAME}")
+    set(MACOSX_BUNDLE_INFO_STRING "${Dashboard_APP_NAME}: A high-performance, reliable dashboard for FRC use.")
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.${Dashboard_ORG_NAME}.${Dashboard_APP_NAME}")
+    set(MACOSX_BUNDLE_BUNDLE_VERSION "${Dashboard_GIT_TAG_NUMERO}")
+    set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${Dashboard_GIT_TAG_NUMERO}")
+    set(MACOSX_BUNDLE_LONG_VERSION_STRING "${Dashboard_GIT_TAG_NUMERO}")
+    set(MACOSX_BUNDLE_ICON_FILE ${Dashboard_APP_NAME}.icns)
+    set(MACOSX_BUNDLE_COPYRIGHT "Copyleft 2023-2024 ${Dashboard_ORG_NAME}")
+
+    # install as bundle
+    set(INSTALL_BUNDLE "full")
+endif()

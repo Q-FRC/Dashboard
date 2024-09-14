@@ -185,7 +185,7 @@ jobs:
 
         windeployqt ${{ env.BUILD_DIR }}\Dashboard.exe --dir ${{ env.INSTALL_DIR }} --qmldir ${{ github.workspace }} --qmlimport %QML2_IMPORT_PATH%
         cp ${{ env.BUILD_DIR }}\Dashboard.exe ${{ env.INSTALL_DIR }}
-        cp -r ${{ runner.workspace }}\Qt\${{ matrix.qt_version }}\${{ matrix.qt_arch }}\qml ${{ env.INSTALL_DIR }}
+        cp -r ${{ runner.workspace }}\Qt\${{ matrix.qt_version }}\msvc2022_64\qml ${{ env.INSTALL_DIR }}
 
         if "${{ inputs.build_type }}" == "Debug" (
           cp C:\Windows\System32\ucrtbased.dll ${{ env.INSTALL_DIR }}
