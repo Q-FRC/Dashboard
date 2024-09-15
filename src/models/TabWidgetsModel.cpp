@@ -50,6 +50,9 @@ bool TabWidgetsModel::setData(const QModelIndex &index, const QVariant &value, i
         case TITLE:
             w.title = value.toString();
             break;
+        case TYPE:
+            w.type = value.toString();
+            break;
         case COL:
             w.col = value.toInt();
             break;

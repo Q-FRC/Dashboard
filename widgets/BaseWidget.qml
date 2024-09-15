@@ -14,6 +14,7 @@ Rectangle {
     property int item_titleFontSize: 20
 
     property alias titleField: titleField
+    property alias rcMenu: rcMenu
 
     color: Constants.widgetBg
 
@@ -22,20 +23,22 @@ Rectangle {
     signal resizeBegin(var drag)
     signal resizeEnd(var drag)
     signal dragEnd(var drag)
-    signal cancelDrag()
+    signal cancelDrag
 
-    onResizeBegin: (drag) => {
+    onResizeBegin: drag => {
                        drag.source = this
                        rep.beginResize(drag)
                    }
 
-    onResizeEnd: (drag) => {
+    onResizeEnd: drag => {
                      drag.source = this
                      rep.endResize(drag)
                  }
 
-    onDragEnd: (drag) => {
-                   let source = Qt.rect(drag.source.mcolumn, drag.source.mrow, drag.source.mcolumnSpan, drag.source.mrowSpan)
+    onDragEnd: drag => {
+                   let source = Qt.rect(drag.source.mcolumn, drag.source.mrow,
+                                        drag.source.mcolumnSpan,
+                                        drag.source.mrowSpan)
                    rep.intersectionCheck(drag, source)
                }
 
@@ -61,6 +64,13 @@ Rectangle {
         mcolumn = model.column
         mrowSpan = model.rowSpan
         mcolumnSpan = model.colSpan
+
+        for (var p in this) {
+            if (p.startsWith("item_") && typeof this[p] !== "function") {
+                let prop = model.properties[p.substring(5)]
+                this[p] = typeof prop === "undefined" ? this[p] : prop
+            }
+        }
     }
 
     Frame {
@@ -97,15 +107,14 @@ Rectangle {
 
         pressAndHoldInterval: 100
 
-        onPressed: (mouse) => {
+        onPressed: mouse => {
                        if (mouse.button === Qt.RightButton) {
                            drag.target = null
                            rcMenu.popup()
-                       }
-                       else if (mouse.button === Qt.LeftButton) {
+                       } else if (mouse.button === Qt.LeftButton) {
                            drag.target = parent
 
-                           rect.beginDrag = Qt.point(parent.x, parent.y);
+                           rect.beginDrag = Qt.point(parent.x, parent.y)
                            rect.Drag.hotSpot = Qt.point(mouse.x, mouse.y)
                            parent.z = 3
 
@@ -114,28 +123,49 @@ Rectangle {
                    }
 
         onReleased: {
-            if (!rect.caught) {
-                backAnimX.from = rect.x;
-                backAnimX.to = beginDrag.x;
-                backAnimY.from = rect.y;
-                backAnimY.to = beginDrag.y;
-                backAnim.start()
+            if (drag.target === null) {
+                Layout.rowSpan = grid.rows + 1
+                Layout.columnSpan = grid.columns + 1
+                Layout.row = grid.rows + 1
+                Layout.column = grid.columns + 1
+                update()
 
-                cancelDrag()
-            } else {
-                rect.Drag.drop()
+                Layout.rowSpan = mrowSpan
+                Layout.columnSpan = mcolumnSpan
+                Layout.column = mcolumn
+                Layout.row = mrow
+            } else
+                if (!rect.caught) {
+                    backAnimX.from = rect.x
+                    backAnimX.to = beginDrag.x
+                    backAnimY.from = rect.y
+                    backAnimY.to = beginDrag.y
+                    backAnim.start()
 
-                // dragEnd(rect.Drag)
+                    cancelDrag()
+                } else {
+                    rect.Drag.drop()
 
-                parent.z = 2
-                cancelDrag()
-            }
+                    // dragEnd(rect.Drag)
+                    parent.z = 2
+                    cancelDrag()
+                }
         }
 
         ParallelAnimation {
             id: backAnim
-            SmoothedAnimation { id: backAnimX; target: rect; property: "x"; duration: 250 }
-            SmoothedAnimation { id: backAnimY; target: rect; property: "y"; duration: 250 }
+            SmoothedAnimation {
+                id: backAnimX
+                target: rect
+                property: "x"
+                duration: 250
+            }
+            SmoothedAnimation {
+                id: backAnimY
+                target: rect
+                property: "y"
+                duration: 250
+            }
 
             onFinished: {
                 x = rect.beginDrag.x
@@ -146,10 +176,30 @@ Rectangle {
 
     ParallelAnimation {
         id: resizeBackAnim
-        SmoothedAnimation { id: resizeBackAnimX; target: rect; property: "x"; duration: 250 }
-        SmoothedAnimation { id: resizeBackAnimY; target: rect; property: "y"; duration: 250 }
-        SmoothedAnimation { id: resizeBackAnimWidth; target: rect; property: "width"; duration: 250 }
-        SmoothedAnimation { id: resizeBackAnimHeight; target: rect; property: "height"; duration: 250 }
+        SmoothedAnimation {
+            id: resizeBackAnimX
+            target: rect
+            property: "x"
+            duration: 250
+        }
+        SmoothedAnimation {
+            id: resizeBackAnimY
+            target: rect
+            property: "y"
+            duration: 250
+        }
+        SmoothedAnimation {
+            id: resizeBackAnimWidth
+            target: rect
+            property: "width"
+            duration: 250
+        }
+        SmoothedAnimation {
+            id: resizeBackAnimHeight
+            target: rect
+            property: "height"
+            duration: 250
+        }
 
         onFinished: {
             width = rect.beginResize.width
@@ -161,7 +211,7 @@ Rectangle {
 
     function resetResize(mouse) {
         rect.beginDrag = Qt.point(rect.x, rect.y)
-        rect.beginResize = Qt.rect(rect.x, rect.y, rect.width, rect.height);
+        rect.beginResize = Qt.rect(rect.x, rect.y, rect.width, rect.height)
         rect.Drag.hotSpot = Qt.point(mouse.x, mouse.y)
         rect.z = 3
 
@@ -170,14 +220,14 @@ Rectangle {
 
     function releaseResize() {
         if (!rect.caught) {
-            resizeBackAnimX.from = rect.x;
-            resizeBackAnimX.to = beginResize.x;
-            resizeBackAnimY.from = rect.y;
-            resizeBackAnimY.to = beginResize.y;
-            resizeBackAnimWidth.from = rect.width;
-            resizeBackAnimWidth.to = beginResize.width;
-            resizeBackAnimHeight.from = rect.height;
-            resizeBackAnimHeight.to = beginResize.height;
+            resizeBackAnimX.from = rect.x
+            resizeBackAnimX.to = beginResize.x
+            resizeBackAnimY.from = rect.y
+            resizeBackAnimY.to = beginResize.y
+            resizeBackAnimWidth.from = rect.width
+            resizeBackAnimWidth.to = beginResize.width
+            resizeBackAnimHeight.from = rect.height
+            resizeBackAnimHeight.to = beginResize.height
             resizeBackAnim.start()
 
             cancelDrag()
@@ -192,17 +242,9 @@ Rectangle {
 
     /* RESIZE ANCHORS */
     Repeater {
-        model: [
-            DirectionFlags.RIGHT,
-            DirectionFlags.LEFT,
-            DirectionFlags.TOP,
-            DirectionFlags.BOTTOM,
-
-            DirectionFlags.RIGHT | DirectionFlags.TOP,
-            DirectionFlags.RIGHT | DirectionFlags.BOTTOM,
-            DirectionFlags.LEFT | DirectionFlags.TOP,
-            DirectionFlags.LEFT | DirectionFlags.BOTTOM
-        ]
+        model: [DirectionFlags.RIGHT, DirectionFlags.LEFT, DirectionFlags.TOP, DirectionFlags.BOTTOM, DirectionFlags.RIGHT
+            | DirectionFlags.TOP, DirectionFlags.RIGHT | DirectionFlags.BOTTOM, DirectionFlags.LEFT
+            | DirectionFlags.TOP, DirectionFlags.LEFT | DirectionFlags.BOTTOM]
 
         ResizeAnchor {
             required property int modelData
@@ -211,7 +253,6 @@ Rectangle {
     }
 
     /* ACTUAL DATA */
-
     TextField {
         id: titleField
         font.pixelSize: item_titleFontSize

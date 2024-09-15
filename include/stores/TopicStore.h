@@ -27,6 +27,7 @@ private:
     bool hasEntry(QString topic);
 
     Q_INVOKABLE Listener entry(QString topic);
+    Q_INVOKABLE Listener changeNumSubscribed(QString topic, int changeBy = 1);
 
     QList<Listener> Listeners;
     QHash<QString, nt::NetworkTableEntry> topicEntryMap;

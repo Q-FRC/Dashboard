@@ -37,14 +37,14 @@ Rectangle {
         }
 
         function rowWidth() {
-            return grid.height / grid.rows;
+            return grid.height / grid.rows
         }
 
-        function prefWidth(item){
+        function prefWidth(item) {
             return colWidth() * item.Layout.columnSpan
         }
 
-        function prefHeight(item){
+        function prefHeight(item) {
             return rowWidth() * item.Layout.rowSpan
         }
 
@@ -57,7 +57,7 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "int"
                     IntWidget {
-                        item_topic: model.topic
+
 
                         Layout.row: model.row
                         Layout.column: model.column
@@ -73,7 +73,7 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "string"
                     TextWidget {
-                        item_topic: model.topic
+
 
                         Layout.row: model.row
                         Layout.column: model.column
@@ -90,7 +90,7 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "double"
                     DoubleWidget {
-                        item_topic: model.topic
+
 
                         Layout.row: model.row
                         Layout.column: model.column
@@ -107,8 +107,58 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "bool"
                     BoolWidget {
-                        item_topic: model.topic
-                        item_checkboxSize: typeof model.properties.checkboxSize === "undefined" ? 20 : model.properties.checkboxSize
+
+
+                        Layout.row: model.row
+                        Layout.column: model.column
+                        Layout.rowSpan: model.rowSpan
+                        Layout.columnSpan: model.colSpan
+
+                        Layout.margins: 8
+
+                        Layout.preferredWidth: grid.prefWidth(this)
+                        Layout.preferredHeight: grid.prefHeight(this)
+                    }
+                }
+
+                DelegateChoice {
+                    roleValue: "dial"
+                    IntDialWidget {
+
+
+                        Layout.row: model.row
+                        Layout.column: model.column
+                        Layout.rowSpan: model.rowSpan
+                        Layout.columnSpan: model.colSpan
+
+                        Layout.margins: 8
+
+                        Layout.preferredWidth: grid.prefWidth(this)
+                        Layout.preferredHeight: grid.prefHeight(this)
+                    }
+                }
+
+                DelegateChoice {
+                    roleValue: "doubleDial"
+                    DoubleDialWidget {
+
+
+                        Layout.row: model.row
+                        Layout.column: model.column
+                        Layout.rowSpan: model.rowSpan
+                        Layout.columnSpan: model.colSpan
+
+                        Layout.margins: 8
+
+                        Layout.preferredWidth: grid.prefWidth(this)
+                        Layout.preferredHeight: grid.prefHeight(this)
+                    }
+                }
+
+                DelegateChoice {
+                    roleValue: "color"
+                    ColorWidget {
+
 
                         Layout.row: model.row
                         Layout.column: model.column

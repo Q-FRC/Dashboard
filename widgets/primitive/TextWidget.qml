@@ -14,7 +14,7 @@ BaseWidget {
         font.pixelSize: item_fontSize
 
         function updateTopic(ntTopic, value) {
-            if (ntTopic === topic) {
+            if (ntTopic === item_topic) {
                 text = value
             }
         }
@@ -34,17 +34,23 @@ BaseWidget {
 
         Component.onCompleted: {
             topicStore.topicUpdate.connect(updateTopic)
-            topicStore.subscribe(topic)
-            text = topicStore.getValue(topic)
+            item_topic = model.topic
         }
 
         Component.onDestruction: {
             if (topicStore !== null) {
                 topicStore.topicUpdate.disconnect(updateTopic)
-                topicStore.unsubscribe(topic)
+                topicStore.unsubscribe(item_topic)
             }
         }
 
-        onTextEdited: topicStore.setValue(topic, text)
+        onTextEdited: topicStore.setValue(item_topic, text)
+    }
+
+    onItem_topicChanged: {
+        topicStore.unsubscribe(topic)
+        topicStore.subscribe(item_topic)
+        model.topic = item_topic
+        textField.text = topicStore.getValue(item_topic)
     }
 }

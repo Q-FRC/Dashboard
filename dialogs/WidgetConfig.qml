@@ -12,13 +12,21 @@ Dialog {
     width: parent.width / 2
     height: parent.width / 1.5
 
+    ColorDialog {
+        id: colorDialog
+    }
+
     property var item
 
     function openUp(item) {
         lm.clear()
         for (var p in item) {
-            if(p.startsWith("item_") && typeof item[p] !== "function") {
-                lm.append({"name": p, "type": MetaObjectHelper.typeName(item, p), "itemValue": item[p]})
+            if (p.startsWith("item_") && typeof item[p] !== "function") {
+                lm.append({
+                              "name": p,
+                              "type": MetaObjectHelper.typeName(item, p),
+                              "itemValue": item[p]
+                          })
             }
         }
 
@@ -33,12 +41,12 @@ Dialog {
     }
 
     function displayText(text) {
-        const result = text.substring(5).replace(/([A-Z])/g, " $1");
-        return result.charAt(0).toUpperCase() + result.slice(1);
+        const result = text.substring(5).replace(/([A-Z])/g, " $1")
+        return result.charAt(0).toUpperCase() + result.slice(1)
     }
 
     function getValues() {
-        for (let i = 0; i < listView.count; ++i) {
+        for (var i = 0; i < listView.count; ++i) {
             let idx = lm.get(i)
             item[idx.name] = idx.itemValue
         }
@@ -93,7 +101,7 @@ Dialog {
                         font.pixelSize: 15
                         text: model.itemValue
 
-                        onTextEdited: model.itemValue = text;
+                        onTextEdited: model.itemValue = text
                     }
                 }
             }
@@ -164,6 +172,49 @@ Dialog {
                         value: model.itemValue * 100.0
 
                         onValueModified: model.itemValue = value / 100.0
+                    }
+                }
+            }
+
+            DelegateChoice {
+                roleValue: "QColor"
+
+                RowLayout {
+                    clip: true
+                    width: parent.width
+
+                    uniformCellSizes: true
+
+                    Label {
+                        Layout.fillWidth: true
+
+                        text: displayText(model.name)
+                        font.pixelSize: 15
+                        color: "white"
+                    }
+
+                    TextField {
+                        id: colorField
+                        font.pixelSize: 15
+                        Layout.fillWidth: true
+
+                        text: model.itemValue
+                    }
+
+                    Button {
+                        Layout.fillWidth: true
+                        text: "Pick"
+
+                        function setColor() {
+                            colorField.text = colorDialog.color
+                            colorDialog.accepted.disconnect(setColor)
+                        }
+
+                        onClicked: {
+                            colorDialog.selectedColor = colorField.text
+                            colorDialog.accepted.connect(setColor)
+                            colorDialog.open()
+                        }
                     }
                 }
             }

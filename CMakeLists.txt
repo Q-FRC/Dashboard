@@ -78,8 +78,11 @@ set(QML_FILES
 
     widgets/primitive/TextWidget.qml
     widgets/primitive/IntWidget.qml
+    widgets/primitive/IntDialWidget.qml
     widgets/primitive/DoubleWidget.qml
+    widgets/primitive/DoubleDialWidget.qml
     widgets/primitive/BoolWidget.qml
+    widgets/primitive/ColorWidget.qml
 
     dialogs/TopicView.qml
     dialogs/TabNameDialog.qml

@@ -30,9 +30,24 @@ Listener TopicStore::entry(QString topic) {
     return l;
 }
 
+Listener TopicStore::changeNumSubscribed(QString topic, int changeBy)
+{
+    for (Listener listener : Listeners) {
+        if (listener.topic == topic) {
+            listener.numSubscribed += changeBy;
+            return listener;
+        }
+    }
+
+    Listener l;
+    l.isNull = true;
+    return l;
+}
+
 QVariant TopicStore::toVariant(const nt::Value &value)
 {
     QVariant v;
+
     if (!value.IsValid()) return v;
 
     if (value.IsBoolean()) v = value.GetBoolean();
@@ -113,7 +128,7 @@ bool Listener::operator==(const Listener &other) const {
 void TopicStore::subscribe(QString ntTopic) {
     Listener listener;
 
-    listener = this->entry(ntTopic);
+    listener = changeNumSubscribed(ntTopic);
     if (listener.isNull) {
         listener = {
             ntTopic,
@@ -146,20 +161,18 @@ void TopicStore::subscribe(QString ntTopic) {
         listener.callback = updateWidget;
 
         Listeners.append(listener);
-    } else {
-        listener.numSubscribed += 1;
     }
 }
 
 void TopicStore::unsubscribe(QString ntTopic) {
     if (!hasEntry(ntTopic)) return;
 
-    Listener listener = entry(ntTopic);
-    listener.numSubscribed -= 1;
+    Listener listener = changeNumSubscribed(ntTopic, -1);
 
     if (listener.numSubscribed <= 0) {
         topicEntryMap.value(ntTopic).Unpublish();
         topicEntryMap.remove(ntTopic);
+        Listeners.removeAll(listener);
         Globals::inst.RemoveListener(listener.listenerHandle);
     }
 }
