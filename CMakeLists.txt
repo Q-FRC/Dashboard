@@ -8,6 +8,7 @@ set(Dashboard_GIT_REPO https://github.com/${Dashboard_ORG_NAME}/${Dashboard_EXEC
 project(QFRCDashboard VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
 add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
@@ -55,8 +56,11 @@ find_package(Protobuf)
 set(QAPPLICATION_CLASS QApplication)
 add_subdirectory("SingleApplication")
 
+set(QRC_FILES fields.qrc)
+
 qt_add_executable(${Dashboard_EXEC_NAME}
     main.cpp
+    ${QRC_FILES}
 )
 
 set_source_files_properties(Constants.qml
@@ -85,6 +89,7 @@ set(QML_FILES
     widgets/primitive/ColorWidget.qml
 
     widgets/sendable/FMSInfo.qml
+    widgets/sendable/Field2d.qml
 
     dialogs/TopicView.qml
     dialogs/TabNameDialog.qml
@@ -99,10 +104,8 @@ set(ELEMENTS
     models/TabListModel
     models/TopicListModel
 
-    # stores/FilterStore
     stores/TopicStore
     # stores/CameraStore
-    # stores/TypeStore
 )
 
 foreach(ELEMENT ${ELEMENTS})
