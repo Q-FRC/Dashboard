@@ -16,8 +16,10 @@ int main(int argc, char *argv[])
     TopicStore store(&app);
     TopicListModel *topics = new TopicListModel(store, &app);
 
-    Globals::inst.AddConnectionListener(true, [topics] (const nt::Event &event) {
+    Globals::inst.AddConnectionListener(true, [topics, &store] (const nt::Event &event) {
         bool connected = event.Is(nt::EventFlags::kConnected);
+
+        store.connect(connected);
 
         if (!connected) {
             topics->clear();

@@ -90,6 +90,8 @@ set(QML_FILES
 
     widgets/sendable/FMSInfo.qml
     widgets/sendable/Field2d.qml
+    widgets/sendable/Command.qml
+    widgets/sendable/StringChooser.qml
 
     dialogs/TopicView.qml
     dialogs/TabNameDialog.qml

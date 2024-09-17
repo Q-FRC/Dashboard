@@ -9,6 +9,11 @@ TopicStore::TopicStore(QObject *parent)
 {
 }
 
+void TopicStore::connect(bool connected)
+{
+    emit this->connected(connected);
+}
+
 bool TopicStore::hasEntry(QString topic) {
     for (const Listener &listener : Listeners) {
         if (topic == listener.topic) {

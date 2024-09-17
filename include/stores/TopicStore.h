@@ -39,6 +39,8 @@ public:
 
     TopicStore(QObject *parent = nullptr);
 
+    void connect(bool connected);
+
     Q_INVOKABLE void subscribe(QString ntTopic);
     Q_INVOKABLE void unsubscribe(QString ntTopic);
 
@@ -55,6 +57,7 @@ public:
     }
 signals:
     void topicUpdate(QString topic, QVariant newValue);
+    void connected(bool connected);
 };
 
 #endif // TopicStore_H
