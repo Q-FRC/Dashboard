@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 
 import QFRCDashboard 1.0
-import DirectionFlags 1.0
+import QFDFlags 1.0
 
 Rectangle {
     id: resizeAnchor
@@ -10,10 +10,10 @@ Rectangle {
 
     required property int direction
 
-    property bool hasLeft: direction & DirectionFlags.LEFT
-    property bool hasRight: direction & DirectionFlags.RIGHT
-    property bool hasTop: direction & DirectionFlags.TOP
-    property bool hasBottom: direction & DirectionFlags.BOTTOM
+    property bool hasLeft: direction & QFDFlags.LEFT
+    property bool hasRight: direction & QFDFlags.RIGHT
+    property bool hasTop: direction & QFDFlags.TOP
+    property bool hasBottom: direction & QFDFlags.BOTTOM
 
     property bool horiz: hasLeft || hasRight
     property bool vert: hasTop || hasBottom

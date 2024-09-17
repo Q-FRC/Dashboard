@@ -57,8 +57,6 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "int"
                     IntWidget {
-
-
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan
@@ -73,8 +71,6 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "string"
                     TextWidget {
-
-
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan
@@ -90,8 +86,6 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "double"
                     DoubleWidget {
-
-
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan
@@ -107,8 +101,6 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "bool"
                     BoolWidget {
-
-
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan
@@ -124,8 +116,6 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "dial"
                     IntDialWidget {
-
-
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan
@@ -141,8 +131,6 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "doubleDial"
                     DoubleDialWidget {
-
-
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan
@@ -158,8 +146,21 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "color"
                     ColorWidget {
+                        Layout.row: model.row
+                        Layout.column: model.column
+                        Layout.rowSpan: model.rowSpan
+                        Layout.columnSpan: model.colSpan
 
+                        Layout.margins: 8
 
+                        Layout.preferredWidth: grid.prefWidth(this)
+                        Layout.preferredHeight: grid.prefHeight(this)
+                    }
+                }
+
+                DelegateChoice {
+                    roleValue: "FMSInfo"
+                    FMSInfo {
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan

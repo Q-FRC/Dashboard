@@ -36,6 +36,15 @@ void TopicListModel::add(const QString &toAdd)
     QStringList split = toAdd.split('/');
     if (split.at(0).isEmpty()) split.remove(0);
 
+    QStringList newList = split;
+    newList.removeLast();
+    QString parentPath('/' + newList.join('/'));
+
+    nt::NetworkTableEntry type = Globals::inst.GetEntry(parentPath.toStdString() + "/.type");
+
+    bool hasType = type.Exists();
+    type.Unpublish();
+
     QStandardItem *parentItem = invisibleRootItem();
 
     for (const QString &sub : split) {
@@ -45,25 +54,62 @@ void TopicListModel::add(const QString &toAdd)
 
         if (results.isEmpty()) {
             QStandardItem *item = new QStandardItem(sub);
+            bool append = false;
 
             if (isLast) {
-                item->setData(toAdd, TLMRoleTypes::TOPIC);
-                item->setData(m_store->typeString(toAdd), TYPE);
+                if (hasType) {
+                    if (sub == ".type") {
+                        QMetaObject::Connection *conn = new QMetaObject::Connection;
+
+                        m_store->subscribe(toAdd);
+
+                        *conn = connect(m_store, &TopicStore::topicUpdate, this, [conn, toAdd, parentItem, parentPath, this](QString topic, QVariant value) {
+                            if (topic == toAdd) {
+                                parentItem->setData(parentPath, TOPIC);
+                                QString typeStr = value.toString();
+                                parentItem->setData(typeStr, TYPE);
+
+                                disconnect(*conn);
+                                delete conn;
+
+                                m_store->unsubscribe(toAdd);
+                            }
+                        });
+
+                        append = false;
+                    } else {
+                        append = false;
+                    }
+                } else {
+                    append = true;
+
+                    item->setData(toAdd, TLMRoleTypes::TOPIC);
+                    item->setData(m_store->typeString(toAdd), TYPE);
+                }
             } else {
-                item->setData("theseNuts", TLMRoleTypes::TOPIC);
+                append = true;
+                item->setData("", TLMRoleTypes::TOPIC);
                 item->setData("", TYPE);
             }
 
-            parentItem->appendRow(item);
-            parentItem = item;
+            if (append) {
+                parentItem->appendRow(item);
+                parentItem = item;
+            } else {
+                delete item;
+            }
         } else {
             for (QStandardItem *item : results) {
+                if (item->parent() != nullptr && item->parent()->data(TLMRoleTypes::TYPE).toString() != "") goto end;
+
                 if (item->parent() == nullptr || item->parent()->text() == parentItem->text()) {
                     parentItem = item;
                 }
             }
         }
     }
+end:
+    return;
 }
 
 void TopicListModel::remove(const QString &toRemove)
@@ -95,9 +141,9 @@ void TopicListModel::remove(const QString &toRemove)
                     }
 
                     parentItem = item;
-
                 }
             }
         }
     }
 }
+

@@ -3,7 +3,7 @@
 #include <QQmlContext>
 
 #include "BuildConfig.h"
-#include "DirectionFlags.h"
+#include "Flags.h"
 #include "Globals.h"
 #include "TopicListModel.h"
 #include "TopicStore.h"
@@ -24,8 +24,6 @@ int main(int argc, char *argv[])
         }
     });
 
-
-
     Globals::inst.StartClient4(BuildConfig.APP_NAME.toStdString());
     Globals::inst.SetServer(Globals::server.server.c_str(), NT_DEFAULT_PORT4);
     Globals::inst.StartDSClient();
@@ -42,11 +40,11 @@ int main(int argc, char *argv[])
     });
 
     qmlRegisterUncreatableMetaObject(
-        DirectionFlags::staticMetaObject, // meta object created by Q_NAMESPACE macro
-        "DirectionFlags",                // import statement (can be any string)
+        QFDFlags::staticMetaObject, // meta object created by Q_NAMESPACE macro
+        "QFDFlags",                // import statement (can be any string)
         1, 0,                          // major and minor version of the import
-        "DirectionFlags",                 // name in QML (does not have to match C++ name)
-        "Attempt to create uninstantiable object \"DirectionFlags\" ignored"            // error in case someone tries to create a MyNamespace object
+        "QFDFlags",                 // name in QML (does not have to match C++ name)
+        "Attempt to create uninstantiable object \"QFDFlags\" ignored"            // error in case someone tries to create a MyNamespace object
         );
 
     QQmlApplicationEngine engine;

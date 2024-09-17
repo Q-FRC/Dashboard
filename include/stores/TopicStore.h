@@ -3,6 +3,7 @@
 
 #include "networktables/NetworkTableEntry.h"
 #include "Globals.h"
+#include "Flags.h"
 
 #include <QMultiHash>
 #include <QHash>
@@ -47,6 +48,11 @@ public:
     Q_INVOKABLE void setValue(QString topic, const QVariant &value);
 
     QString typeString(QString topic);
+
+    Q_INVOKABLE inline QFDFlags::ControlWord toWord(int val)
+    {
+        return (QFDFlags::ControlWord) val;
+    }
 signals:
     void topicUpdate(QString topic, QVariant newValue);
 };

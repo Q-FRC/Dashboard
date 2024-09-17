@@ -84,6 +84,8 @@ set(QML_FILES
     widgets/primitive/BoolWidget.qml
     widgets/primitive/ColorWidget.qml
 
+    widgets/sendable/FMSInfo.qml
+
     dialogs/TopicView.qml
     dialogs/TabNameDialog.qml
     dialogs/WidgetConfig.qml
@@ -110,7 +112,7 @@ endforeach()
 
 set(HEADERS
     ${HEADERS}
-    include/DirectionFlags.h
+    include/Flags.h
     include/MetaObjectHelper.h
 )
 

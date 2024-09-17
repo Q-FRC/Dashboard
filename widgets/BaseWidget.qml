@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 2.15
 
 import QFRCDashboard 1.0
-import DirectionFlags 1.0
+import QFDFlags 1.0
 
 Rectangle {
     id: rect
@@ -242,9 +242,9 @@ Rectangle {
 
     /* RESIZE ANCHORS */
     Repeater {
-        model: [DirectionFlags.RIGHT, DirectionFlags.LEFT, DirectionFlags.TOP, DirectionFlags.BOTTOM, DirectionFlags.RIGHT
-            | DirectionFlags.TOP, DirectionFlags.RIGHT | DirectionFlags.BOTTOM, DirectionFlags.LEFT
-            | DirectionFlags.TOP, DirectionFlags.LEFT | DirectionFlags.BOTTOM]
+        model: [QFDFlags.RIGHT, QFDFlags.LEFT, QFDFlags.TOP, QFDFlags.BOTTOM, QFDFlags.RIGHT
+            | QFDFlags.TOP, QFDFlags.RIGHT | QFDFlags.BOTTOM, QFDFlags.LEFT
+            | QFDFlags.TOP, QFDFlags.LEFT | QFDFlags.BOTTOM]
 
         ResizeAnchor {
             required property int modelData
