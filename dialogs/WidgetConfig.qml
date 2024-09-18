@@ -69,6 +69,15 @@ Dialog {
         boundsBehavior: Flickable.StopAtBounds
 
         model: lm
+
+        component FieldLabel : Label {
+            Layout.fillWidth: true
+
+            text: displayText(model.name)
+            font.pixelSize: 15
+            color: "white"
+        }
+
         delegate: DelegateChooser {
             role: "type"
 
@@ -86,13 +95,7 @@ Dialog {
 
                     uniformCellSizes: true
 
-                    Label {
-                        Layout.fillWidth: true
-
-                        text: displayText(model.name)
-                        font.pixelSize: 15
-                        color: "white"
-                    }
+                    FieldLabel {}
 
                     TextField {
                         id: txt
@@ -119,13 +122,7 @@ Dialog {
 
                     uniformCellSizes: true
 
-                    Label {
-                        Layout.fillWidth: true
-
-                        text: displayText(model.name)
-                        font.pixelSize: 15
-                        color: "white"
-                    }
+                    FieldLabel {}
 
                     SpinBox {
                         to: 1000
@@ -154,13 +151,7 @@ Dialog {
 
                     uniformCellSizes: true
 
-                    Label {
-                        Layout.fillWidth: true
-
-                        text: displayText(model.name)
-                        font.pixelSize: 15
-                        color: "white"
-                    }
+                    FieldLabel {}
 
                     DoubleSpinBox {
                         to: 1000 * 100
@@ -170,6 +161,8 @@ Dialog {
                         Layout.fillWidth: true
 
                         value: model.itemValue * 100.0
+
+                        stepSize: 10
 
                         onValueModified: model.itemValue = value / 100.0
                     }
@@ -185,13 +178,7 @@ Dialog {
 
                     uniformCellSizes: true
 
-                    Label {
-                        Layout.fillWidth: true
-
-                        text: displayText(model.name)
-                        font.pixelSize: 15
-                        color: "white"
-                    }
+                    FieldLabel {}
 
                     TextField {
                         id: colorField
@@ -206,7 +193,8 @@ Dialog {
                         text: "Pick"
 
                         function setColor() {
-                            colorField.text = colorDialog.color
+                            colorField.text = colorDialog.selectedColor
+                            model.itemValue = colorDialog.selectedColor
                             colorDialog.accepted.disconnect(setColor)
                         }
 

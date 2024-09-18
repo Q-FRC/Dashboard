@@ -17,6 +17,7 @@ BaseWidget {
             text: "Dial"
             onTriggered: {
                 model.type = "dial"
+                model.properties.clear()
             }
         }
     }

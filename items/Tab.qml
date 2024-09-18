@@ -11,6 +11,23 @@ Rectangle {
     height: Constants.height
     color: Constants.bg
 
+    TabWidgetsModel {
+        id: twm
+
+        rows: model.rows
+        cols: model.cols
+    }
+
+    Component.onCompleted: {
+        if (model.widgets === null)
+            model.widgets = twm
+        else {
+
+            twm.setEqualTo(model.widgets)
+            model.widgets = twm
+        }
+    }
+
     function add(title, topic, type) {
         twm.add(title, topic, type)
     }
@@ -32,25 +49,14 @@ Rectangle {
 
         grid.rows = r
         grid.columns = c
-
-        console.log(r,c)
     }
 
     function cols() {
-        console.log(twm.cols)
         return model.cols
     }
 
     function rows() {
-        console.log(twm.rows)
         return model.rows
-    }
-
-    TabWidgetsModel {
-        id: twm
-
-        rows: model.rows
-        cols: model.cols
     }
 
     GridLayout {

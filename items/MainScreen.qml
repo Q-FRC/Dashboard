@@ -1,3 +1,4 @@
+import QtCore
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 6.6
@@ -9,6 +10,8 @@ Rectangle {
     width: Constants.width
     height: Constants.height
     color: Constants.bg
+
+    property string filename: ""
 
     function openConf(item) {
         widgetConf.openUp(item)
@@ -65,6 +68,54 @@ Rectangle {
         id: tlm
     }
 
+    /** SAVE */
+    FileDialog {
+        id: saveDialog
+        currentFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation)
+        fileMode: FileDialog.SaveFile
+        defaultSuffix: "json"
+        selectedNameFilter.index: 0
+        nameFilters: ["JSON files (*.json)", "All files (*)"]
+    }
+
+    function save() {
+        if (filename === "") return saveAsAction()
+
+        tlm.save(filename)
+    }
+
+    function saveAs() {
+        filename = saveDialog.selectedFile
+
+        tlm.save(filename)
+    }
+
+    function saveAsAction() {
+        saveDialog.accepted.connect(saveAs)
+        saveDialog.open()
+    }
+
+    /** LOAD */
+    FileDialog {
+        id: loadDialog
+        currentFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation)
+        fileMode: FileDialog.OpenFile
+        defaultSuffix: "json"
+        selectedNameFilter.index: 0
+        nameFilters: ["JSON files (*.json)", "All files (*)"]
+    }
+
+    function load() {
+        filename = loadDialog.selectedFile
+        tlm.load(filename)
+    }
+
+    function loadAction() {
+        loadDialog.accepted.connect(load)
+        loadDialog.open()
+    }
+
+    /** TAB SETTINGS */
     function addTab() {
         tabNameDialog.accepted.disconnect(addTab)
         tlm.add(tabNameDialog.tabName.text);
@@ -98,6 +149,22 @@ Rectangle {
 
     function currentTab() {
         return swipe.currentItem
+    }
+
+    /** CLOSE TAB */
+    MessageDialog {
+        id: tabClose
+        title: "Close Tab?"
+        text: "Are you sure you want to close this tab?"
+        buttons: MessageDialog.Yes | MessageDialog.No
+
+        onAccepted: {
+            tlm.remove(swipe.currentIndex)
+        }
+    }
+
+    function closeTab() {
+        tabClose.open()
     }
 
     SwipeView {

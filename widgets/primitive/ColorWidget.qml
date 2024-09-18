@@ -6,8 +6,6 @@ import QFRCDashboard
 BaseWidget {
     property string item_topic
 
-    property int item_checkboxSize: 20
-
     property color item_falseColor: "#FF0000"
     property color item_trueColor: "#00FF00"
 
@@ -19,20 +17,24 @@ BaseWidget {
             text: "Checkbox"
             onTriggered: {
                 model.type = "bool"
+                model.properties.clear()
             }
         }
     }
+
+    onItem_falseColorChanged: recta.updateTopic(item_topic, topicStore.getValue(item_topic))
+    onItem_trueColorChanged: recta.updateTopic(item_topic, topicStore.getValue(item_topic))
 
     Component.onCompleted: {
         rcMenu.addMenu(switchMenu)
     }
 
     Rectangle {
-        id: rect
+        id: recta
 
         function updateTopic(ntTopic, ntValue) {
             if (ntTopic === item_topic) {
-                color = ntValue ? item_trueColor : item_falseColor
+                this.color = ntValue ? item_trueColor : item_falseColor
             }
         }
 
@@ -62,6 +64,6 @@ BaseWidget {
         topicStore.unsubscribe(topic)
         topicStore.subscribe(item_topic)
         model.topic = item_topic
-        rect.updateTopic(item_topic, topicStore.getValue(item_topic))
+        recta.updateTopic(item_topic, topicStore.getValue(item_topic))
     }
 }

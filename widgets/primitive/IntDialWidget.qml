@@ -23,6 +23,7 @@ BaseWidget {
             text: "Spin Box"
             onTriggered: {
                 model.type = "int"
+                model.properties.clear()
             }
         }
     }

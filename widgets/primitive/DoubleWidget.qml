@@ -20,6 +20,7 @@ BaseWidget {
             text: "Dial"
             onTriggered: {
                 model.type = "doubleDial"
+                model.properties.clear()
             }
         }
     }

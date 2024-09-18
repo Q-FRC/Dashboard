@@ -1,4 +1,6 @@
 #include "models/TabWidgetsModel.h"
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QRect>
 
 TabWidgetsModel::TabWidgetsModel(QObject *parent)
@@ -53,6 +55,9 @@ bool TabWidgetsModel::setData(const QModelIndex &index, const QVariant &value, i
         case TYPE:
             w.type = value.toString();
             break;
+        case TOPIC:
+            w.topic = value.toString();
+            break;
         case COL:
             w.col = value.toInt();
             break;
@@ -64,6 +69,9 @@ bool TabWidgetsModel::setData(const QModelIndex &index, const QVariant &value, i
             break;
         case ROWSPAN:
             w.rowSpan = value.toInt();
+            break;
+        case PROPERTIES:
+            w.properties = value.toMap();
             break;
         }
         emit dataChanged(index, index, {role});
@@ -77,7 +85,16 @@ Qt::ItemFlags TabWidgetsModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::NoItemFlags;
 
-    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+}
+
+void TabWidgetsModel::add(Widget w)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_data << w;
+    endInsertRows();
+
+    emit unoccupiedCellsChanged();
 }
 
 void TabWidgetsModel::add(QString title, QString topic, QString type)
@@ -94,13 +111,30 @@ void TabWidgetsModel::add(QString title, QString topic, QString type)
     w.rowSpan = 1;
     w.colSpan = 1;
 
-    w.properties = QVariantMap({{"checkboxSize", 40}});
-
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data << w;
     endInsertRows();
 
     emit unoccupiedCellsChanged();
+}
+
+void TabWidgetsModel::setEqualTo(TabWidgetsModel *w)
+{
+    beginResetModel();
+    m_data.clear();
+    endResetModel();
+
+    beginInsertRows(QModelIndex(), 0, w->data().count() - 1);
+    m_data << w->data();
+    endInsertRows();
+
+    m_rows = w->rows();
+    m_cols = w->cols();
+}
+
+QList<Widget> TabWidgetsModel::data()
+{
+    return m_data;
 }
 
 bool TabWidgetsModel::remove(int row, int column, const QModelIndex &parent)
@@ -150,6 +184,7 @@ void TabWidgetsModel::setCols(int newCols)
 bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan, QRectF ignore)
 {
     QRect itemRect = QRect(col, row, colSpan, rowSpan);
+    qDebug() << cols() << col + colSpan;
     if (col + colSpan > cols() || row + rowSpan > rows()) return true;
 
     for (const Widget &w : m_data) {
@@ -160,9 +195,12 @@ bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan, Q
         }
 
         if (dataRect.intersects(itemRect)) {
+            qDebug() << dataRect << itemRect;
             return true;
         }
     }
+
+    qDebug() << "NOPE!" << itemRect;
 
     return false;
 }
@@ -192,4 +230,66 @@ int TabWidgetsModel::unoccupiedCells() const
     }
 
     return c;
+}
+
+QJsonArray TabWidgetsModel::saveObject() const
+{
+    QJsonArray arr;
+
+    for (const Widget &w : m_data) {
+        QJsonObject obj;
+        obj.insert("title", w.title);
+        obj.insert("topic", w.topic);
+        obj.insert("type", w.type);
+        obj.insert("column", w.col);
+        obj.insert("row", w.row);
+        obj.insert("rowSpan", w.rowSpan);
+        obj.insert("colSpan", w.colSpan);
+
+        QJsonObject prop;
+
+        QMapIterator iter(w.properties);
+
+        while (iter.hasNext()) {
+            iter.next();
+            prop.insert(iter.key(), iter.value().toJsonValue());
+        }
+
+        obj.insert("properties", prop);
+
+        arr.append(obj);
+    }
+
+    return arr;
+}
+
+TabWidgetsModel *TabWidgetsModel::loadObject(QObject *parent, const QJsonArray &arr)
+{
+    TabWidgetsModel *model = new TabWidgetsModel(parent);
+
+    for (const QJsonValueConstRef ref : arr) {
+        QJsonObject obj = ref.toObject();
+
+        Widget w;
+        w.title = obj.value("title").toString("");
+        w.topic = obj.value("topic").toString("");
+        w.type = obj.value("type").toString("");
+        w.col = obj.value("column").toInt(0);
+        w.row = obj.value("row").toInt(0);
+        w.rowSpan= obj.value("rowSpan").toInt(0);
+        w.colSpan = obj.value("colSpan").toInt(0);
+
+        QJsonObject properties = obj.value("properties").toObject();
+
+        QVariantMap props;
+        for (const QString &key : properties.keys()) {
+            props.insert(key, properties.value(key));
+        }
+
+        w.properties = props;
+
+        model->add(w);
+    }
+
+    return model;
 }

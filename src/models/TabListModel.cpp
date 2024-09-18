@@ -1,5 +1,9 @@
 #include "TabListModel.h"
 
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonObject>
+
 TabListModel::TabListModel(QObject *parent)
     : QAbstractListModel(parent)
 {}
@@ -23,6 +27,8 @@ QVariant TabListModel::data(const QModelIndex &index, int role) const
         return t.rows;
     case COLS:
         return t.cols;
+    case WIDGETS:
+        return QVariant::fromValue(t.model);
     default:
         break;
     }
@@ -41,6 +47,8 @@ bool TabListModel::setData(const QModelIndex &index, const QVariant &value, int 
             t.rows = value.toInt();
         case COLS:
             t.cols = value.toInt();
+        case WIDGETS:
+            t.model = value.value<TabWidgetsModel *>();
         default:
             break;
         }
@@ -55,7 +63,14 @@ Qt::ItemFlags TabListModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::NoItemFlags;
 
-    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable; // FIXME: Implement me!
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+}
+
+void TabListModel::add(Tab t)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_data << t;
+    endInsertRows();
 }
 
 void TabListModel::add(QString title)
@@ -66,14 +81,98 @@ void TabListModel::add(QString title)
     t.rows = 3;
     t.cols = 5;
 
+    t.model = nullptr;
+
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data << t;
     endInsertRows();
+}
+
+bool TabListModel::remove(int row, const QModelIndex &parent)
+{
+    beginRemoveRows(parent, row, row);
+    m_data.remove(row);
+    endRemoveRows();
+
+    return true;
+}
+
+void TabListModel::save(const QString &filename) const
+{
+    QString name = filename;
+    name.replace("file://", "");
+    QFile file(name);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << ":(";
+        return;
     }
 
-bool TabListModel::remove(int row, int column, const QModelIndex &parent)
+    // addRecentFile(file);
+    // refreshRecentFiles();
+
+    QTextStream stream(&file);
+    stream << saveObject().toJson();
+    file.close();
+}
+
+QJsonDocument TabListModel::saveObject() const
 {
-    return false;
+    QJsonArray arr;
+
+    for (const Tab &t : m_data) {
+        QJsonObject obj;
+
+        obj.insert("title", t.title);
+        obj.insert("rows", t.rows);
+        obj.insert("cols", t.cols);
+        obj.insert("widgets", t.model->saveObject());
+
+        arr.append(obj);
+    }
+
+    return QJsonDocument(arr);
+}
+
+void TabListModel::loadObject(const QJsonDocument &doc)
+{
+    QJsonArray arr = doc.array();
+
+    for (const QJsonValueRef ref : arr) {
+        QJsonObject obj = ref.toObject();
+
+        Tab t;
+
+        t.title = obj.value("title").toString();
+        t.rows = obj.value("rows").toInt();
+        t.cols = obj.value("cols").toInt();
+        t.model = TabWidgetsModel::loadObject(this, obj.value("widgets").toArray());
+
+        add(t);
+    }
+}
+
+void TabListModel::load(const QString &filename)
+{
+    QString name = filename;
+    name.replace("file://", "");
+
+    QFile file(name);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
+
+    // addRecentFile(file);
+    // refreshRecentFiles();
+
+    QTextStream stream(&file);
+    QByteArray data = stream.readAll().toUtf8();
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+
+    loadObject(doc);
+    file.close();
 }
 
 QHash<int, QByteArray> TabListModel::roleNames() const
@@ -82,6 +181,7 @@ QHash<int, QByteArray> TabListModel::roleNames() const
     rez[TITLE] = "title";
     rez[ROWS] = "rows";
     rez[COLS] = "cols";
+    rez[WIDGETS] = "widgets";
 
     return rez;
 }

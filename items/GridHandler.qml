@@ -25,6 +25,7 @@ Repeater {
 
     function recalcValid() {
         let valid = true
+
         for (let i = 0; i < validResize.length; ++i) {
             if (!validResize[i]) valid = false
         }
@@ -167,6 +168,7 @@ Repeater {
                 border.color = rep.recalcValid() ? "light green" : "red"
                 border.width = 5
             } else {
+                rep.validResize[modelData] = true
                 resetBorder()
             }
 

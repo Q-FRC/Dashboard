@@ -23,6 +23,7 @@ BaseWidget {
             text: "Spin Box"
             onTriggered: {
                 model.type = "double"
+                model.properties.clear()
             }
         }
     }

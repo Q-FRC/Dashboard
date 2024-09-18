@@ -50,7 +50,12 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     // Add data:
+    Q_INVOKABLE void add(Widget w);
     Q_INVOKABLE void add(QString title, QString topic, QString type);
+
+    Q_INVOKABLE void setEqualTo(TabWidgetsModel *w);
+
+    QList<Widget> data();
 
     // Remove data:
     Q_INVOKABLE bool remove(int row, int column, const QModelIndex &parent = QModelIndex());
@@ -65,6 +70,9 @@ public:
 
     int unoccupiedCells() const;
     void setUnoccupiedCells(int newUnoccupiedCells);
+
+    QJsonArray saveObject() const;
+    static TabWidgetsModel *loadObject(QObject *parent, const QJsonArray &arr);
 
 protected:
     QHash<int, QByteArray> roleNames() const override;
@@ -87,5 +95,7 @@ private:
     Q_PROPERTY(int cols READ cols WRITE setCols NOTIFY colsChanged FINAL)
     Q_PROPERTY(int unoccupiedCells READ unoccupiedCells NOTIFY unoccupiedCellsChanged FINAL)
 };
+
+Q_DECLARE_METATYPE(TabWidgetsModel)
 
 #endif // TABWIDGETSMODEL_H

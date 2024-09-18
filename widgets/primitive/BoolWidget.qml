@@ -16,6 +16,7 @@ BaseWidget {
             text: "Color Display"
             onTriggered: {
                 model.type = "color"
+                model.properties.clear()
             }
         }
     }

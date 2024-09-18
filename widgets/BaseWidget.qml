@@ -67,8 +67,22 @@ Rectangle {
 
         for (var p in this) {
             if (p.startsWith("item_") && typeof this[p] !== "function") {
-                let prop = model.properties[p.substring(5)]
-                this[p] = typeof prop === "undefined" ? this[p] : prop
+                let propName = p
+                let substr = propName.substring(5)
+                let prop = model.properties[substr]
+                this[p] = typeof prop === "undefined" ? this[propName] : prop
+
+                if (substr === "topic") {
+                    this.item_topicChanged.connect(() => {
+                                                       model.topic = this.item_topic
+                                                   });
+                } else {
+                    this[p + "Changed"].connect(() => {
+                                                    let x = model.properties
+                                                    x[substr] = this[propName]
+                                                    model.properties = x
+                                                });
+                }
             }
         }
     }
@@ -260,6 +274,8 @@ Rectangle {
 
         text: model.title
         color: "#FFFFFF"
+
+        onTextEdited: model.title = text
 
         anchors {
             top: parent.top

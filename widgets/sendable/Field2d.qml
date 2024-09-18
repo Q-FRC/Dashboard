@@ -18,6 +18,9 @@ BaseWidget {
         robot.redraw()
     }
 
+    onItem_robotLengthMetersChanged: redraw()
+    onItem_robotWidthMetersChanged: redraw()
+
     onWidthChanged: redraw()
     onHeightChanged: redraw()
 
@@ -59,8 +62,8 @@ BaseWidget {
         function redraw() {
             let meterRatio = field.paintedHeight / fieldWidth
 
-            width = item_robotWidthMeters * meterRatio
-            height = item_robotLengthMeters * meterRatio
+            height = item_robotWidthMeters * meterRatio
+            width = item_robotLengthMeters * meterRatio
 
             let xPixels = xMeters * meterRatio
             let yPixels = yMeters * meterRatio
@@ -70,12 +73,12 @@ BaseWidget {
 
             let bottomLeft = Qt.point(realFieldX, realFieldY + field.paintedHeight)
 
-            x = bottomLeft.x + xPixels// + (width / 2)
+            x = bottomLeft.x + xPixels
             y = bottomLeft.y - yPixels - height
 
             rotation = -angleDeg
 
-            path.redraw(x, y, width, height, angleDeg)
+            path.redraw(x, y, height, width, angleDeg)
         }
 
         Component.onCompleted: {
