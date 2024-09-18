@@ -43,7 +43,6 @@ void TopicListModel::add(const QString &toAdd)
     nt::NetworkTableEntry type = Globals::inst.GetEntry(parentPath.toStdString() + "/.type");
 
     bool hasType = type.Exists();
-    type.Unpublish();
 
     QStandardItem *parentItem = invisibleRootItem();
 
@@ -59,22 +58,30 @@ void TopicListModel::add(const QString &toAdd)
             if (isLast) {
                 if (hasType) {
                     if (sub == ".type") {
-                        QMetaObject::Connection *conn = new QMetaObject::Connection;
+                        std::string value = type.GetString("invalid");
 
-                        m_store->subscribe(toAdd);
+                        if (value == "invalid") {
+                            QMetaObject::Connection *conn = new QMetaObject::Connection;
 
-                        *conn = connect(m_store, &TopicStore::topicUpdate, this, [conn, toAdd, parentItem, parentPath, this](QString topic, QVariant value) {
-                            if (topic == toAdd) {
-                                parentItem->setData(parentPath, TOPIC);
-                                QString typeStr = value.toString();
-                                parentItem->setData(typeStr, TYPE);
+                            m_store->subscribe(toAdd);
 
-                                disconnect(*conn);
-                                delete conn;
+                            *conn = connect(m_store, &TopicStore::topicUpdate, this, [conn, toAdd, parentItem, parentPath, this](QString topic, QVariant value) mutable {
+                                if (topic == toAdd) {
+                                    parentItem->setData(parentPath, TOPIC);
+                                    QString typeStr = value.toString();
+                                    parentItem->setData(typeStr, TYPE);
 
-                                m_store->unsubscribe(toAdd);
-                            }
-                        });
+                                    m_store->unsubscribe(toAdd);
+
+                                    disconnect(*conn);
+                                    delete conn;
+                                }
+                            });
+                        } else {
+                            parentItem->setData(parentPath, TOPIC);
+                            QString typeStr = QString::fromStdString(value);
+                            parentItem->setData(typeStr, TYPE);
+                        }
 
                         append = false;
                     } else {
@@ -108,7 +115,9 @@ void TopicListModel::add(const QString &toAdd)
             }
         }
     }
+
 end:
+    type.Unpublish();
     return;
 }
 

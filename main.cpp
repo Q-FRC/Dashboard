@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <TabListModel.h>
 
 #include "BuildConfig.h"
 #include "Flags.h"
@@ -12,9 +13,9 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-
     TopicStore store(&app);
     TopicListModel *topics = new TopicListModel(store, &app);
+    TabListModel *tlm = new TabListModel(&app);
 
     Globals::inst.AddConnectionListener(true, [topics, &store] (const nt::Event &event) {
         bool connected = event.Is(nt::EventFlags::kConnected);
@@ -42,17 +43,18 @@ int main(int argc, char *argv[])
     });
 
     qmlRegisterUncreatableMetaObject(
-        QFDFlags::staticMetaObject, // meta object created by Q_NAMESPACE macro
-        "QFDFlags",                // import statement (can be any string)
-        1, 0,                          // major and minor version of the import
-        "QFDFlags",                 // name in QML (does not have to match C++ name)
-        "Attempt to create uninstantiable object \"QFDFlags\" ignored"            // error in case someone tries to create a MyNamespace object
+        QFDFlags::staticMetaObject,
+        "QFDFlags",
+        1, 0,
+        "QFDFlags",
+        "Attempt to create uninstantiable object \"QFDFlags\" ignored"
         );
 
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("topics", topics);
     engine.rootContext()->setContextProperty("topicStore", &store);
+    engine.rootContext()->setContextProperty("tlm", tlm);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

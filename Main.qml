@@ -4,12 +4,22 @@ import QtQuick.Controls
 import QFRCDashboard
 
 ApplicationWindow {
+    id: window
     width: Constants.width
     height: Constants.height
     visible: true
     title: qsTr("QFRCDashboard")
 
     menuBar: MenuBar {
+        Menu {
+            title: qsTr("&NT")
+            Action {
+                text: qsTr("&Server Settings...")
+                onTriggered: screen.serverSettings()
+                shortcut: "Ctrl+E"
+            }
+        }
+
         Menu {
             title: qsTr("&File")
             Action {

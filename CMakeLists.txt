@@ -97,6 +97,7 @@ set(QML_FILES
     dialogs/TabNameDialog.qml
     dialogs/TabSizeDialog.qml
     dialogs/WidgetConfig.qml
+    dialogs/ServerDialog.qml
 )
 
 set(ELEMENTS

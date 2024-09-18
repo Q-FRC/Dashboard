@@ -54,10 +54,30 @@ public:
     Q_INVOKABLE void loadObject(const QJsonDocument &doc);
     Q_INVOKABLE void load(const QString &fileName = "");
 
+    bool useTeam() const;
+    void setUseTeam(bool newUseTeam);
+
+    QString ip() const;
+    void setIp(const QString &newIp);
+
+    int getPort() const;
+    void setPort(int newPort);
+
+signals:
+    void useTeamChanged();
+
+    void ipChanged();
+
+    void portChanged();
+
 protected:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
     QList<Tab> m_data;
+
+    Q_PROPERTY(bool useTeam READ useTeam WRITE setUseTeam NOTIFY useTeamChanged FINAL)
+    Q_PROPERTY(QString ip READ ip WRITE setIp NOTIFY ipChanged FINAL)
+    Q_PROPERTY(int port READ getPort WRITE setPort NOTIFY portChanged FINAL)
 };
 #endif // TABLISTMODEL_H

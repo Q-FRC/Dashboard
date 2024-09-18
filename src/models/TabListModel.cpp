@@ -1,8 +1,41 @@
 #include "TabListModel.h"
+#include "Globals.h"
 
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonObject>
+
+void reconnectServer() {
+    std::string server = Globals::server.server;
+    bool isTeamNumber = Globals::server.teamNumber;
+    int port = Globals::server.port;
+    // QString switchTopic = Globals::server.switchTopic;
+
+    if (server.empty()) return;
+
+    if (isTeamNumber) {
+        int team;
+        try {
+            team = std::stoi(server);
+        } catch (std::invalid_argument const &) {
+            return;
+        }
+
+        Globals::inst.SetServerTeam(team, port);
+    } else {
+        Globals::inst.SetServer(server.c_str(), port);
+    }
+
+    Globals::inst.Disconnect();
+
+    // QString serverTopic = Globals::server.switchTopic;
+
+    // Globals::server = data;
+
+    // if (serverTopic != switchTopic) {
+    //     emit switchTopicChanged();
+    // }
+}
 
 TabListModel::TabListModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -118,6 +151,11 @@ void TabListModel::save(const QString &filename) const
 
 QJsonDocument TabListModel::saveObject() const
 {
+    QJsonObject doc;
+    doc.insert("useTeamNumber", useTeam());
+    doc.insert("port", getPort());
+    doc.insert("ip", ip());
+
     QJsonArray arr;
 
     for (const Tab &t : m_data) {
@@ -131,12 +169,22 @@ QJsonDocument TabListModel::saveObject() const
         arr.append(obj);
     }
 
-    return QJsonDocument(arr);
+    doc.insert("tabs", arr);
+
+    return QJsonDocument(doc);
 }
 
 void TabListModel::loadObject(const QJsonDocument &doc)
 {
-    QJsonArray arr = doc.array();
+    QJsonObject ob = doc.object();
+
+    Globals::server.server = ob.value("ip").toString().toStdString();
+    Globals::server.port = ob.value("port").toInt();
+    Globals::server.teamNumber = ob.value("useTeamNumber").toBool();
+
+    reconnectServer();
+
+    QJsonArray arr = ob.value("tabs").toArray();
 
     for (const QJsonValueRef ref : arr) {
         QJsonObject obj = ref.toObject();
@@ -184,4 +232,40 @@ QHash<int, QByteArray> TabListModel::roleNames() const
     rez[WIDGETS] = "widgets";
 
     return rez;
+}
+
+int TabListModel::getPort() const
+{
+    return Globals::server.port;
+}
+
+void TabListModel::setPort(int newPort)
+{
+    Globals::server.port = newPort;
+    emit portChanged();
+    reconnectServer();
+}
+
+QString TabListModel::ip() const
+{
+    return QString::fromStdString(Globals::server.server);
+}
+
+void TabListModel::setIp(const QString &newIp)
+{
+    Globals::server.server = newIp.toStdString();
+    emit ipChanged();
+    reconnectServer();
+}
+
+bool TabListModel::useTeam() const
+{
+    return Globals::server.teamNumber;
+}
+
+void TabListModel::setUseTeam(bool newUseTeam)
+{
+    Globals::server.teamNumber = newUseTeam;
+    emit useTeamChanged();
+    reconnectServer();
 }

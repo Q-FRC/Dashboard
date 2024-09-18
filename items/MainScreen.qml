@@ -167,6 +167,15 @@ Rectangle {
         tabClose.open()
     }
 
+    /** SERVER SETTINGS */
+    ServerDialog {
+        id: serverDialog
+    }
+
+    function serverSettings() {
+        serverDialog.open()
+    }
+
     SwipeView {
         id: swipe
 
