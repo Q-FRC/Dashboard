@@ -19,6 +19,10 @@ QVariant TabListModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case TITLE:
         return t.title;
+    case ROWS:
+        return t.rows;
+    case COLS:
+        return t.cols;
     default:
         break;
     }
@@ -29,7 +33,17 @@ QVariant TabListModel::data(const QModelIndex &index, int role) const
 bool TabListModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (data(index, role) != value) {
-        // FIXME: Implement me!
+        Tab &t = m_data[index.row()];
+        switch (role) {
+        case TITLE:
+            t.title = value.toString();
+        case ROWS:
+            t.rows = value.toInt();
+        case COLS:
+            t.cols = value.toInt();
+        default:
+            break;
+        }
         emit dataChanged(index, index, {role});
         return true;
     }
@@ -49,6 +63,8 @@ void TabListModel::add(QString title)
     static char i = 0;
     Tab t;
     t.title = title;
+    t.rows = 3;
+    t.cols = 5;
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_data << t;
@@ -64,6 +80,8 @@ QHash<int, QByteArray> TabListModel::roleNames() const
 {
     QHash<int,QByteArray> rez;
     rez[TITLE] = "title";
+    rez[ROWS] = "rows";
+    rez[COLS] = "cols";
 
     return rez;
 }

@@ -49,6 +49,14 @@ Rectangle {
         id: tabNameDialog
     }
 
+    TabNameDialog {
+        id: tabRenameDialog
+    }
+
+    TabSizeDialog {
+        id: tabSizeDialog
+    }
+
     WidgetConfig {
         id: widgetConf
     }
@@ -65,7 +73,27 @@ Rectangle {
 
     function newTab() {
         tabNameDialog.accepted.connect(addTab)
-        tabNameDialog.openUp()
+        tabNameDialog.openUp("")
+    }
+
+    function tabRename() {
+        tabRenameDialog.accepted.disconnect(tabRename)
+        currentTab().setName(tabRenameDialog.tabName.text)
+    }
+
+    function renameTab() {
+        tabRenameDialog.accepted.connect(tabRename)
+        tabRenameDialog.openUp(currentTab().name())
+    }
+
+    function setSize() {
+        tabSizeDialog.accepted.disconnect(setSize)
+        currentTab().setSize(tabSizeDialog.rowValue.value, tabSizeDialog.columnValue.value)
+    }
+
+    function tabSize() {
+        tabSizeDialog.accepted.connect(setSize)
+        tabSizeDialog.openUp(currentTab().rows(), currentTab().cols())
     }
 
     function currentTab() {

@@ -15,17 +15,48 @@ Rectangle {
         twm.add(title, topic, type)
     }
 
+    function setName(name) {
+        model.title = name
+    }
+
+    function name() {
+        return model.title
+    }
+
+    function setSize(r, c) {
+        model.rows = r
+        model.cols = c
+
+        twm.rows = r
+        twm.cols = c
+
+        grid.rows = r
+        grid.columns = c
+
+        console.log(r,c)
+    }
+
+    function cols() {
+        console.log(twm.cols)
+        return model.cols
+    }
+
+    function rows() {
+        console.log(twm.rows)
+        return model.rows
+    }
+
     TabWidgetsModel {
         id: twm
 
-        rows: 3
-        cols: 3
+        rows: model.rows
+        cols: model.cols
     }
 
     GridLayout {
         id: grid
-        rows: 3
-        columns: 3
+        rows: model.rows
+        columns: model.cols
 
         anchors.fill: parent
 

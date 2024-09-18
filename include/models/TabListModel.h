@@ -6,6 +6,9 @@
 
 typedef struct {
     QString title;
+
+    int rows;
+    int cols;
 } Tab;
 
 class TabListModel : public QAbstractListModel
@@ -16,6 +19,8 @@ class TabListModel : public QAbstractListModel
 public:
     enum TLMRoleTypes {
         TITLE = Qt::UserRole,
+        ROWS,
+        COLS
     };
 
     explicit TabListModel(QObject *parent = nullptr);

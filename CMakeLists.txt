@@ -95,6 +95,7 @@ set(QML_FILES
 
     dialogs/TopicView.qml
     dialogs/TabNameDialog.qml
+    dialogs/TabSizeDialog.qml
     dialogs/WidgetConfig.qml
 )
 

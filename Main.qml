@@ -17,6 +17,18 @@ ApplicationWindow {
                 onTriggered: screen.newTab()
                 shortcut: "Ctrl+T"
             }
+
+            Action {
+                text: qsTr("Tab &Size")
+                onTriggered: screen.tabSize()
+                shortcut: "Ctrl+S"
+            }
+
+            Action {
+                text: qsTr("&Rename Tab")
+                onTriggered: screen.renameTab()
+                shortcut: "Ctrl+R"
+            }
         }
     }
 

@@ -12,10 +12,10 @@ Dialog {
 
     property alias tabName: tabName
 
-    function openUp() {
+    function openUp(txt) {
         open()
         tabName.focus = true
-        tabName.text = ""
+        tabName.text = txt
     }
 
     Column {

@@ -106,8 +106,8 @@ Repeater {
             width: 2
         }
 
-        Layout.row: modelData % grid.rows
-        Layout.column: modelData / grid.columns
+        Layout.row: modelData / grid.columns
+        Layout.column: modelData % grid.columns
 
         Layout.preferredWidth: grid.prefWidth(this)
         Layout.preferredHeight: grid.prefHeight(this)
