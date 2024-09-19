@@ -59,6 +59,7 @@ public:
 
     // Remove data:
     Q_INVOKABLE bool remove(int row, int column, const QModelIndex &parent = QModelIndex());
+    Q_INVOKABLE bool removeLatest();
 
     int rows() const;
     void setRows(int newRows);

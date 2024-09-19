@@ -13,6 +13,11 @@ BaseWidget {
         anchors {
             verticalCenter: parent.verticalCenter
             horizontalCenter: parent.horizontalCenter
+
+            left: parent.left
+            right: parent.right
+
+            margins: 8
         }
 
         font.pixelSize: item_fontSize

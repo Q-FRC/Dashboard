@@ -59,6 +59,16 @@ Repeater {
 
     property list<rect> intersected
 
+    function occupied() {
+        for (let i = 0; i < model; ++i) {
+            if (itemAt(i).isOccupied()) {
+                return Qt.point(i / grid.columns, i % grid.columns)
+            }
+        }
+
+        return Qt.point(-1, -1)
+    }
+
     function calcRectangle(drag) {
         let rows = []
         let cols = []
@@ -112,6 +122,11 @@ Repeater {
 
         Layout.preferredWidth: grid.prefWidth(this)
         Layout.preferredHeight: grid.prefHeight(this)
+
+        function isOccupied() {
+            // @disable-check M126
+            return border.color == "#90ee90"
+        }
 
         function resetBorder() {
             border.color = "gray"

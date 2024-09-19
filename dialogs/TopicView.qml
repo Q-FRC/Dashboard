@@ -5,10 +5,13 @@ import QtQuick.Dialogs
 import QFRCDashboard
 
 Row {
+    id: tv
     signal open
     signal close
 
     signal addWidget(string name, string topic, string type)
+    signal dragging(point pos)
+    signal dropped(point pos)
 
     function widgetAdd(name, topic, type) {
         button.text = ">>"
@@ -37,13 +40,50 @@ Row {
             // modified from Qt's example TreeView
             selectionModel: ItemSelectionModel { }
 
-            // The model needs to be a QAbstractItemModel
             model: topics
 
             delegate: Item {
-                TapHandler {
-                    onDoubleTapped: if (!hasChildren) widgetAdd(model.name, model.topic, model.type)
+                DragHandler {
+                    id: dh
+                    target: null
+
+                    property bool ready: false
+
+                    onActiveChanged: if (!active && ready) {
+                                         ready = false
+                                         dropped(centroid.position)
+                                     }
+
+                    yAxis.onActiveValueChanged: {
+                        let global = mapToItem(topicView, centroid.position)
+                        if (!topicView.contains(global)) {
+                            if (!ready) {
+                                widgetAdd(model.name, model.topic, model.type)
+                                ready = true
+                            }
+
+                            let p = mapToItem(tv, centroid.position)
+                            p.x += tv.x
+                            dragging(p)
+                        }
+                    }
+
+                    xAxis.onActiveValueChanged: {
+                        let global = mapToItem(topicView, centroid.position)
+                        if (!topicView.contains(global)) {
+                            if (!ready) {
+                                widgetAdd(model.name, model.topic, model.type)
+                                ready = true
+                            }
+
+                            let p = mapToItem(tv, centroid.position)
+                            p.x += tv.x
+                            dragging(p)
+                        }
+                    }
                 }
+
+
 
                 // implicitWidth: padding + label.x + label.implicitWidth + padding
                 implicitHeight: label.implicitHeight * 1.5

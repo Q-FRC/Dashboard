@@ -15,6 +15,7 @@ Rectangle {
 
     property alias titleField: titleField
     property alias rcMenu: rcMenu
+    property alias dragArea: dragArea
 
     color: Constants.widgetBg
 
@@ -59,7 +60,13 @@ Rectangle {
     onMrowSpanChanged: model.rowSpan = mrowSpan
     onMcolumnSpanChanged: model.colSpan = mcolumnSpan
 
+    function remove() {
+        twm.remove(model.row, model.column)
+    }
+
     Component.onCompleted: {
+        tab.latestWidget = this
+
         mrow = model.row
         mcolumn = model.column
         mrowSpan = model.rowSpan

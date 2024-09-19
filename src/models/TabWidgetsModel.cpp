@@ -99,14 +99,12 @@ void TabWidgetsModel::add(Widget w)
 
 void TabWidgetsModel::add(QString title, QString topic, QString type)
 {
-    static char i = 0;
     Widget w;
     w.title = title;
     w.topic = topic;
     w.type = type;
-    w.row = i / 3;
-    w.col = i % 3;
-    ++i;
+    w.row = -1;
+    w.col = -1;
 
     w.rowSpan = 1;
     w.colSpan = 1;
@@ -153,6 +151,15 @@ bool TabWidgetsModel::remove(int row, int column, const QModelIndex &parent)
     }
 
     return false;
+}
+
+bool TabWidgetsModel::removeLatest()
+{
+    beginRemoveRows(QModelIndex(), rowCount() - 1, rowCount() - 1);
+    m_data.removeLast();
+    endRemoveRows();
+
+    return true;
 }
 
 int TabWidgetsModel::rows() const

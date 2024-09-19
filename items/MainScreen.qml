@@ -46,6 +46,53 @@ Rectangle {
         }
 
         onAddWidget: (title, topic, type) => currentTab().add(title, topic, type)
+
+        property bool readyDragging: false
+        onDragging: (pos) => {
+                        if (currentTab() !== null) {
+                            let w = currentTab().latestWidget
+                            w.x = mapFromItem(topicView, pos).x
+                            w.y = pos.y
+
+                            w.width = 1
+                            w.height = 1
+
+                            w.visible = false
+
+                            if (!readyDragging) {
+                                w.dragArea.drag.target = w
+                                readyDragging = true
+
+                                parent.z = 3
+                            }
+                            w.resizeBegin(w.Drag)
+                        }
+                    }
+
+        onDropped: (pos) => {
+                       if (currentTab() !== null) {
+                           let w = currentTab().latestWidget
+                           if (!w.caught) {
+                               w.cancelDrag()
+                               currentTab().removeLatest()
+                           } else {
+                               let p = currentTab().gridHandler.occupied()
+                               if (p.x === -1 || p.y === -1) {
+                                   w.cancelDrag()
+                                   currentTab().removeLatest()
+                               } else {
+                                   w.mrow = p.x
+                                   w.mcolumn = p.y
+
+                                   w.z = 2
+                                   w.visible = true
+                                   w.cancelDrag()
+                               }
+
+                           }
+
+                       }
+                   }
     }
 
     TabNameDialog {

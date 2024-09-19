@@ -7,9 +7,14 @@ import Qt.labs.qmlmodels
 import QFRCDashboard
 
 Rectangle {
+    id: tab
     width: Constants.width
     height: Constants.height
     color: Constants.bg
+
+    property var latestWidget
+
+    property alias gridHandler: rep
 
     TabWidgetsModel {
         id: twm
@@ -26,6 +31,10 @@ Rectangle {
             twm.setEqualTo(model.widgets)
             model.widgets = twm
         }
+    }
+
+    function removeLatest() {
+        twm.removeLatest()
     }
 
     function add(title, topic, type) {

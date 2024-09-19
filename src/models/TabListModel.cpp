@@ -137,7 +137,7 @@ void TabListModel::save(const QString &filename) const
     QFile file(name);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << ":(";
+        qCritical() << "Failed to open file" << name << "for writing.";
         return;
     }
 
