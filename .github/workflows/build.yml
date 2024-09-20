@@ -31,7 +31,7 @@ jobs:
 
           - os: macOS-12
             qt_host: mac
-            qt_version: '6.8.0'
+            qt_version: '6.7.2'
             qt_modules: 'qtmultimedia qtcharts'
             qt_arch: 'clang_64'
 
@@ -243,4 +243,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: QFRCDashboard-${{ runner.os }}-Setup-${{ env.VERSION }}-${{ inputs.build_type }}
-        path: QFRCDashboard-Setup.exe
+        path: Dashboard-Setup.exe
