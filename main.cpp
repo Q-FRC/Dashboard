@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
         store.connect(connected);
 
         if (!connected) {
-            topics->clear();
+            QMetaObject::invokeMethod(topics, &TopicListModel::clear);
         }
     });
 
@@ -35,7 +35,10 @@ int main(int argc, char *argv[])
         std::string topicName(event.GetTopicInfo()->name);
 
         if (event.Is(nt::EventFlags::kPublish)) {
-            topics->add(QString::fromStdString(topicName));
+            QMetaObject::invokeMethod(topics, [topics, topicName] {
+                topics->add(QString::fromStdString(topicName));
+            });
+
         } else if (event.Is(nt::EventFlags::kUnpublish)) {
             // TODO: handle unpublishing
             // topics->remove(QString::fromStdString(topicName));

@@ -31,7 +31,7 @@ void TopicListModel::reload()
 
 void TopicListModel::add(const QString &toAdd)
 {
-    if (toAdd.isEmpty()) return;
+    if (toAdd.isEmpty() || toAdd == "/") return;
 
     QStringList split = toAdd.split('/');
     if (split.at(0).isEmpty()) split.remove(0);

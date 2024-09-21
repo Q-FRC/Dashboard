@@ -29,6 +29,7 @@ Row {
             width: 3
         }
 
+        // modified from Qt's example TreeView
         TreeView {
             id: treeView
             anchors.fill: parent
@@ -37,7 +38,6 @@ Row {
 
             boundsBehavior: Flickable.StopAtBounds
 
-            // modified from Qt's example TreeView
             selectionModel: ItemSelectionModel { }
 
             model: topics
@@ -82,8 +82,6 @@ Row {
                         }
                     }
                 }
-
-
 
                 // implicitWidth: padding + label.x + label.implicitWidth + padding
                 implicitHeight: label.implicitHeight * 1.5
