@@ -13,7 +13,7 @@ BaseWidget {
     property double item_endAngle: 540
 
     property int item_lowerBound: 0
-    property int item_upperBound: 100
+    property int item_upperBound: 1000
 
     Menu {
         id: switchMenu
@@ -23,7 +23,6 @@ BaseWidget {
             text: "Spin Box"
             onTriggered: {
                 model.type = "int"
-                model.properties.clear()
             }
         }
     }

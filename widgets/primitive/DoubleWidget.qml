@@ -10,7 +10,7 @@ BaseWidget {
     property double item_stepSize: 0.1
 
     property double item_lowerBound: 0
-    property double item_upperBound: 100
+    property double item_upperBound: 1000.0
 
     Menu {
         id: switchMenu
@@ -20,7 +20,6 @@ BaseWidget {
             text: "Dial"
             onTriggered: {
                 model.type = "doubleDial"
-                model.properties.clear()
             }
         }
     }
@@ -36,15 +35,14 @@ BaseWidget {
 
         function updateTopic(ntTopic, ntValue) {
             if (ntTopic === item_topic) {
-                value = ntValue * 100.0
+                value = ntValue
             }
         }
 
         value: 0
-        stepSize: item_stepSize * 100.0
-
-        from: item_lowerBound * 100.0
-        to: item_upperBound * 100.0
+        stepSize: item_stepSize
+        from: item_lowerBound
+        to: item_upperBound
 
         anchors {
             verticalCenter: parent.verticalCenter
@@ -70,7 +68,7 @@ BaseWidget {
         }
 
         onValueModified: {
-            realValue = value / 100.0
+            realValue = value
             topicStore.setValue(item_topic, realValue)
         }
     }
@@ -79,6 +77,6 @@ BaseWidget {
         topicStore.unsubscribe(topic)
         topicStore.subscribe(item_topic)
         model.topic = item_topic
-        spin.value = topicStore.getValue(item_topic) * 100.0
+        spin.value = topicStore.getValue(item_topic)
     }
 }

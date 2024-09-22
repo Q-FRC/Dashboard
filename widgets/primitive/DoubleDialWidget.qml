@@ -13,7 +13,7 @@ BaseWidget {
     property double item_endAngle: 540
 
     property double item_lowerBound: 0
-    property double item_upperBound: 100
+    property double item_upperBound: 1000.0
 
     Menu {
         id: switchMenu
@@ -23,7 +23,6 @@ BaseWidget {
             text: "Spin Box"
             onTriggered: {
                 model.type = "double"
-                model.properties.clear()
             }
         }
     }
@@ -39,16 +38,16 @@ BaseWidget {
 
         function updateTopic(ntTopic, ntValue) {
             if (ntTopic === item_topic) {
-                value = ntValue * 100.0
+                value = ntValue
                 dial.value = ntValue
             }
         }
 
         value: 0
-        stepSize: item_stepSize * 100.0
+        stepSize: item_stepSize
 
-        from: item_lowerBound * 100.0
-        to: item_upperBound * 100.0
+        from: item_lowerBound
+        to: item_upperBound
 
         anchors {
             top: dial.bottom
@@ -74,13 +73,13 @@ BaseWidget {
         }
 
         onValueModified: {
-            dial.value = value / 100.0
-            topicStore.setValue(item_topic, value / 100.0)
+            dial.value = value
+            topicStore.setValue(item_topic, value)
         }
 
         function setValue(val) {
-            value = val * 100.0
-            topicStore.setValue(item_topic, value / 100.0)
+            value = val
+            topicStore.setValue(item_topic, value)
         }
     }
 
@@ -156,7 +155,7 @@ BaseWidget {
         topicStore.unsubscribe(topic)
         topicStore.subscribe(item_topic)
         model.topic = item_topic
-        spin.value = topicStore.getValue(item_topic) * 100.0
+        spin.value = topicStore.getValue(item_topic)
         dial.value = topicStore.getValue(item_topic)
     }
 }

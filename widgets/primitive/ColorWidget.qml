@@ -17,7 +17,6 @@ BaseWidget {
             text: "Checkbox"
             onTriggered: {
                 model.type = "bool"
-                model.properties.clear()
             }
         }
     }

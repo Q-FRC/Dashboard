@@ -125,7 +125,7 @@ Dialog {
                     FieldLabel {}
 
                     SpinBox {
-                        to: 1000
+                        to: 100000
                         id: sb
 
                         Layout.fillWidth: true
@@ -143,7 +143,7 @@ Dialog {
 
                 RowLayout {
                     function getValue() {
-                        return sb.value / 100.0
+                        return sb.value
                     }
 
                     clip: true
@@ -154,17 +154,17 @@ Dialog {
                     FieldLabel {}
 
                     DoubleSpinBox {
-                        to: 1000 * 100
+                        to: 100000.0
 
                         id: dsb
                         font.pixelSize: 15
                         Layout.fillWidth: true
 
-                        value: model.itemValue * 100.0
+                        value: model.itemValue
 
-                        stepSize: 10
+                        stepSize: 0.1
 
-                        onValueModified: model.itemValue = value / 100.0
+                        onValueModified: model.itemValue = value
                     }
                 }
             }
