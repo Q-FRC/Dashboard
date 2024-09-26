@@ -3,19 +3,19 @@
 
 #include <QRegularExpression>
 
-QList<Camera> CameraStore::Cameras{};
-
 CameraStore::CameraStore()
 {
-    throw std::runtime_error("CameraStore is a static class.");
+    m_table = Globals::inst.GetTable("/CameraPublisher");
+    Globals::inst.AddListener({{"/CameraPublisher"}}, nt::EventFlags::kTopic, [this](const nt::Event &) {
+        filterCameras();
+    });
 }
 
 void CameraStore::filterCameras() {
     Cameras.clear();
-    std::shared_ptr<nt::NetworkTable> table = Globals::inst.GetTable("/CameraPublisher");
 
-    for (const std::string &st : table->GetSubTables()) {
-        std::shared_ptr<nt::NetworkTable> subtable = table->GetSubTable(st);
+    for (const std::string &st : m_table->GetSubTables()) {
+        std::shared_ptr<nt::NetworkTable> subtable = m_table->GetSubTable(st);
 
         Camera camera = Camera::fromTable(subtable);
         Cameras.append(camera);

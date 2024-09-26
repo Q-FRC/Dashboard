@@ -93,6 +93,8 @@ set(QML_FILES
     widgets/sendable/Command.qml
     widgets/sendable/StringChooser.qml
 
+    widgets/misc/CameraView.qml
+
     dialogs/TopicView.qml
     dialogs/TabNameDialog.qml
     dialogs/TabSizeDialog.qml
@@ -109,7 +111,7 @@ set(ELEMENTS
     models/TopicListModel
 
     stores/TopicStore
-    # stores/CameraStore
+    stores/CameraStore
 )
 
 foreach(ELEMENT ${ELEMENTS})
