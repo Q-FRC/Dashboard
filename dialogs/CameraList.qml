@@ -77,8 +77,8 @@ Row {
                                 ready = true
                             }
 
-                            let p = mapToItem(tv, centroid.position)
-                            p.x += tv.x
+                            let p = mapToItem(cl, centroid.position)
+                            p.x += cl.x
                             dragging(p)
                         }
                     }
@@ -87,12 +87,12 @@ Row {
                         let global = mapToItem(topicView, centroid.position)
                         if (!topicView.contains(global)) {
                             if (!ready) {
-                                widgetAdd(model.name, "model.topic", model.type)
+                                widgetAdd(model.name, model.source, model.urls)
                                 ready = true
                             }
 
-                            let p = mapToItem(tv, centroid.position)
-                            p.x += tv.x
+                            let p = mapToItem(cl, centroid.position)
+                            p.x += cl.x
                             dragging(p)
                         }
                     }
@@ -105,14 +105,14 @@ Row {
                 Rectangle {
                     id: background
                     anchors.fill: parent
-                    color: row === treeView.currentRow ? palette.highlight : "black"
-                    opacity: (treeView.alternatingRows
-                              && row % 2 !== 0) ? 0.3 : 0.1
+                    color: "black"
+                    opacity: (listView.alternatingRows
+                              && ListView.row % 2 !== 0) ? 0.3 : 0.1
                 }
 
                 Label {
                     id: label
-                    x: padding + (isTreeNode ? (depth + 1) * indentation : 0)
+                    x: 20
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - padding - x
                     clip: true

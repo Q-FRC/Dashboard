@@ -77,52 +77,81 @@ void CameraListModel::add(std::shared_ptr<nt::NetworkTable> table)
     QString sourcePath = QString::fromStdString(std::string{table->GetPath()} + "/source");
     QString streamsPath = QString::fromStdString(std::string{table->GetPath()} + "/streams");
 
-    m_store->subscribe(namePath);
-    m_store->subscribe(sourcePath);
+    nt::NetworkTableEntry desc = Globals::inst.GetEntry(namePath.toStdString());
+    nt::NetworkTableEntry src = Globals::inst.GetEntry(sourcePath.toStdString());
+    nt::NetworkTableEntry str = Globals::inst.GetEntry(streamsPath.toStdString());
 
-    bool descriptionDone = false, sourceDone = false, streamsDone;
+    camera.name = QString::fromStdString(desc.GetString("invalid"));
+    camera.source = QString::fromStdString(src.GetString("invalid"));
 
-    QMetaObject::Connection *conn = new QMetaObject::Connection;
+    auto urls = TopicStore::toVariant(str.GetValue()).toList();
 
-    *conn = connect(m_store, &TopicStore::topicUpdate, this, [&](QString topic, QVariant value) {
-        if (topic == namePath) {
-            descriptionDone = true;
+    camera.urls = {};
+    for (const QVariant &url : urls) {
+        camera.urls.append(url.toUrl());
+    }
 
-            camera.name = value.toString();
+    bool descriptionDone = (camera.name != "invalid"),
+        sourceDone = (camera.source != "invalid"),
+        streamsDone = (!camera.urls.empty());
 
-            if (camera.name.isEmpty()) {
-                std::string path{table->GetPath()};
-                QString qpath = QString::fromStdString(path);
-                camera.name = qpath.split("/").last();
+    if (sourceDone && descriptionDone && streamsDone) {
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_data << camera;
+        endInsertRows();
+    } else {
+        m_store->subscribe(namePath);
+        m_store->subscribe(sourcePath);
+        m_store->subscribe(streamsPath);
+
+        QMetaObject::Connection *conn = new QMetaObject::Connection;
+
+        *conn = connect(m_store, &TopicStore::topicUpdate, this, [=, this](QString topic, QVariant value) mutable {
+            if (!descriptionDone && topic == namePath) {
+                descriptionDone = true;
+
+                camera.name = value.toString();
+
+                if (camera.name.isEmpty()) {
+                    std::string path{table->GetPath()};
+                    QString qpath = QString::fromStdString(path);
+                    camera.name = qpath.split("/").last();
+                }
+            } else if (!sourceDone && topic == sourcePath) {
+                sourceDone = true;
+
+                camera.source = value.toString();
+            } else if (!streamsDone && topic == streamsPath) {
+                streamsDone = true;
+
+                QStringList streams = value.toStringList();
+
+                for (const QString &stream : streams) {
+                    static QRegularExpression re("^(mjpe?g|ip|usb):");
+                    QString newStream = stream;
+                    newStream.replace(re, "");
+                    newStream.replace("/?action=stream", "/stream.mjpg?");
+
+                    camera.urls.append(QUrl(newStream));
+                }
             }
-        } else if (topic == sourcePath) {
-            sourceDone = true;
 
-            camera.source = value.toString();
-        } else if (topic == streamsPath) {
-            streamsDone = true;
+            if ((topic == streamsPath || topic == sourcePath || topic == namePath)
+                && sourceDone && descriptionDone && streamsDone) {
 
-            QStringList streams = value.toStringList();
+                beginInsertRows(QModelIndex(), rowCount(), rowCount());
+                m_data << camera;
+                endInsertRows();
 
-            for (const QString &stream : streams) {
-                static QRegularExpression re("^(mjpe?g|ip|usb):");
-                QString newStream = stream;
-                newStream.replace(re, "");
-                newStream.replace("/?action=stream", "/stream.mjpg?");
+                m_store->unsubscribe(namePath);
+                m_store->unsubscribe(sourcePath);
+                m_store->unsubscribe(streamsPath);
 
-                camera.urls.append(QUrl(newStream));
+                disconnect(*conn);
+                delete conn;
             }
-        }
-
-        if (sourceDone && descriptionDone && streamsDone) {
-            disconnect(*conn);
-            delete conn;
-        }
-    });
-
-    beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    m_data << camera;
-    endInsertRows();
+        });
+    }
 }
 
 void CameraListModel::clear()

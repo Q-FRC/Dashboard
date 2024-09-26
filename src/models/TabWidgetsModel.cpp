@@ -36,6 +36,8 @@ QVariant TabWidgetsModel::data(const QModelIndex &index, int role) const
         return w.type;
     case PROPERTIES:
         return w.properties;
+    case IDX:
+        return index.row();
     default:
         break;
     }
@@ -124,7 +126,12 @@ void TabWidgetsModel::addCamera(QString name, QString source, QVariantList urls)
 
     w.properties.insert("name", name);
     w.properties.insert("source", source);
-    w.properties.insert("URL", urls.at(0).toUrl());
+
+    if (urls.empty()) {
+        w.properties.insert("URL", source);
+    } else {
+        w.properties.insert("URL", urls.at(0));
+    }
 
     w.row = -1;
     w.col = -1;
@@ -137,7 +144,6 @@ void TabWidgetsModel::addCamera(QString name, QString source, QVariantList urls)
     endInsertRows();
 
     emit unoccupiedCellsChanged();
-
 }
 
 void TabWidgetsModel::setEqualTo(TabWidgetsModel *w)
@@ -159,22 +165,15 @@ QList<Widget> TabWidgetsModel::data()
     return m_data;
 }
 
-bool TabWidgetsModel::remove(int row, int column, const QModelIndex &parent)
+bool TabWidgetsModel::remove(int idx)
 {
-    for (size_t i = 0; i < rowCount(); ++i) {
-        Widget w = m_data[i];
-        if ((column >= w.col && column <= w.col + w.colSpan) &&
-            (row >= w.row && row <= w.row + w.colSpan)) {
+    if (idx < 0 || idx >= m_data.count()) return false;
 
-            beginRemoveRows(parent, i, i);
-            m_data.remove(i);
-            endRemoveRows();
+    beginRemoveRows(QModelIndex(), idx, idx);
+    m_data.remove(idx);
+    endRemoveRows();
 
-            return true;
-        }
-    }
-
-    return false;
+    return true;
 }
 
 bool TabWidgetsModel::removeLatest()
@@ -245,6 +244,7 @@ QHash<int, QByteArray> TabWidgetsModel::roleNames() const
     rez[ROWSPAN] = "rowSpan";
     rez[COLSPAN] = "colSpan";
     rez[PROPERTIES] = "properties";
+    rez[IDX] = "idx";
 
     return rez;
 }

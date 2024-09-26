@@ -8,10 +8,24 @@ import QFRCDashboard
 BaseWidget {
     property string item_URL
 
-    MediaPlayer {
-        id: player
-        source: item_URL
-        videoOutput: VideoOutput {
+    Rectangle {
+        anchors {
+            top: titleField.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+
+            margins: 8
+        }
+
+        MediaPlayer {
+            id: player
+            source: item_URL
+            videoOutput: video
+        }
+
+        VideoOutput {
+            id: video
             anchors.fill: parent
         }
     }

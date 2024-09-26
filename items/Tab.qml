@@ -27,7 +27,6 @@ Rectangle {
         if (model.widgets === null)
             model.widgets = twm
         else {
-
             twm.setEqualTo(model.widgets)
             model.widgets = twm
         }
@@ -256,6 +255,21 @@ Rectangle {
                 DelegateChoice {
                     roleValue: "String Chooser"
                     StringChooser {
+                        Layout.row: model.row
+                        Layout.column: model.column
+                        Layout.rowSpan: model.rowSpan
+                        Layout.columnSpan: model.colSpan
+
+                        Layout.margins: 8
+
+                        Layout.preferredWidth: grid.prefWidth(this)
+                        Layout.preferredHeight: grid.prefHeight(this)
+                    }
+                }
+
+                DelegateChoice {
+                    roleValue: "camera"
+                    CameraView {
                         Layout.row: model.row
                         Layout.column: model.column
                         Layout.rowSpan: model.rowSpan

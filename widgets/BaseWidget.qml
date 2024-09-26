@@ -82,13 +82,13 @@ Rectangle {
                 if (substr === "topic") {
                     this.item_topicChanged.connect(() => {
                                                        model.topic = this.item_topic
-                                                   });
+                                                   })
                 } else {
                     this[p + "Changed"].connect(() => {
                                                     let x = model.properties
                                                     x[substr] = this[propName]
                                                     model.properties = x
-                                                });
+                                                })
                 }
             }
         }
@@ -103,7 +103,7 @@ Rectangle {
 
         MenuItem {
             text: "Delete Widget"
-            onTriggered: twm.remove(model.row, model.column)
+            onTriggered: twm.remove(model.idx)
         }
 
         MenuItem {
@@ -155,22 +155,21 @@ Rectangle {
                 Layout.columnSpan = mcolumnSpan
                 Layout.column = mcolumn
                 Layout.row = mrow
-            } else
-                if (!rect.caught) {
-                    backAnimX.from = rect.x
-                    backAnimX.to = beginDrag.x
-                    backAnimY.from = rect.y
-                    backAnimY.to = beginDrag.y
-                    backAnim.start()
+            } else if (!rect.caught) {
+                backAnimX.from = rect.x
+                backAnimX.to = beginDrag.x
+                backAnimY.from = rect.y
+                backAnimY.to = beginDrag.y
+                backAnim.start()
 
-                    cancelDrag()
-                } else {
-                    rect.Drag.drop()
+                cancelDrag()
+            } else {
+                rect.Drag.drop()
 
-                    // dragEnd(rect.Drag)
-                    parent.z = 2
-                    cancelDrag()
-                }
+                // dragEnd(rect.Drag)
+                parent.z = 2
+                cancelDrag()
+            }
         }
 
         ParallelAnimation {

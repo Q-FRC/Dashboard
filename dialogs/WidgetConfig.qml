@@ -8,9 +8,11 @@ import QFRCDashboard
 
 Dialog {
     id: widgetConf
+
     anchors.centerIn: parent
-    width: parent.width / 2
-    height: parent.width / 1.5
+
+    width: parent.width / 1.6
+    height: parent.height - 60
 
     ColorDialog {
         id: colorDialog
@@ -70,7 +72,7 @@ Dialog {
 
         model: lm
 
-        component FieldLabel : Label {
+        component FieldLabel: Label {
             Layout.fillWidth: true
 
             text: displayText(model.name)

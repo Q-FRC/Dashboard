@@ -10,6 +10,8 @@
 #include "TopicListModel.h"
 #include "TopicStore.h"
 
+#include <QTimer>
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -19,13 +21,26 @@ int main(int argc, char *argv[])
     TabListModel *tlm = new TabListModel(&app);
     CameraListModel *clm = new CameraListModel(store, &app);
 
-    Globals::inst.AddConnectionListener(true, [topics, &store] (const nt::Event &event) {
+    Globals::inst.AddConnectionListener(true, [topics, &store, clm] (const nt::Event &event) {
         bool connected = event.Is(nt::EventFlags::kConnected);
 
         store.connect(connected);
 
         if (!connected) {
             QMetaObject::invokeMethod(topics, &TopicListModel::clear);
+            QMetaObject::invokeMethod(clm, &CameraListModel::clear);
+        } else {
+            QMetaObject::invokeMethod(clm, [=] {
+                QTimer::singleShot(2000, [=] {
+                    clm->clear();
+
+                    for (const std::string &st : Globals::inst.GetTable("/CameraPublisher")->GetSubTables()) {
+                        std::shared_ptr<nt::NetworkTable> subtable = Globals::inst.GetTable("/CameraPublisher")->GetSubTable(st);
+
+                        clm->add(subtable);
+                    }
+                });
+            });
         }
     });
 
@@ -44,17 +59,6 @@ int main(int argc, char *argv[])
         } else if (event.Is(nt::EventFlags::kUnpublish)) {
             // TODO: handle unpublishing
             // topics->remove(QString::fromStdString(topicName));
-        }
-    });
-
-
-    Globals::inst.AddListener({{"/CameraPublisher"}}, nt::EventFlags::kTopic, [&](const nt::Event &) {
-        clm->clear();
-
-        for (const std::string &st : Globals::inst.GetTable("/CameraPublisher")->GetSubTables()) {
-            std::shared_ptr<nt::NetworkTable> subtable = Globals::inst.GetTable("/CameraPublisher")->GetSubTable(st);
-
-            clm->add(subtable);
         }
     });
 

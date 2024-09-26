@@ -34,7 +34,8 @@ public:
         COLSPAN,
         TYPE,
         TOPIC,
-        PROPERTIES
+        PROPERTIES,
+        IDX
     };
 
     explicit TabWidgetsModel(QObject *parent = nullptr);
@@ -59,7 +60,7 @@ public:
     QList<Widget> data();
 
     // Remove data:
-    Q_INVOKABLE bool remove(int row, int column, const QModelIndex &parent = QModelIndex());
+    Q_INVOKABLE bool remove(int idx);
     Q_INVOKABLE bool removeLatest();
 
     int rows() const;

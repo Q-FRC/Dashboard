@@ -132,15 +132,15 @@ Rectangle {
             cMenuAnim.start()
         }
 
-        onAddWidget: (name, source, urls) => currentTab().addCamera(name,
-                                                                    source,
-                                                                    urls)
+        onAddWidget: (name, source, urls) => {
+                         currentTab().addCamera(name, source, urls)
+                     }
 
         property bool readyDragging: false
         onDragging: pos => {
                         if (currentTab() !== null) {
                             let w = currentTab().latestWidget
-                            w.x = mapFromItem(topicView, pos).x
+                            w.x = mapFromItem(cameraList, pos).x
                             w.y = pos.y
 
                             w.width = 1
