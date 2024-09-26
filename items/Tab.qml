@@ -41,6 +41,10 @@ Rectangle {
         twm.add(title, topic, type)
     }
 
+    function addCamera(name, source, urls) {
+        twm.addCamera(name, source, urls)
+    }
+
     function setName(name) {
         model.title = name
     }

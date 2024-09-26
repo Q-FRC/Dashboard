@@ -4,6 +4,7 @@
 #include <TabListModel.h>
 
 #include "BuildConfig.h"
+#include "CameraListModel.h"
 #include "Flags.h"
 #include "Globals.h"
 #include "TopicListModel.h"
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
     TopicStore store(&app);
     TopicListModel *topics = new TopicListModel(store, &app);
     TabListModel *tlm = new TabListModel(&app);
+    CameraListModel *clm = new CameraListModel(store, &app);
 
     Globals::inst.AddConnectionListener(true, [topics, &store] (const nt::Event &event) {
         bool connected = event.Is(nt::EventFlags::kConnected);
@@ -45,6 +47,17 @@ int main(int argc, char *argv[])
         }
     });
 
+
+    Globals::inst.AddListener({{"/CameraPublisher"}}, nt::EventFlags::kTopic, [&](const nt::Event &) {
+        clm->clear();
+
+        for (const std::string &st : Globals::inst.GetTable("/CameraPublisher")->GetSubTables()) {
+            std::shared_ptr<nt::NetworkTable> subtable = Globals::inst.GetTable("/CameraPublisher")->GetSubTable(st);
+
+            clm->add(subtable);
+        }
+    });
+
     qmlRegisterUncreatableMetaObject(
         QFDFlags::staticMetaObject,
         "QFDFlags",
@@ -56,6 +69,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("topics", topics);
+    engine.rootContext()->setContextProperty("cameras", clm);
     engine.rootContext()->setContextProperty("topicStore", &store);
     engine.rootContext()->setContextProperty("tlm", tlm);
     QObject::connect(

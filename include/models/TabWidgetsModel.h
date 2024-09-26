@@ -52,6 +52,7 @@ public:
     // Add data:
     Q_INVOKABLE void add(Widget w);
     Q_INVOKABLE void add(QString title, QString topic, QString type);
+    Q_INVOKABLE void addCamera(QString name, QString source, QVariantList urls);
 
     Q_INVOKABLE void setEqualTo(TabWidgetsModel *w);
 

@@ -31,7 +31,12 @@ Rectangle {
         width: (parent.width / 3) + 40
         height: parent.height
 
-        SmoothedAnimation { id: menuAnim; target: topicView; property: "anchors.leftMargin"; duration: 500 }
+        SmoothedAnimation {
+            id: menuAnim
+            target: topicView
+            property: "anchors.leftMargin"
+            duration: 500
+        }
 
         onOpen: {
             menuAnim.from = -(parent.width / 3)
@@ -45,10 +50,11 @@ Rectangle {
             menuAnim.start()
         }
 
-        onAddWidget: (title, topic, type) => currentTab().add(title, topic, type)
+        onAddWidget: (title, topic, type) => currentTab().add(title,
+                                                              topic, type)
 
         property bool readyDragging: false
-        onDragging: (pos) => {
+        onDragging: pos => {
                         if (currentTab() !== null) {
                             let w = currentTab().latestWidget
                             w.x = mapFromItem(topicView, pos).x
@@ -69,7 +75,7 @@ Rectangle {
                         }
                     }
 
-        onDropped: (pos) => {
+        onDropped: pos => {
                        if (currentTab() !== null) {
                            let w = currentTab().latestWidget
                            if (!w.caught) {
@@ -88,9 +94,90 @@ Rectangle {
                                    w.visible = true
                                    w.cancelDrag()
                                }
-
                            }
+                       }
+                   }
+    }
 
+    CameraList {
+        id: cameraList
+        z: 4
+
+        anchors {
+            right: parent.right
+            rightMargin: -(parent.width / 3)
+            top: parent.top
+            bottom: parent.bottom
+        }
+
+        width: (parent.width / 3) + 40
+        height: parent.height
+
+        SmoothedAnimation {
+            id: cMenuAnim
+            target: cameraList
+            property: "anchors.rightMargin"
+            duration: 500
+        }
+
+        onOpen: {
+            cMenuAnim.from = -(parent.width / 3)
+            cMenuAnim.to = 0
+            cMenuAnim.start()
+        }
+
+        onClose: {
+            cMenuAnim.to = -(parent.width / 3)
+            cMenuAnim.from = 0
+            cMenuAnim.start()
+        }
+
+        onAddWidget: (name, source, urls) => currentTab().addCamera(name,
+                                                                    source,
+                                                                    urls)
+
+        property bool readyDragging: false
+        onDragging: pos => {
+                        if (currentTab() !== null) {
+                            let w = currentTab().latestWidget
+                            w.x = mapFromItem(topicView, pos).x
+                            w.y = pos.y
+
+                            w.width = 1
+                            w.height = 1
+
+                            w.visible = false
+
+                            if (!readyDragging) {
+                                w.dragArea.drag.target = w
+                                readyDragging = true
+
+                                parent.z = 3
+                            }
+                            w.resizeBegin(w.Drag)
+                        }
+                    }
+
+        onDropped: pos => {
+                       if (currentTab() !== null) {
+                           let w = currentTab().latestWidget
+                           if (!w.caught) {
+                               w.cancelDrag()
+                               currentTab().removeLatest()
+                           } else {
+                               let p = currentTab().gridHandler.occupied()
+                               if (p.x === -1 || p.y === -1) {
+                                   w.cancelDrag()
+                                   currentTab().removeLatest()
+                               } else {
+                                   w.mrow = p.x
+                                   w.mcolumn = p.y
+
+                                   w.z = 2
+                                   w.visible = true
+                                   w.cancelDrag()
+                               }
+                           }
                        }
                    }
     }
@@ -118,7 +205,8 @@ Rectangle {
     /** SAVE */
     FileDialog {
         id: saveDialog
-        currentFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation)
+        currentFolder: StandardPaths.writableLocation(
+                           StandardPaths.HomeLocation)
         fileMode: FileDialog.SaveFile
         defaultSuffix: "json"
         selectedNameFilter.index: 0
@@ -126,7 +214,8 @@ Rectangle {
     }
 
     function save() {
-        if (filename === "") return saveAsAction()
+        if (filename === "")
+            return saveAsAction()
 
         tlm.save(filename)
     }
@@ -145,7 +234,8 @@ Rectangle {
     /** LOAD */
     FileDialog {
         id: loadDialog
-        currentFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation)
+        currentFolder: StandardPaths.writableLocation(
+                           StandardPaths.HomeLocation)
         fileMode: FileDialog.OpenFile
         defaultSuffix: "json"
         selectedNameFilter.index: 0
@@ -165,7 +255,7 @@ Rectangle {
     /** TAB SETTINGS */
     function addTab() {
         tabNameDialog.accepted.disconnect(addTab)
-        tlm.add(tabNameDialog.tabName.text);
+        tlm.add(tabNameDialog.tabName.text)
         swipe.setCurrentIndex(swipe.count - 1)
     }
 
@@ -186,7 +276,8 @@ Rectangle {
 
     function setSize() {
         tabSizeDialog.accepted.disconnect(setSize)
-        currentTab().setSize(tabSizeDialog.rowValue.value, tabSizeDialog.columnValue.value)
+        currentTab().setSize(tabSizeDialog.rowValue.value,
+                             tabSizeDialog.columnValue.value)
     }
 
     function tabSize() {
@@ -253,7 +344,7 @@ Rectangle {
         anchors {
             top: parent.top
             left: topicView.right
-            right: parent.right
+            right: cameraList.left
         }
 
         position: TabBar.Footer

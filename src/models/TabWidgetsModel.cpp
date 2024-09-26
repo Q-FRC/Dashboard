@@ -116,6 +116,30 @@ void TabWidgetsModel::add(QString title, QString topic, QString type)
     emit unoccupiedCellsChanged();
 }
 
+void TabWidgetsModel::addCamera(QString name, QString source, QVariantList urls)
+{
+    Widget w;
+    w.title = name;
+    w.type = "camera";
+
+    w.properties.insert("name", name);
+    w.properties.insert("source", source);
+    w.properties.insert("URL", urls.at(0).toUrl());
+
+    w.row = -1;
+    w.col = -1;
+
+    w.rowSpan = 1;
+    w.colSpan = 1;
+
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_data << w;
+    endInsertRows();
+
+    emit unoccupiedCellsChanged();
+
+}
+
 void TabWidgetsModel::setEqualTo(TabWidgetsModel *w)
 {
     beginResetModel();

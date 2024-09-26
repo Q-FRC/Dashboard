@@ -5,21 +5,15 @@
 #include <QUrl>
 #include "networktables/NetworkTable.h"
 
-class Camera
+typedef struct Camera
 {
-private:
-    QUrl m_urls{};
-    QString m_name{};
-    QString m_source{};
 public:
-    Camera() = default;
+    static struct Camera fromTable(std::shared_ptr<nt::NetworkTable> table);
 
-    static Camera fromTable(std::shared_ptr<nt::NetworkTable> table);
-
-    QList<QUrl> Urls;
-    QString Name;
-    QString Source;
-};
+    QUrl url;
+    QString name;
+    QString source;
+} Camera;
 
 class CameraStore : public QObject
 {

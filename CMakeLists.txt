@@ -96,6 +96,7 @@ set(QML_FILES
     widgets/misc/CameraView.qml
 
     dialogs/TopicView.qml
+    dialogs/CameraList.qml
     dialogs/TabNameDialog.qml
     dialogs/TabSizeDialog.qml
     dialogs/WidgetConfig.qml
@@ -109,9 +110,9 @@ set(ELEMENTS
     models/TabWidgetsModel
     models/TabListModel
     models/TopicListModel
+    models/CameraListModel
 
     stores/TopicStore
-    stores/CameraStore
 )
 
 foreach(ELEMENT ${ELEMENTS})

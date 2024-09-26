@@ -38,7 +38,7 @@ Row {
 
             boundsBehavior: Flickable.StopAtBounds
 
-            selectionModel: ItemSelectionModel { }
+            selectionModel: ItemSelectionModel {}
 
             model: topics
 
@@ -112,14 +112,16 @@ Row {
                     easing.type: Easing.OutQuart
                 }
                 TableView.onPooled: indicatorAnimation.complete()
-                TableView.onReused: if (current) indicatorAnimation.start()
+                TableView.onReused: if (current)
+                                        indicatorAnimation.start()
                 onExpandedChanged: indicator.rotation = expanded ? 90 : 0
 
                 Rectangle {
                     id: background
                     anchors.fill: parent
                     color: row === treeView.currentRow ? palette.highlight : "black"
-                    opacity: (treeView.alternatingRows && row % 2 !== 0) ? 0.3 : 0.1
+                    opacity: (treeView.alternatingRows
+                              && row % 2 !== 0) ? 0.3 : 0.1
                 }
 
                 Label {
@@ -132,7 +134,8 @@ Row {
                     TapHandler {
                         onSingleTapped: {
                             let index = treeView.index(row, column)
-                            treeView.selectionModel.setCurrentIndex(index, ItemSelectionModel.NoUpdate)
+                            treeView.selectionModel.setCurrentIndex(
+                                        index, ItemSelectionModel.NoUpdate)
                             treeView.toggleExpanded(row)
                         }
                     }
@@ -168,8 +171,8 @@ Row {
         id: button
         text: ">>"
 
-        width: 40
-        height: 37
+        width: 41
+        height: 41
 
         onClicked: {
             if (text === ">>") {
