@@ -8,6 +8,11 @@ BaseWidget {
 
     property int item_checkboxSize: 20
 
+    property list<var> item_test: []
+
+    property string testValueType: "color"
+    property string testValueName: "Color"
+
     Menu {
         id: switchMenu
         title: "Switch Widget..."

@@ -8,6 +8,20 @@ BaseWidget {
 
     property int item_fontSize: 15
 
+    Menu {
+        id: switchMenu
+        title: "Switch Widget..."
+
+        MenuItem {
+            text: "Enum"
+            onTriggered: {
+                model.type = "enum"
+            }
+        }
+    }
+
+    Component.onCompleted: rcMenu.addMenu(switchMenu)
+
     TextField {
         id: textField
 

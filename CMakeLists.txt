@@ -86,7 +86,10 @@ set(QML_FILES
     widgets/primitive/DoubleWidget.qml
     widgets/primitive/DoubleDialWidget.qml
     widgets/primitive/BoolWidget.qml
+    widgets/primitive/EnumWidget.qml
     widgets/primitive/ColorWidget.qml
+
+    widgets/primitive/ShapeHandler.qml
 
     widgets/sendable/FMSInfo.qml
     widgets/sendable/Field2d.qml
@@ -111,6 +114,7 @@ set(ELEMENTS
     models/TabListModel
     models/TopicListModel
     models/CameraListModel
+    models/MapModel
 
     stores/TopicStore
 )
@@ -134,7 +138,6 @@ qt_add_qml_module(${Dashboard_EXEC_NAME}
     QML_FILES ${QML_FILES}
 
     SOURCES ${SOURCES} ${HEADERS}
-    QML_FILES widgets/primitive/ShapeHandler.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

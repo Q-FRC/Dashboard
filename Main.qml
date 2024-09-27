@@ -18,6 +18,11 @@ ApplicationWindow {
                 onTriggered: screen.serverSettings()
                 shortcut: "Ctrl+E"
             }
+            Action {
+                text: "cope"
+                onTriggered: sneed.open()
+                shortcut: "Ctrl+G"
+            }
         }
 
         Menu {

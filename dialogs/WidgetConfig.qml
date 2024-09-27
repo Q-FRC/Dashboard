@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import QtQuick.Layouts
@@ -24,20 +24,29 @@ Dialog {
         lm.clear()
         for (var p in item) {
             if (p.startsWith("item_") && typeof item[p] !== "function") {
+                let sub = p.substr(5)
                 let typeName = MetaObjectHelper.typeName(item, p)
                 var choices = []
+                let obj = {}
 
-                // If choices exists, it's a list
-                // If KeyType/ValueType exist, it's a map
                 if (typeName === "QVariant") {
-                    choices = item[p.substr(5) + "Choices"]
+                    choices = item[sub + "Choices"]
+
+                    typeName = "list"
+                }
+
+                else if (typeName === "QVariantList") {
+                    obj["valueType"] = item[sub + "ValueType"]
+                    obj["valueName"] = item[sub + "ValueName"]
                 }
 
                 lm.append({
                               "name": p,
                               "type": typeName,
                               "itemValue": item[p],
-                              "choices": choices
+                              "choices": choices,
+                              "item": item,
+                              "map": obj
                           })
             }
         }
@@ -210,7 +219,7 @@ Dialog {
             }
 
             DelegateChoice {
-                roleValue: "QVariant"
+                roleValue: "list"
 
                 RowLayout {
                     clip: true
@@ -238,6 +247,153 @@ Dialog {
 
                         function updateValue() {
                             setValue(valueAt(currentIndex))
+                        }
+                    }
+                }
+            }
+
+            DelegateChoice {
+                roleValue: "QVariantList"
+
+                GridLayout {
+                    clip: true
+                    width: parent.width
+
+                    rowSpacing: 0
+
+                    rows: 4
+                    columns: 2
+
+                    FieldLabel {}
+
+                    function setValue(v) {
+                        model.itemValue = v
+                    }
+
+                    function getValue() {
+                        // stupid workaround because of cancer
+                        // itemValue gets corrupted to a QQmlListModel for some reason
+                        // kill me
+                        return model.item[model.name]
+                    }
+
+                    HorizontalHeaderView {
+                        Layout.minimumWidth: parent.width - 90
+                        Layout.row: 0
+                        Layout.column: 1
+
+                        Layout.fillWidth: true
+
+                        Layout.minimumHeight: 30
+                        Layout.columnSpan: 2
+                        id: horizontalHeader
+                        syncView: tbl
+                        clip: true
+                    }
+
+                    TableView {
+                        Layout.minimumWidth: parent.width - 90
+                        Layout.minimumHeight: 40
+                        columnSpacing: 1
+                        rowSpacing: 1
+                        clip: true
+
+                        id: tbl
+
+                        Layout.fillWidth: true
+
+                        Layout.row: 1
+                        Layout.column: 1
+
+                        Layout.rowSpan: 3
+
+                        interactive: false
+
+                        function resetHeight() {
+                            Layout.minimumHeight = 42 * tblModel.rowCount()
+                        }
+
+                        Component.onCompleted: {
+                            let vl = map.valueName
+                            let iv = getValue()
+
+                            for (let i = 0; i < iv.length; ++i) {
+                                tblModel.add(iv[i]["Value"], iv[i][vl])
+                                tbl.resetHeight()
+                            }
+
+                            setValue(tblModel.asList())
+                            tblModel.dataChanged.connect(() => setValue(tblModel.asList()))
+                        }
+
+                        model: MapModel {
+                            id: tblModel
+                            valueName: map.valueName
+                        }
+
+                        selectionModel: ItemSelectionModel {}
+                        selectionBehavior: TableView.SelectRows
+                        selectionMode: TableView.SingleSelection
+
+                        delegate: Rectangle {
+                            border {
+                                color: "white"
+                                width: 2
+                            }
+
+                            required property bool selected
+                            required property bool current
+
+                            implicitWidth: tbl.width / 2
+                            implicitHeight: 40
+
+                            color: current ? "blue" : "black"
+
+                            Text {
+                                font.pixelSize: 15
+                                anchors.centerIn: parent
+                                text: display
+                                color: "white"
+                            }
+
+                            TableView.editDelegate: TextField {
+                                font.pixelSize: 15
+                                anchors.fill: parent
+                                text: display
+                                horizontalAlignment: TextInput.AlignHCenter
+                                verticalAlignment: TextInput.AlignVCenter
+                                Component.onCompleted: selectAll()
+
+                                TableView.onCommit: {
+                                    display = text
+                                }
+                            }
+                        }
+                    }
+
+                    Button {
+                        Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+                        Layout.row: 1
+                        Layout.column: 0
+                        text: "Add"
+
+                        onClicked: {
+                            tblModel.add("", "")
+                            setValue(tblModel.asList())
+                            tbl.resetHeight()
+                        }
+                    }
+
+                    Button {
+                        Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+                        Layout.row: 2
+                        Layout.column: 0
+                        text: "Delete"
+
+                        onClicked: {
+                            tblModel.remove(tbl.currentRow)
+                            setValue(tblModel.asList())
+                            tbl.resetHeight()
                         }
                     }
                 }
