@@ -26,6 +26,9 @@ Dialog {
             if (p.startsWith("item_") && typeof item[p] !== "function") {
                 let typeName = MetaObjectHelper.typeName(item, p)
                 var choices = []
+
+                // If choices exists, it's a list
+                // If KeyType/ValueType exist, it's a map
                 if (typeName === "QVariant") {
                     choices = item[p.substr(5) + "Choices"]
                 }
