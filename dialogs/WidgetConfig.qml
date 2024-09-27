@@ -24,10 +24,17 @@ Dialog {
         lm.clear()
         for (var p in item) {
             if (p.startsWith("item_") && typeof item[p] !== "function") {
+                let typeName = MetaObjectHelper.typeName(item, p)
+                var choices = []
+                if (typeName === "QVariant") {
+                    choices = item[p.substr(5) + "Choices"]
+                }
+
                 lm.append({
                               "name": p,
-                              "type": MetaObjectHelper.typeName(item, p),
-                              "itemValue": item[p]
+                              "type": typeName,
+                              "itemValue": item[p],
+                              "choices": choices
                           })
             }
         }
@@ -88,10 +95,6 @@ Dialog {
                 roleValue: "QString"
 
                 RowLayout {
-                    function getValue() {
-                        return txt.text
-                    }
-
                     clip: true
                     width: parent.width
 
@@ -115,10 +118,6 @@ Dialog {
                 roleValue: "int"
 
                 RowLayout {
-                    function getValue() {
-                        return sb.value
-                    }
-
                     clip: true
                     width: parent.width
 
@@ -144,10 +143,6 @@ Dialog {
                 roleValue: "double"
 
                 RowLayout {
-                    function getValue() {
-                        return sb.value
-                    }
-
                     clip: true
                     width: parent.width
 
@@ -188,6 +183,8 @@ Dialog {
                         Layout.fillWidth: true
 
                         text: model.itemValue
+
+                        onTextEdited: model.itemValue = text
                     }
 
                     Button {
@@ -204,6 +201,40 @@ Dialog {
                             colorDialog.selectedColor = colorField.text
                             colorDialog.accepted.connect(setColor)
                             colorDialog.open()
+                        }
+                    }
+                }
+            }
+
+            DelegateChoice {
+                roleValue: "QVariant"
+
+                RowLayout {
+                    clip: true
+                    width: parent.width
+
+                    uniformCellSizes: true
+
+                    FieldLabel {}
+
+                    function setValue(v) {
+                        model.itemValue = v
+                    }
+
+                    ComboBox {
+                        model: choices
+
+                        id: cb
+                        font.pixelSize: 15
+                        Layout.fillWidth: true
+
+                        Component.onCompleted: {
+                            currentIndex = choices.indexOf(itemValue)
+                            currentIndexChanged.connect(updateValue)
+                        }
+
+                        function updateValue() {
+                            setValue(valueAt(currentIndex))
                         }
                     }
                 }

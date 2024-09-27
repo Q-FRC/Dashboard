@@ -2,6 +2,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QRect>
+#include <qcolor.h>
 
 TabWidgetsModel::TabWidgetsModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -280,7 +281,12 @@ QJsonArray TabWidgetsModel::saveObject() const
 
         while (iter.hasNext()) {
             iter.next();
-            prop.insert(iter.key(), iter.value().toJsonValue());
+            // I hate Qt
+            if (iter.value().metaType() == QMetaType::fromType<QColor>()) {
+                prop.insert(iter.key(), iter.value().value<QColor>().name());
+            } else {
+                prop.insert(iter.key(), iter.value().toJsonValue());
+            }
         }
 
         obj.insert("properties", prop);
