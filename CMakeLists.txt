@@ -53,8 +53,6 @@ add_subdirectory("program_info")
 find_package(ntcore)
 find_package(Protobuf)
 
-set(QAPPLICATION_CLASS QApplication)
-add_subdirectory("SingleApplication")
 
 set(QRC_FILES fields.qrc)
 
@@ -109,6 +107,7 @@ set(QML_FILES
 set(ELEMENTS
     Globals
     Constants
+    SettingsManager
 
     models/TabWidgetsModel
     models/TabListModel

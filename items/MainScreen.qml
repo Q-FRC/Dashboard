@@ -18,8 +18,8 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        if (tlm.loadRecent && !tlm.recentFiles.empty) {
-            filename = tlm.recentFiles[0]
+        if (settings.loadRecent && !settings.recentFiles.empty) {
+            filename = settings.recentFiles[0]
             tlm.load(filename)
         }
     }

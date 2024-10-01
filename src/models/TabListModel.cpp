@@ -1,66 +1,13 @@
 #include "TabListModel.h"
-#include "Constants.h"
 #include "Globals.h"
 
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonObject>
 
-void reconnectServer() {
-    std::string server = Globals::server.server;
-    bool isTeamNumber = Globals::server.teamNumber;
-    int port = Globals::server.port;
-    // QString switchTopic = Globals::server.switchTopic;
-
-    if (server.empty()) return;
-
-    if (isTeamNumber) {
-        int team;
-        try {
-            team = std::stoi(server);
-        } catch (std::invalid_argument const &) {
-            return;
-        }
-
-        Globals::inst.SetServerTeam(team, port);
-    } else {
-        Globals::inst.SetServer(server.c_str(), port);
-    }
-
-    Globals::inst.Disconnect();
-
-    // QString serverTopic = Globals::server.switchTopic;
-
-    // Globals::server = data;
-
-    // if (serverTopic != switchTopic) {
-    //     emit switchTopicChanged();
-    // }
-}
-
-void TabListModel::addRecentFile(QFile &file) {
-    QStringList recentFiles = Settings::RecentFiles.value().toStringList();
-
-    QString fileName = file.fileName();
-    int index = recentFiles.indexOf(fileName);
-
-    if (index != -1) {
-        recentFiles.move(index, 0);
-    } else {
-        recentFiles.prepend(fileName);
-    }
-
-    if (recentFiles.length() > 5) {
-        recentFiles.removeLast();
-    }
-
-    Settings::RecentFiles.setValue(recentFiles);
-
-    emit recentFilesChanged();
-}
-
-TabListModel::TabListModel(QObject *parent)
+TabListModel::TabListModel(SettingsManager *settings, QObject *parent)
     : QAbstractListModel(parent)
+    , m_settings(settings)
 {}
 
 int TabListModel::rowCount(const QModelIndex &parent) const
@@ -163,7 +110,7 @@ void TabListModel::save(const QString &filename)
         return;
     }
 
-    addRecentFile(file);
+    m_settings->addRecentFile(file);
 
     QTextStream stream(&file);
     stream << saveObject().toJson();
@@ -173,9 +120,9 @@ void TabListModel::save(const QString &filename)
 QJsonDocument TabListModel::saveObject() const
 {
     QJsonObject doc;
-    doc.insert("useTeamNumber", useTeam());
-    doc.insert("port", getPort());
-    doc.insert("ip", ip());
+    doc.insert("useTeamNumber", m_settings->useTeam());
+    doc.insert("port", m_settings->getPort());
+    doc.insert("ip", m_settings->ip());
 
     QJsonArray arr;
 
@@ -203,7 +150,7 @@ void TabListModel::loadObject(const QJsonDocument &doc)
     Globals::server.port = ob.value("port").toInt();
     Globals::server.teamNumber = ob.value("useTeamNumber").toBool();
 
-    reconnectServer();
+    m_settings->reconnectServer();
 
     QJsonArray arr = ob.value("tabs").toArray();
 
@@ -232,7 +179,7 @@ void TabListModel::load(const QString &filename)
         return;
     }
 
-    addRecentFile(file);
+    m_settings->addRecentFile(file);
 
     QTextStream stream(&file);
     QByteArray data = stream.readAll().toUtf8();
@@ -252,62 +199,4 @@ QHash<int, QByteArray> TabListModel::roleNames() const
     rez[WIDGETS] = "widgets";
 
     return rez;
-}
-
-bool TabListModel::loadRecent() const
-{
-    return Settings::LoadRecent.value().toBool();
-}
-
-void TabListModel::setLoadRecent(bool newLoadRecent)
-{
-    Settings::LoadRecent.setValue(newLoadRecent);
-    emit loadRecentChanged();
-}
-
-QStringList TabListModel::recentFiles() const
-{
-    return Settings::RecentFiles.value().toStringList();
-}
-
-void TabListModel::setRecentFiles(const QStringList &newRecentFiles)
-{
-    Settings::RecentFiles.setValue(newRecentFiles);
-    emit recentFilesChanged();
-}
-
-int TabListModel::getPort() const
-{
-    return Globals::server.port;
-}
-
-void TabListModel::setPort(int newPort)
-{
-    Globals::server.port = newPort;
-    emit portChanged();
-    reconnectServer();
-}
-
-QString TabListModel::ip() const
-{
-    return QString::fromStdString(Globals::server.server);
-}
-
-void TabListModel::setIp(const QString &newIp)
-{
-    Globals::server.server = newIp.toStdString();
-    emit ipChanged();
-    reconnectServer();
-}
-
-bool TabListModel::useTeam() const
-{
-    return Globals::server.teamNumber;
-}
-
-void TabListModel::setUseTeam(bool newUseTeam)
-{
-    Globals::server.teamNumber = newUseTeam;
-    emit useTeamChanged();
-    reconnectServer();
 }

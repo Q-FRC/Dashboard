@@ -7,6 +7,7 @@
 #include <qdir.h>
 #include <qqmlintegration.h>
 
+#include "SettingsManager.h"
 #include "TabWidgetsModel.h"
 
 typedef struct {
@@ -31,7 +32,7 @@ public:
         WIDGETS
     };
 
-    explicit TabListModel(QObject *parent = nullptr);
+    explicit TabListModel(SettingsManager *settings = nullptr, QObject *parent = nullptr);
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -55,44 +56,12 @@ public:
     Q_INVOKABLE void loadObject(const QJsonDocument &doc);
     Q_INVOKABLE void load(const QString &fileName = "");
 
-    bool useTeam() const;
-    void setUseTeam(bool newUseTeam);
-
-    QString ip() const;
-    void setIp(const QString &newIp);
-
-    int getPort() const;
-    void setPort(int newPort);
-
-    QStringList recentFiles() const;
-    void setRecentFiles(const QStringList &newRecentFiles);
-
-    bool loadRecent() const;
-    void setLoadRecent(bool newLoadRecent);
-
-    void addRecentFile(QFile &file);
-
-signals:
-    void useTeamChanged();
-
-    void ipChanged();
-
-    void portChanged();
-
-    void recentFilesChanged();
-
-    void loadRecentChanged();
-
 protected:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
     QList<Tab> m_data;
 
-    Q_PROPERTY(bool useTeam READ useTeam WRITE setUseTeam NOTIFY useTeamChanged FINAL)
-    Q_PROPERTY(QString ip READ ip WRITE setIp NOTIFY ipChanged FINAL)
-    Q_PROPERTY(int port READ getPort WRITE setPort NOTIFY portChanged FINAL)
-    Q_PROPERTY(QStringList recentFiles READ recentFiles WRITE setRecentFiles NOTIFY recentFilesChanged FINAL)
-    Q_PROPERTY(bool loadRecent READ loadRecent WRITE setLoadRecent NOTIFY loadRecentChanged FINAL)
+    SettingsManager *m_settings;
 };
 #endif // TABLISTMODEL_H

@@ -5,7 +5,6 @@
 
 #include "BuildConfig.h"
 #include "CameraListModel.h"
-#include "Constants.h"
 #include "Flags.h"
 #include "Globals.h"
 #include "TopicListModel.h"
@@ -23,7 +22,8 @@ int main(int argc, char *argv[])
 
     TopicStore store(&app);
     TopicListModel *topics = new TopicListModel(store, &app);
-    TabListModel *tlm = new TabListModel(&app);
+    SettingsManager *settings = new SettingsManager(&app);
+    TabListModel *tlm = new TabListModel(settings, &app);
     CameraListModel *clm = new CameraListModel(store, &app);
 
     Globals::inst.AddConnectionListener(true, [topics, &store, clm] (const nt::Event &event) {
@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("topics", topics);
+    engine.rootContext()->setContextProperty("settings", settings);
     engine.rootContext()->setContextProperty("cameras", clm);
     engine.rootContext()->setContextProperty("topicStore", &store);
     engine.rootContext()->setContextProperty("tlm", tlm);

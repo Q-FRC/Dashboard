@@ -23,8 +23,8 @@ ApplicationWindow {
             MenuItem {
                 text: "&Load Most Recent File?"
                 checkable: true
-                checked: tlm.loadRecent
-                onCheckedChanged: tlm.loadRecent = checked
+                checked: settings.loadRecent
+                onCheckedChanged: settings.loadRecent = checked
             }
         }
 
@@ -48,7 +48,7 @@ ApplicationWindow {
             Menu {
                 title: qsTr("&Recent Files...")
                 Repeater {
-                    model: tlm.recentFiles
+                    model: settings.recentFiles
 
                     delegate: MenuItem {
                         text: qsTr("&" + index + ". " + modelData)

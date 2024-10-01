@@ -11,9 +11,9 @@ Dialog {
     anchors.centerIn: parent
 
     onAccepted: {
-        tlm.port = port.value
-        tlm.useTeam = useTeam.checked
-        tlm.ip = ip.text
+        settings.port = port.value
+        settings.useTeam = useTeam.checked
+        settings.ip = ip.text
     }
 
     Column {
