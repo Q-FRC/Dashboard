@@ -11,17 +11,20 @@ ApplicationWindow {
     title: qsTr("QFRCDashboard")
 
     menuBar: MenuBar {
+        contentWidth: parent.width
+
         Menu {
-            title: qsTr("&NT")
+            title: qsTr("&Settings")
             Action {
                 text: qsTr("&Server Settings...")
                 onTriggered: screen.serverSettings()
                 shortcut: "Ctrl+E"
             }
-            Action {
-                text: "cope"
-                onTriggered: sneed.open()
-                shortcut: "Ctrl+G"
+            MenuItem {
+                text: "&Load Most Recent File?"
+                checkable: true
+                checked: tlm.loadRecent
+                onCheckedChanged: tlm.loadRecent = checked
             }
         }
 
@@ -41,6 +44,17 @@ ApplicationWindow {
                 text: qsTr("&Open...")
                 onTriggered: screen.loadAction()
                 shortcut: "Ctrl+O"
+            }
+            Menu {
+                title: qsTr("&Recent Files...")
+                Repeater {
+                    model: tlm.recentFiles
+
+                    delegate: MenuItem {
+                        text: qsTr("&" + index + ". " + modelData)
+                        onTriggered: tlm.load(modelData)
+                    }
+                }
             }
         }
 

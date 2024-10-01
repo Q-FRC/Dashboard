@@ -1,4 +1,5 @@
 #include "TabListModel.h"
+#include "Constants.h"
 #include "Globals.h"
 
 #include <QFile>
@@ -35,6 +36,27 @@ void reconnectServer() {
     // if (serverTopic != switchTopic) {
     //     emit switchTopicChanged();
     // }
+}
+
+void TabListModel::addRecentFile(QFile &file) {
+    QStringList recentFiles = Settings::RecentFiles.value().toStringList();
+
+    QString fileName = file.fileName();
+    int index = recentFiles.indexOf(fileName);
+
+    if (index != -1) {
+        recentFiles.move(index, 0);
+    } else {
+        recentFiles.prepend(fileName);
+    }
+
+    if (recentFiles.length() > 5) {
+        recentFiles.removeLast();
+    }
+
+    Settings::RecentFiles.setValue(recentFiles);
+
+    emit recentFilesChanged();
 }
 
 TabListModel::TabListModel(QObject *parent)
@@ -130,7 +152,7 @@ bool TabListModel::remove(int row, const QModelIndex &parent)
     return true;
 }
 
-void TabListModel::save(const QString &filename) const
+void TabListModel::save(const QString &filename)
 {
     QString name = filename;
     name.replace("file://", "");
@@ -141,8 +163,7 @@ void TabListModel::save(const QString &filename) const
         return;
     }
 
-    // addRecentFile(file);
-    // refreshRecentFiles();
+    addRecentFile(file);
 
     QTextStream stream(&file);
     stream << saveObject().toJson();
@@ -211,8 +232,7 @@ void TabListModel::load(const QString &filename)
         return;
     }
 
-    // addRecentFile(file);
-    // refreshRecentFiles();
+    addRecentFile(file);
 
     QTextStream stream(&file);
     QByteArray data = stream.readAll().toUtf8();
@@ -232,6 +252,28 @@ QHash<int, QByteArray> TabListModel::roleNames() const
     rez[WIDGETS] = "widgets";
 
     return rez;
+}
+
+bool TabListModel::loadRecent() const
+{
+    return Settings::LoadRecent.value().toBool();
+}
+
+void TabListModel::setLoadRecent(bool newLoadRecent)
+{
+    Settings::LoadRecent.setValue(newLoadRecent);
+    emit loadRecentChanged();
+}
+
+QStringList TabListModel::recentFiles() const
+{
+    return Settings::RecentFiles.value().toStringList();
+}
+
+void TabListModel::setRecentFiles(const QStringList &newRecentFiles)
+{
+    Settings::RecentFiles.setValue(newRecentFiles);
+    emit recentFilesChanged();
 }
 
 int TabListModel::getPort() const

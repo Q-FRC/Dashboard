@@ -13,6 +13,5 @@ void Setting::setValue(const QVariant &value) const {
     settings.setValue(Name, value);
 }
 
-const Setting Settings::FirstRun{"firstRun", true};
 const Setting Settings::RecentFiles{"recentFiles", QStringList{}};
 const Setting Settings::LoadRecent{"loadRecent", false};

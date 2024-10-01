@@ -5,6 +5,7 @@
 
 #include "BuildConfig.h"
 #include "CameraListModel.h"
+#include "Constants.h"
 #include "Flags.h"
 #include "Globals.h"
 #include "TopicListModel.h"
@@ -15,6 +16,10 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    app.setOrganizationName(BuildConfig.ORG_NAME);
+    app.setApplicationName(BuildConfig.APP_NAME);
+    app.setApplicationVersion(BuildConfig.versionString());
 
     TopicStore store(&app);
     TopicListModel *topics = new TopicListModel(store, &app);

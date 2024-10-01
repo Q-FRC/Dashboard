@@ -5,6 +5,11 @@
 #include <QVariant>
 
 typedef struct Setting {
+    Q_PROPERTY(QString name MEMBER Name CONSTANT FINAL)
+    Q_PROPERTY(QVariant value READ value CONSTANT)
+    Q_GADGET
+
+public:
     const QString Name;
     const QVariant DefaultValue;
 
@@ -13,7 +18,7 @@ typedef struct Setting {
 } Setting;
 
 namespace Settings {
-extern const Setting FirstRun;
+Q_NAMESPACE
 extern const Setting RecentFiles;
 extern const Setting LoadRecent;
 }

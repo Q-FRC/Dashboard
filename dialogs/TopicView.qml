@@ -171,8 +171,8 @@ Row {
         id: button
         text: ">>"
 
-        width: 41
-        height: 41
+        width: tabs.height
+        height: width
 
         onClicked: {
             if (text === ">>") {

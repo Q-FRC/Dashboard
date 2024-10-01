@@ -17,6 +17,13 @@ Rectangle {
         widgetConf.openUp(item)
     }
 
+    Component.onCompleted: {
+        if (tlm.loadRecent && !tlm.recentFiles.empty) {
+            filename = tlm.recentFiles[0]
+            tlm.load(filename)
+        }
+    }
+
     TopicView {
         id: topicView
         z: 4
@@ -28,7 +35,7 @@ Rectangle {
             bottom: parent.bottom
         }
 
-        width: (parent.width / 3) + 40
+        width: (parent.width / 3) + tabs.height
         height: parent.height
 
         SmoothedAnimation {
@@ -110,7 +117,7 @@ Rectangle {
             bottom: parent.bottom
         }
 
-        width: (parent.width / 3) + 40
+        width: (parent.width / 3) + tabs.height
         height: parent.height
 
         SmoothedAnimation {
@@ -196,10 +203,6 @@ Rectangle {
 
     WidgetConfig {
         id: widgetConf
-    }
-
-    TabListModel {
-        id: tlm
     }
 
     /** SAVE */
