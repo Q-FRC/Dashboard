@@ -24,7 +24,7 @@ Dialog {
             id: useTeam
             text: "Use Team Number?"
 
-            checked: tlm.useTeam
+            checked: settings.useTeam
 
             font.pixelSize: 17
         }
@@ -39,7 +39,7 @@ Dialog {
             SpinBox {
                 id: port
 
-                value: tlm.port
+                value: settings.port
 
                 from: 1
                 to: 65535
@@ -58,7 +58,7 @@ Dialog {
             TextField {
                 id: ip
 
-                text: tlm.ip
+                text: settings.ip
 
                 validator: RegularExpressionValidator {
                     regularExpression: useTeam.checked ? /[0-9]{1,5}/ : /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/
