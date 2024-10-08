@@ -128,19 +128,30 @@ void TabWidgetsModel::addCamera(QString name, QString source, QVariantList urls)
     w.properties.insert("name", name);
     w.properties.insert("source", source);
 
+    QUrl url;
     if (urls.empty()) {
-        w.properties.insert("URL", source);
+        url = source;
     } else {
         for (const QVariant &u : urls) {
-            if (u.toUrl().toString().contains(".local")) {
+            // pure, unfaltered cancer
+            QString str = u.value<QVariant>().toString();
+
+            if (str.contains(".local")) {
                 continue;
             }
 
-            w.properties.insert("URL", u);
+            url = str;
         }
-        if (!w.properties.contains("URL")) {
-            w.properties.insert("URL", urls.at(0));
+
+        if (url.isEmpty()) {
+            url = urls.at(0).value<QVariant>().toString();
         }
+    }
+
+    if (!url.isEmpty()) {
+        QStringList split = url.toString().split(":");
+        w.properties.insert("host", (split.at(0) + ":" + split.at(1)));;
+        w.properties.insert("port", split.at(2).split("/").at(0).toInt());
     }
 
     w.row = -1;

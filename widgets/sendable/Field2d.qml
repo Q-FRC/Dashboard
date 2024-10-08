@@ -30,11 +30,6 @@ BaseWidget {
     onItem_robotLengthMetersChanged: redraw()
     onItem_robotWidthMetersChanged: redraw()
 
-    onItem_useVerticalFieldChanged: redraw()
-
-    onWidthChanged: redraw()
-    onHeightChanged: redraw()
-
     function updateMirror(topic, value) {
         if (topic === "/FMSInfo/IsRedAlliance") {
             mirrorField = value
@@ -74,8 +69,12 @@ BaseWidget {
 
         fillMode: Image.PreserveAspectFit
         source: "qrc:/" + item_field + "Field" + (item_useVerticalField ? "Vertical" : "") + ".png"
+        onSourceChanged: robot.redraw()
 
-        rotation: mirrorField ? 180 : 0
+        onPaintedGeometryChanged: robot.redraw()
+
+        mirrorVertically: item_useVerticalField ? mirrorField : false
+        mirror: item_useVerticalField ? false : mirrorField
     }
 
     Rectangle {

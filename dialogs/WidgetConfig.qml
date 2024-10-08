@@ -40,6 +40,14 @@ Dialog {
                     obj["valueName"] = item[sub + "ValueName"]
                 }
 
+                else if (typeName === "int" || typeName === "double") {
+                    let min = item[sub + "Min"];
+                    let max = item[sub + "Max"];
+
+                    obj["min"] = (typeof min === "undefined") ? 0 : min
+                    obj["max"] = (typeof max === "undefined") ? 100000 : max
+                }
+
                 lm.append({
                               "name": p,
                               "type": typeName,
@@ -162,7 +170,9 @@ Dialog {
                     FieldLabel {}
 
                     SpinBox {
-                        to: 100000
+                        from: map.min
+                        to: map.max
+
                         id: sb
 
                         Layout.fillWidth: true
@@ -187,7 +197,8 @@ Dialog {
                     FieldLabel {}
 
                     DoubleSpinBox {
-                        to: 100000.0
+                        from: map.min
+                        to: map.max
 
                         id: dsb
                         font.pixelSize: 15
