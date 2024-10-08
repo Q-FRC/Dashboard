@@ -131,7 +131,16 @@ void TabWidgetsModel::addCamera(QString name, QString source, QVariantList urls)
     if (urls.empty()) {
         w.properties.insert("URL", source);
     } else {
-        w.properties.insert("URL", urls.at(0));
+        for (const QVariant &u : urls) {
+            if (u.toUrl().toString().contains(".local")) {
+                continue;
+            }
+
+            w.properties.insert("URL", u);
+        }
+        if (!w.properties.contains("URL")) {
+            w.properties.insert("URL", urls.at(0));
+        }
     }
 
     w.row = -1;
@@ -217,6 +226,7 @@ bool TabWidgetsModel::cellOccupied(int row, int col, int rowSpan, int colSpan, Q
     QRect itemRect = QRect(col, row, colSpan, rowSpan);
 
     if (col + colSpan > cols() || row + rowSpan > rows()) return true;
+    if (m_data.empty()) return false;
 
     for (const Widget &w : m_data) {
         QRect dataRect = QRect(w.col, w.row, w.colSpan, w.rowSpan);

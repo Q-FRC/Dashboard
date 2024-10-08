@@ -22,11 +22,13 @@ BaseWidget {
             id: player
             source: item_URL
             videoOutput: video
+            onErrorOccurred: console.log("CameraView: error:", errorString)
         }
 
         VideoOutput {
             id: video
             anchors.fill: parent
+
         }
     }
 

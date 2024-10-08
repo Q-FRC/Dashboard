@@ -88,7 +88,12 @@ void CameraListModel::add(std::shared_ptr<nt::NetworkTable> table)
 
     camera.urls = {};
     for (const QVariant &url : urls) {
-        camera.urls.append(url.toUrl());
+        static QRegularExpression re("^(mjpe?g|ip|usb):");
+        QString newStream = url.toUrl().toString();
+        newStream.replace(re, "");
+        newStream.replace("/?action=stream", "/stream.mjpg?");
+
+        camera.urls.append(QUrl(newStream));
     }
 
     bool descriptionDone = (camera.name != "invalid"),

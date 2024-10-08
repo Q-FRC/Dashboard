@@ -83,6 +83,8 @@ Dialog {
             margins: 8
         }
 
+        spacing: 8
+
         id: listView
 
         clip: true
@@ -122,6 +124,28 @@ Dialog {
                         text: model.itemValue
 
                         onTextEdited: model.itemValue = text
+                    }
+                }
+            }
+
+            DelegateChoice {
+                roleValue: "bool"
+
+                RowLayout {
+                    clip: true
+                    width: parent.width
+
+                    uniformCellSizes: true
+
+                    FieldLabel {}
+
+                    CheckBox {
+                        checked: model.itemValue
+
+                        onClicked: model.itemValue = checked
+
+                        indicator.implicitHeight: 20
+                        indicator.implicitWidth: 20
                     }
                 }
             }

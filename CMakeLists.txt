@@ -10,7 +10,7 @@ project(QFRCDashboard VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Quick Multimedia)
 add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
 
 qt_standard_project_setup(REQUIRES 6.5)
@@ -152,6 +152,7 @@ set_target_properties(${Dashboard_EXEC_NAME} PROPERTIES
 
 target_link_libraries(${Dashboard_EXEC_NAME}
     PRIVATE Qt6::Quick
+    Qt6::Multimedia
     BuildConfig
     ntcore
 )

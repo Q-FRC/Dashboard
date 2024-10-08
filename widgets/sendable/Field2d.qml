@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick 6.2
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 2.15
 import QtQuick.Shapes 2.15
@@ -8,11 +8,20 @@ import QFRCDashboard
 BaseWidget {
     property string item_topic
 
+    property bool item_useVerticalField: false
+    property bool item_mirrorForRedAlliance: false
+
     property double item_robotWidthMeters: 0.5
     property double item_robotLengthMeters: 0.5
 
+    property var item_field: "2024"
+
+    property list<string> fieldChoices: ["2024", "2023"]
+
     property double fieldWidth: 8.2296;
     property double fieldLength: 8.2296 * 2.;
+
+    property bool mirrorField: false
 
     function redraw() {
         robot.redraw()
@@ -21,20 +30,52 @@ BaseWidget {
     onItem_robotLengthMetersChanged: redraw()
     onItem_robotWidthMetersChanged: redraw()
 
+    onItem_useVerticalFieldChanged: redraw()
+
     onWidthChanged: redraw()
     onHeightChanged: redraw()
+
+    function updateMirror(topic, value) {
+        if (topic === "/FMSInfo/IsRedAlliance") {
+            mirrorField = value
+        }
+    }
+
+    function unsubscribeMirror() {
+        if (topicStore !== null) {
+            topicStore.topicUpdate.disconnect(updateMirror)
+            topicStore.unsubscribe("/FMSInfo/IsRedAlliance")
+        }
+
+    }
+
+    onItem_mirrorForRedAllianceChanged: {
+        if (item_mirrorForRedAlliance) {
+            topicStore.topicUpdate.connect(updateMirror)
+            topicStore.subscribe("/FMSInfo/IsRedAlliance")
+        } else {
+            unsubscribeMirror()
+            mirrorField = false
+        }
+    }
+
+    Component.onDestruction: {
+        unsubscribeMirror()
+    }
 
     Image {
         id: field
 
         y: titleField.height + 10
-
         x: 8
+
         width: parent.width - 16
         height: parent.height - titleField.height - 16
 
         fillMode: Image.PreserveAspectFit
-        source: "qrc:/2024Field.png"
+        source: "qrc:/" + item_field + "Field" + (item_useVerticalField ? "Vertical" : "") + ".png"
+
+        rotation: mirrorField ? 180 : 0
     }
 
     Rectangle {
@@ -71,10 +112,11 @@ BaseWidget {
             let realFieldX = field.x + (field.width - field.paintedWidth) / 2
             let realFieldY = field.y + (field.height - field.paintedHeight) / 2
 
-            let bottomLeft = Qt.point(realFieldX, realFieldY + field.paintedHeight)
+            let startPoint = item_useVerticalField ? Qt.point(realFieldX + field.paintedWidth - width, realFieldY + field.paintedHeight)
+                  : Qt.point(realFieldX, realFieldY + field.paintedHeight)
 
-            x = bottomLeft.x + xPixels
-            y = bottomLeft.y - yPixels - height
+            x = startPoint.x + xPixels
+            y = startPoint.y - yPixels - height
 
             rotation = -angleDeg
 
@@ -129,7 +171,7 @@ BaseWidget {
                 end.x = 0
                 end.y = 0
 
-                shape.rotation = -rot
+                shape.rotation = -rot + (item_useVerticalField ? 270 : 0)
             }
         }
     }

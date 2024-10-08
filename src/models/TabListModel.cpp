@@ -185,6 +185,9 @@ void TabListModel::load(const QString &filename)
     QByteArray data = stream.readAll().toUtf8();
 
     QJsonDocument doc = QJsonDocument::fromJson(data);
+    beginResetModel();
+    m_data.clear();
+    endResetModel();
 
     loadObject(doc);
     file.close();
