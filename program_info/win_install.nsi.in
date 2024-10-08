@@ -69,6 +69,7 @@ Section "@Dashboard_APP_NAME@"
   File /r "imageformats"
   File /r "platforms"
   File /r "tls"
+  File /r "multimedia"
   File /r "qml"
 
   ; Write the installation path into the registry
