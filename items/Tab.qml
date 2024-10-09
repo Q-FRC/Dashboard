@@ -16,6 +16,35 @@ Rectangle {
 
     property alias gridHandler: rep
 
+    signal copying(point mousePos)
+    signal dropped(point mousePos)
+
+    property bool isCopying: false
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+
+        property point mouseCoordinates: Qt.point(0, 0)
+
+        onPositionChanged: mouse =>
+                           {
+                               mouseCoordinates = Qt.point(mouse.x, mouse.y)
+                               if (isCopying) {
+                                   copying(mouseCoordinates)
+                               }
+                           }
+
+        onClicked: {
+            if (copying) {
+                isCopying = false
+                dropped(mouseCoordinates)
+            }
+        }
+    }
+
+
     TabWidgetsModel {
         id: twm
 
@@ -30,6 +59,12 @@ Rectangle {
             twm.setEqualTo(model.widgets)
             model.widgets = twm
         }
+    }
+
+    function copy(idx) {
+        twm.copy(idx);
+        isCopying = true
+        copying(mouseArea.mouseCoordinates)
     }
 
     function removeLatest() {

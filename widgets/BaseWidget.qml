@@ -110,6 +110,11 @@ Rectangle {
             text: "Configure"
             onTriggered: openConf(rcMenu.parent)
         }
+
+        MenuItem {
+            text: "Duplicate Widget"
+            onTriggered: copy(idx)
+        }
     }
 
     MouseArea {

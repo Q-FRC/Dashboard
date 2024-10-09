@@ -57,11 +57,10 @@ BaseWidget {
             onSourceChanged: {
                 player.playbackStateChanged.connect(restartVideo)
                 player.stop()
-                console.log(source)
             }
 
             videoOutput: video
-            onErrorOccurred: console.error("CameraView: error:", errorString)
+            onErrorOccurred: (error, errorString) => console.error("CameraView: error:", errorString)
         }
 
         VideoOutput {

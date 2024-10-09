@@ -97,7 +97,6 @@ set(QML_FILES
     widgets/misc/CameraView.qml
 
     dialogs/TopicView.qml
-    dialogs/CameraList.qml
     dialogs/TabNameDialog.qml
     dialogs/TabSizeDialog.qml
     dialogs/WidgetConfig.qml

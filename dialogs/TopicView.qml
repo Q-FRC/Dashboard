@@ -6,17 +6,61 @@ import QFRCDashboard
 
 Row {
     id: tv
+    z: 4
+
+    property alias menuAnim : menuAnim
+
+    property bool isCamera: false
+
+    property string closedText: isCamera ? "<<" : ">>"
+    property string openText: isCamera ? ">>" : "<<"
+
+    width: (parent.width / 3) + tabs.height
+    height: parent.height
+
+    SmoothedAnimation {
+        id: menuAnim
+        target: tv
+        property: "anchors." + (isCamera ? "right" : "left") + "Margin"
+        duration: 500
+    }
+
     signal open
     signal close
 
     signal addWidget(string name, string topic, string type)
+    signal addCamera(string name, string source, var urls)
     signal dragging(point pos)
     signal dropped(point pos)
 
     function widgetAdd(name, topic, type) {
-        button.text = ">>"
+        button2.text = closedText
         close()
         addWidget(name, topic, type)
+    }
+
+    function cameraAdd(name, source, urls) {
+        button.text = (closedText)
+        close()
+        addCamera(name, source, urls)
+    }
+
+    Button {
+        id: button
+        text: closedText
+
+        width: isCamera ? tabs.height : 0
+        height: isCamera ? width : 0
+
+        onClicked: {
+            if (text === closedText) {
+                open()
+                text = openText
+            } else {
+                close()
+                text = closedText
+            }
+        }
     }
 
     Rectangle {
@@ -40,7 +84,7 @@ Row {
 
             selectionModel: ItemSelectionModel {}
 
-            model: topics
+            model: isCamera ? cameras : topics
 
             delegate: Item {
                 DragHandler {
@@ -54,11 +98,16 @@ Row {
                                          dropped(centroid.position)
                                      }
 
-                    yAxis.onActiveValueChanged: {
+                    function drag() {
                         let global = mapToItem(topicView, centroid.position)
                         if (!topicView.contains(global)) {
                             if (!ready) {
-                                widgetAdd(model.name, model.topic, model.type)
+                                if (isCamera) {
+                                    cameraAdd(model.name, model.source, model.urls)
+                                } else {
+                                    widgetAdd(model.name, model.topic, model.type)
+                                }
+
                                 ready = true
                             }
 
@@ -68,18 +117,12 @@ Row {
                         }
                     }
 
-                    xAxis.onActiveValueChanged: {
-                        let global = mapToItem(topicView, centroid.position)
-                        if (!topicView.contains(global)) {
-                            if (!ready) {
-                                widgetAdd(model.name, model.topic, model.type)
-                                ready = true
-                            }
+                    yAxis.onActiveValueChanged: {
+                        drag()
+                    }
 
-                            let p = mapToItem(tv, centroid.position)
-                            p.x += tv.x
-                            dragging(p)
-                        }
+                    xAxis.onActiveValueChanged: {
+                        drag()
                     }
                 }
 
@@ -159,29 +202,31 @@ Row {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.right: parent.right
                     clip: true
-                    text: model.type
+                    text: isCamera ? "" : model.type
 
                     font.pixelSize: 17
                 }
+
             }
         }
     }
 
     Button {
-        id: button
-        text: ">>"
+        id: button2
+        text: closedText
 
-        width: tabs.height
-        height: width
+        width: !isCamera ? tabs.height : 0
+        height: !isCamera ? width : 0
 
         onClicked: {
-            if (text === ">>") {
+            if (text === closedText) {
                 open()
-                text = "<<"
+                text = openText
             } else {
                 close()
-                text = ">>"
+                text = closedText
             }
         }
     }
+
 }

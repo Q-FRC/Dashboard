@@ -51,6 +51,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     // Add data:
+    Q_INVOKABLE void copy(int idx);
     Q_INVOKABLE void add(Widget w);
     Q_INVOKABLE void add(QString title, QString topic, QString type);
     Q_INVOKABLE void addCamera(QString name, QString source, QVariantList urls);

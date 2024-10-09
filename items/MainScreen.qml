@@ -7,11 +7,13 @@ import QtQuick.Dialogs
 import QFRCDashboard
 
 Rectangle {
+    id: mainScreen
     width: Constants.width
     height: Constants.height
     color: Constants.bg
 
     property string filename: ""
+    property bool readyDragging
 
     function openConf(item) {
         widgetConf.openUp(item)
@@ -24,25 +26,64 @@ Rectangle {
         }
     }
 
+    function drag(pos, fromList) {
+        if (currentTab() !== null) {
+            let w = currentTab().latestWidget
+            w.x = pos.x
+            w.y = pos.y - (fromList ? tabs.height : 0)
+
+            w.width = 1
+            w.height = 1
+
+            w.visible = false
+
+            if (!readyDragging) {
+                w.dragArea.drag.target = w
+                readyDragging = true
+
+                mainScreen.z = 3
+            }
+            w.resizeBegin(w.Drag)
+        }
+    }
+
+    function drop(pos) {
+        if (currentTab() !== null) {
+            let w = currentTab().latestWidget
+            if (!w.caught) {
+                w.cancelDrag()
+                currentTab().removeLatest()
+            } else {
+                let p = currentTab().gridHandler.occupied()
+                if (p.x === -1 || p.y === -1) {
+                    w.cancelDrag()
+                    currentTab().removeLatest()
+                } else {
+                    w.mrow = p.x
+                    w.mcolumn = p.y
+
+                    w.z = 2
+                    w.visible = true
+                    w.cancelDrag()
+                }
+            }
+        }
+    }
+
+
     TopicView {
-        id: topicView
-        z: 4
+        id: tv
+
+        onAddWidget: (title, topic, type) => {
+                         currentTab().add(title, topic, type)
+                     }
 
         anchors {
             left: parent.left
             leftMargin: -(parent.width / 3)
+
             top: parent.top
             bottom: parent.bottom
-        }
-
-        width: (parent.width / 3) + tabs.height
-        height: parent.height
-
-        SmoothedAnimation {
-            id: menuAnim
-            target: topicView
-            property: "anchors.leftMargin"
-            duration: 500
         }
 
         onOpen: {
@@ -57,136 +98,43 @@ Rectangle {
             menuAnim.start()
         }
 
-        onAddWidget: (title, topic, type) => currentTab().add(title,
-                                                              topic, type)
+        onDragging: pos => drag(this, pos);
 
-        property bool readyDragging: false
-        onDragging: pos => {
-                        if (currentTab() !== null) {
-                            let w = currentTab().latestWidget
-                            w.x = mapFromItem(topicView, pos).x
-                            w.y = pos.y
-
-                            w.width = 1
-                            w.height = 1
-
-                            w.visible = false
-
-                            if (!readyDragging) {
-                                w.dragArea.drag.target = w
-                                readyDragging = true
-
-                                parent.z = 3
-                            }
-                            w.resizeBegin(w.Drag)
-                        }
-                    }
-
-        onDropped: pos => {
-                       if (currentTab() !== null) {
-                           let w = currentTab().latestWidget
-                           if (!w.caught) {
-                               w.cancelDrag()
-                               currentTab().removeLatest()
-                           } else {
-                               let p = currentTab().gridHandler.occupied()
-                               if (p.x === -1 || p.y === -1) {
-                                   w.cancelDrag()
-                                   currentTab().removeLatest()
-                               } else {
-                                   w.mrow = p.x
-                                   w.mcolumn = p.y
-
-                                   w.z = 2
-                                   w.visible = true
-                                   w.cancelDrag()
-                               }
-                           }
-                       }
-                   }
+        onDropped: pos => drop(this, pos);
     }
 
-    CameraList {
-        id: cameraList
-        z: 4
+    TopicView {
+        id: cl
+
+        isCamera: true
+
+        onAddCamera: (name, source, urls) => {
+                         currentTab().addCamera(name, source, urls)
+                     }
 
         anchors {
             right: parent.right
             rightMargin: -(parent.width / 3)
+
             top: parent.top
             bottom: parent.bottom
         }
 
-        width: (parent.width / 3) + tabs.height
-        height: parent.height
-
-        SmoothedAnimation {
-            id: cMenuAnim
-            target: cameraList
-            property: "anchors.rightMargin"
-            duration: 500
-        }
-
         onOpen: {
-            cMenuAnim.from = -(parent.width / 3)
-            cMenuAnim.to = 0
-            cMenuAnim.start()
+            menuAnim.from = -(parent.width / 3)
+            menuAnim.to = 0
+            menuAnim.start()
         }
 
         onClose: {
-            cMenuAnim.to = -(parent.width / 3)
-            cMenuAnim.from = 0
-            cMenuAnim.start()
+            menuAnim.to = -(parent.width / 3)
+            menuAnim.from = 0
+            menuAnim.start()
         }
 
-        onAddWidget: (name, source, urls) => {
-                         currentTab().addCamera(name, source, urls)
-                     }
+        onDragging: pos => drag(this, pos)
 
-        property bool readyDragging: false
-        onDragging: pos => {
-                        if (currentTab() !== null) {
-                            let w = currentTab().latestWidget
-                            w.x = mapFromItem(cameraList, pos).x
-                            w.y = pos.y
-
-                            w.width = 1
-                            w.height = 1
-
-                            w.visible = false
-
-                            if (!readyDragging) {
-                                w.dragArea.drag.target = w
-                                readyDragging = true
-
-                                parent.z = 3
-                            }
-                            w.resizeBegin(w.Drag)
-                        }
-                    }
-
-        onDropped: pos => {
-                       if (currentTab() !== null) {
-                           let w = currentTab().latestWidget
-                           if (!w.caught) {
-                               w.cancelDrag()
-                               currentTab().removeLatest()
-                           } else {
-                               let p = currentTab().gridHandler.occupied()
-                               if (p.x === -1 || p.y === -1) {
-                                   w.cancelDrag()
-                                   currentTab().removeLatest()
-                               } else {
-                                   w.mrow = p.x
-                                   w.mcolumn = p.y
-
-                                   w.z = 2
-                                   w.visible = true
-                                   w.cancelDrag()
-                               }
-                           }
-                       }
-                   }
+        onDropped: pos => drop(this, pos)
     }
 
     TabNameDialog {
@@ -337,6 +285,10 @@ Rectangle {
             Tab {
                 width: swipe.width
                 height: swipe.height
+
+                onCopying: pos => drag(pos, false)
+
+                onDropped: pos => drop(pos)
             }
         }
     }
@@ -346,8 +298,8 @@ Rectangle {
 
         anchors {
             top: parent.top
-            left: topicView.right
-            right: cameraList.left
+            left: tv.right
+            right: cl.left
         }
 
         position: TabBar.Footer

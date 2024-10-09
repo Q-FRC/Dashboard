@@ -91,6 +91,24 @@ Qt::ItemFlags TabWidgetsModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
+void TabWidgetsModel::copy(int idx)
+{
+    Widget w = m_data.at(idx);
+    Widget nw = Widget(w);
+
+    nw.row = -1;
+    nw.col = -1;
+
+    nw.rowSpan = 1;
+    nw.colSpan = 1;
+
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
+    m_data << nw;
+    endInsertRows();
+
+    emit unoccupiedCellsChanged();
+}
+
 void TabWidgetsModel::add(Widget w)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
