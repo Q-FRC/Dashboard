@@ -45,6 +45,7 @@ BaseWidget {
     Component.onCompleted: {
         topicStore.topicUpdate.connect(updateTopic)
         item_topic = model.topic
+
         rcMenu.addMenu(switchMenu)
     }
 
@@ -78,5 +79,6 @@ BaseWidget {
         topicStore.unsubscribe(topic)
         topicStore.subscribe(item_topic)
         model.topic = item_topic
+        updateTopic(model.topic, topicStore.getValue(model.topic))
     }
 }

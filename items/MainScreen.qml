@@ -48,17 +48,17 @@ Rectangle {
         }
     }
 
-    function drop(pos) {
+    function drop(pos, fromList) {
         if (currentTab() !== null) {
             let w = currentTab().latestWidget
             if (!w.caught) {
                 w.cancelDrag()
-                currentTab().removeLatest()
+                if (fromList) currentTab().removeLatest()
             } else {
                 let p = currentTab().gridHandler.occupied()
                 if (p.x === -1 || p.y === -1) {
                     w.cancelDrag()
-                    currentTab().removeLatest()
+                    if (fromList) currentTab().removeLatest()
                 } else {
                     w.mrow = p.x
                     w.mcolumn = p.y
@@ -99,9 +99,9 @@ Rectangle {
             menuAnim.start()
         }
 
-        onDragging: pos => drag(this, pos);
+        onDragging: pos => drag(pos, true);
 
-        onDropped: pos => drop(this, pos);
+        onDropped: pos => drop(pos, true);
     }
 
     TopicView {
@@ -133,9 +133,9 @@ Rectangle {
             menuAnim.start()
         }
 
-        onDragging: pos => drag(this, pos)
+        onDragging: pos => drag(pos, true)
 
-        onDropped: pos => drop(this, pos)
+        onDropped: pos => drop(pos, true)
     }
 
     TabNameDialog {
@@ -296,7 +296,7 @@ Rectangle {
 
                 onCopying: pos => drag(pos, false)
 
-                onDropped: pos => drop(pos)
+                onDropped: pos => drop(pos, false)
 
                 onStoreWidget: w => clipboard = w
             }

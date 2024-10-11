@@ -49,6 +49,7 @@ BaseWidget {
 
         Component.onCompleted: {
             topicStore.topicUpdate.connect(updateTopic)
+
             item_topic = model.topic
         }
 
@@ -66,6 +67,7 @@ BaseWidget {
         topicStore.unsubscribe(topic)
         topicStore.subscribe(item_topic)
         model.topic = item_topic
+
         control.checked = topicStore.getValue(item_topic)
     }
 }

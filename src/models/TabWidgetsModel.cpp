@@ -298,7 +298,7 @@ QJsonArray TabWidgetsModel::saveObject() const
 {
     QJsonArray arr;
 
-    for (const Widget &w : m_data) {
+    for (const Widget w : m_data) {
         QJsonObject obj;
         obj.insert("title", w.title);
         obj.insert("topic", w.topic);

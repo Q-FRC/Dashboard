@@ -41,13 +41,13 @@ BaseWidget {
             topicStore.topicUpdate.disconnect(updateMirror)
             topicStore.unsubscribe("/FMSInfo/IsRedAlliance")
         }
-
     }
 
     onItem_mirrorForRedAllianceChanged: {
         if (item_mirrorForRedAlliance) {
             topicStore.topicUpdate.connect(updateMirror)
             topicStore.subscribe("/FMSInfo/IsRedAlliance")
+            mirrorField = topicStore.getValue("/FMSInfo/IsRedAlliance")
         } else {
             unsubscribeMirror()
             mirrorField = false
@@ -122,16 +122,25 @@ BaseWidget {
             path.redraw(x, y, height, width, angleDeg)
         }
 
+        function update() {
+            topicStore.subscribe(item_topic + "/Robot")
+        }
+
+        function unsubscribe() {
+            topicStore.unsubscribe(topic + "/Robot")
+        }
+
         Component.onCompleted: {
             topicStore.topicUpdate.connect(updateTopic)
             item_topic = model.topic
-            topicStore.subscribe(item_topic + "/Robot")
+
+            update()
         }
 
         Component.onDestruction: {
             if (topicStore !== null) {
                 topicStore.topicUpdate.disconnect(updateTopic)
-                topicStore.unsubscribe(item_topic + "/Robot")
+                unsubscribe()
             }
         }
     }
@@ -176,6 +185,10 @@ BaseWidget {
     }
 
     onItem_topicChanged: {
+        robot.unsubscribe()
+
         model.topic = item_topic
+
+        robot.update()
     }
 }

@@ -10,6 +10,7 @@ BaseWidget {
     property int item_fontSize: 18
 
     ComboBox {
+        id: combo
         anchors {
             verticalCenter: parent.verticalCenter
             horizontalCenter: parent.horizontalCenter
@@ -51,20 +52,28 @@ BaseWidget {
             }
         }
 
-        Component.onCompleted: {
-            topicStore.topicUpdate.connect(updateTopic)
-            item_topic = topic
+        function update() {
             topicStore.subscribe(item_topic + "/options")
             topicStore.subscribe(item_topic + "/active")
             topicStore.subscribe(item_topic + "/selected")
         }
 
+        function unsubscribe() {
+            topicStore.unsubscribe(topic + "/options")
+            topicStore.unsubscribe(topic + "/active")
+            topicStore.unsubscribe(topic + "/selected")
+        }
+
+        Component.onCompleted: {
+            topicStore.topicUpdate.connect(updateTopic)
+            item_topic = topic
+
+            update()
+        }
+
         Component.onDestruction: {
             if (topicStore !== null) {
                 topicStore.topicUpdate.disconnect(updateTopic)
-                topicStore.unsubscribe(item_topic + "/options")
-                topicStore.unsubscribe(item_topic + "/active")
-                topicStore.unsubscribe(item_topic + "/selected")
             }
         }
 
@@ -74,6 +83,8 @@ BaseWidget {
     }
 
     onItem_topicChanged: {
+        combo.unsubscribe()
         topic = item_topic
+        combo.update()
     }
 }

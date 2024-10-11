@@ -68,8 +68,7 @@ BaseWidget {
         }
 
         onValueModified: {
-            realValue = value
-            topicStore.setValue(item_topic, realValue)
+            topicStore.setValue(item_topic, value)
         }
     }
 

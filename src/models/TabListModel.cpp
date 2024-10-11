@@ -45,12 +45,16 @@ bool TabListModel::setData(const QModelIndex &index, const QVariant &value, int 
         switch (role) {
         case TITLE:
             t.title = value.toString();
+            break;
         case ROWS:
             t.rows = value.toInt();
+            break;
         case COLS:
             t.cols = value.toInt();
+            break;
         case WIDGETS:
             t.model = value.value<TabWidgetsModel *>();
+            break;
         default:
             break;
         }

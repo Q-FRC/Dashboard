@@ -46,18 +46,27 @@ BaseWidget {
 
             text: matchType + " Match " + matchNumber
 
+            function update() {
+                topicStore.subscribe(item_topic + "/MatchNumber")
+                topicStore.subscribe(item_topic + "/MatchType")
+            }
+
+            function unsubscribe() {
+                topicStore.unsubscribe(topic + "/MatchNumber")
+                topicStore.unsubscribe(topic + "/MatchType")
+            }
+
             Component.onCompleted: {
                 topicStore.topicUpdate.connect(updateTopic)
                 item_topic = model.topic
-                topicStore.subscribe(item_topic + "/MatchNumber")
-                topicStore.subscribe(item_topic + "/MatchType")
+
+                update()
             }
 
             Component.onDestruction: {
                 if (topicStore !== null) {
                     topicStore.topicUpdate.disconnect(updateTopic)
-                    topicStore.unsubscribe(item_topic + "/MatchNumber")
-                    topicStore.unsubscribe(item_topic + "/MatchType")
+                    unsubscribe()
                 }
             }
         }
@@ -85,18 +94,27 @@ BaseWidget {
 
             text: "Station: " + alliance + " " + stationNumber;
 
+            function update() {
+                topicStore.subscribe(item_topic + "/StationNumber")
+                topicStore.subscribe(item_topic + "/IsRedAlliance")
+            }
+
+            function unsubscribe() {
+                topicStore.unsubscribe(topic + "/StationNumber")
+                topicStore.unsubscribe(topic + "/IsRedAlliance")
+            }
+
             Component.onCompleted: {
                 topicStore.topicUpdate.connect(updateTopic)
                 item_topic = model.topic
-                topicStore.subscribe(item_topic + "/StationNumber")
-                topicStore.subscribe(item_topic + "/IsRedAlliance")
+
+                update()
             }
 
             Component.onDestruction: {
                 if (topicStore !== null) {
                     topicStore.topicUpdate.disconnect(updateTopic)
-                    topicStore.unsubscribe(item_topic + "/StationNumber")
-                    topicStore.unsubscribe(item_topic + "/IsRedAlliance")
+                    unsubscribe()
                 }
             }
         }
@@ -121,16 +139,25 @@ BaseWidget {
 
             text: "Event: " + eventName;
 
+            function update() {
+                topicStore.subscribe(item_topic + "/EventName")
+            }
+
+            function unsubscribe() {
+                topicStore.unsubscribe(topic + "/EventName")
+            }
+
             Component.onCompleted: {
                 topicStore.topicUpdate.connect(updateTopic)
                 item_topic = model.topic
-                topicStore.subscribe(item_topic + "/EventName")
+
+                update()
             }
 
             Component.onDestruction: {
                 if (topicStore !== null) {
                     topicStore.topicUpdate.disconnect(updateTopic)
-                    topicStore.unsubscribe(item_topic + "/EventName")
+                    unsubscribe()
                 }
             }
         }
@@ -155,16 +182,24 @@ BaseWidget {
 
             text: "Game Specific Message: " + gameSpecificMessage;
 
-            Component.onCompleted: {
-                topicStore.topicUpdate.connect(updateTopic)
-                item_topic = model.topic
+            function update() {
                 topicStore.subscribe(item_topic + "/GameSpecificMessage")
             }
 
+            function unsubscribe() {
+                topicStore.unsubscribe(topic + "/GameSpecificMessage")
+            }
+
+            Component.onCompleted: {
+                topicStore.topicUpdate.connect(updateTopic)
+                item_topic = model.topic
+
+                update()
+            }
             Component.onDestruction: {
                 if (topicStore !== null) {
                     topicStore.topicUpdate.disconnect(updateTopic)
-                    topicStore.unsubscribe(item_topic + "/GameSpecificMessage")
+                    unsubscribe()
                 }
             }
         }
@@ -208,22 +243,43 @@ BaseWidget {
 
             text: "Robot State: " + state;
 
+            function update() {
+                topicStore.subscribe(item_topic + "/FMSControlData")
+                updateTopic(model.topic + "/FMSControlData", topicStore.getValue(model.topic + "/FMSControlData"))
+            }
+
+            function unsubscribe() {
+                topicStore.unsubscribe(topic + "/FMSControlData")
+            }
+
             Component.onCompleted: {
                 topicStore.topicUpdate.connect(updateTopic)
                 item_topic = model.topic
-                topicStore.subscribe(item_topic + "/FMSControlData")
-            }
 
+                update()
+            }
             Component.onDestruction: {
                 if (topicStore !== null) {
                     topicStore.topicUpdate.disconnect(updateTopic)
-                    topicStore.unsubscribe(item_topic + "/FMSControlData")
+                    unsubscribe()
                 }
             }
         }
     }
 
     onItem_topicChanged: {
+        match.unsubscribe()
+        station.unsubscribe()
+        event.unsubscribe()
+        stateText.unsubscribe()
+        gsm.unsubscribe()
+
         model.topic = item_topic
+
+        match.update()
+        station.update()
+        event.update()
+        stateText.update()
+        gsm.update()
     }
 }

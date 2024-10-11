@@ -37,23 +37,34 @@ BaseWidget {
 
         text: name
 
+        function update() {
+            topicStore.subscribe(item_topic + "/.name")
+            topicStore.subscribe(item_topic + "/running")
+        }
+
+        function unsubscribe() {
+            topicStore.unsubscribe(item_topic + "/.name")
+            topicStore.unsubscribe(item_topic + "/running")
+        }
+
         Component.onCompleted: {
             topicStore.topicUpdate.connect(updateTopic)
             item_topic = model.topic
-            topicStore.subscribe(item_topic + "/.name")
-            topicStore.subscribe(item_topic + "/running")
+            update()
         }
 
         Component.onDestruction: {
             if (topicStore !== null) {
                 topicStore.topicUpdate.disconnect(updateTopic)
-                topicStore.unsubscribe(item_topic + "/.name")
-                topicStore.unsubscribe(item_topic + "/running")
+                unsubscribe()
             }
         }
     }
 
     onItem_topicChanged: {
+        cmdButton.unsubscribe()
         model.topic = item_topic
+
+        cmdButton.update()
     }
 }

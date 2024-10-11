@@ -166,6 +166,8 @@ void TopicStore::subscribe(QString ntTopic) {
         listener.callback = updateWidget;
 
         Listeners.append(listener);
+    } else {
+        listener.callback(nt::Event());
     }
 }
 
@@ -201,7 +203,8 @@ QVariant TopicStore::getValue(QString topic) {
     if (l.isNull) return QVariant{};
 
     nt::NetworkTableEntry entry = topicEntryMap.value(topic);
-    return toVariant(entry.GetValue());
+    QVariant v = toVariant(entry.GetValue());
+    return v;
 }
 
 void TopicStore::setValue(QString topic, const QVariant &value)
