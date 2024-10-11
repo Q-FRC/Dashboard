@@ -102,7 +102,7 @@ Rectangle {
         id: rcMenu
 
         MenuItem {
-            text: "Delete Widget"
+            text: "Delete"
             onTriggered: twm.remove(model.idx)
         }
 
@@ -112,7 +112,7 @@ Rectangle {
         }
 
         MenuItem {
-            text: "Duplicate Widget"
+            text: "Copy"
             onTriggered: copy(idx)
         }
     }

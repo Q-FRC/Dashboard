@@ -84,6 +84,15 @@ ApplicationWindow {
                 shortcut: "Ctrl+N"
             }
         }
+
+        Menu {
+            title: qsTr("&Widget")
+            Action {
+                text: qsTr("&Paste")
+                onTriggered: screen.paste()
+                shortcut: "Ctrl+V"
+            }
+        }
     }
 
     MainScreen {

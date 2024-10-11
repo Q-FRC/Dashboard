@@ -77,7 +77,6 @@ void TabListModel::add(Tab t)
 
 void TabListModel::add(QString title)
 {
-    static char i = 0;
     Tab t;
     t.title = title;
     t.rows = 3;
@@ -163,6 +162,8 @@ void TabListModel::loadObject(const QJsonDocument &doc)
         t.rows = obj.value("rows").toInt();
         t.cols = obj.value("cols").toInt();
         t.model = TabWidgetsModel::loadObject(this, obj.value("widgets").toArray());
+        t.model->setCols(t.cols);
+        t.model->setRows(t.rows);
 
         add(t);
     }

@@ -5,7 +5,11 @@
 #include <QQmlEngine>
 #include <QRectF>
 
-typedef struct {
+typedef struct Widget {
+    Q_GADGET
+    QML_ELEMENT
+
+public:
     QString title;
     QString topic;
 
@@ -51,7 +55,7 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     // Add data:
-    Q_INVOKABLE void copy(int idx);
+    Q_INVOKABLE Widget copy(int idx);
     Q_INVOKABLE void add(Widget w);
     Q_INVOKABLE void add(QString title, QString topic, QString type);
     Q_INVOKABLE void addCamera(QString name, QString source, QVariantList urls);

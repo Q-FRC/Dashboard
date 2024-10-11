@@ -19,6 +19,8 @@ Rectangle {
     signal copying(point mousePos)
     signal dropped(point mousePos)
 
+    signal storeWidget(var w)
+
     property bool isCopying: false
 
     MouseArea {
@@ -62,7 +64,12 @@ Rectangle {
     }
 
     function copy(idx) {
-        twm.copy(idx);
+        let w = twm.copy(idx);
+        storeWidget(w)
+    }
+
+    function paste(w) {
+        twm.add(w)
         isCopying = true
         copying(mouseArea.mouseCoordinates)
     }

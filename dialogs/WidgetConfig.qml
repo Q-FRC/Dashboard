@@ -433,6 +433,8 @@ Dialog {
                     }
                 }
             }
+
+            // TODO: QSize
         }
     }
 

@@ -14,6 +14,7 @@ Rectangle {
 
     property string filename: ""
     property bool readyDragging
+    property var clipboard: null
 
     function openConf(item) {
         widgetConf.openUp(item)
@@ -256,6 +257,13 @@ Rectangle {
         tabClose.open()
     }
 
+    /** PASTE */
+    function paste() {
+        if (clipboard != null) {
+            currentTab().paste(clipboard)
+        }
+    }
+
     /** SERVER SETTINGS */
     ServerDialog {
         id: serverDialog
@@ -289,6 +297,8 @@ Rectangle {
                 onCopying: pos => drag(pos, false)
 
                 onDropped: pos => drop(pos)
+
+                onStoreWidget: w => clipboard = w
             }
         }
     }
