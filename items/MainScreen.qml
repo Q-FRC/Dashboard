@@ -1,5 +1,5 @@
 import QtCore
-import QtQuick 2.15
+import QtQuick 6.7
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 6.6
 import QtQuick.Dialogs
@@ -314,6 +314,7 @@ Rectangle {
 
         position: TabBar.Footer
         currentIndex: swipe.currentIndex
+        spacing: 2
 
         Repeater {
             id: tabRep
@@ -321,8 +322,26 @@ Rectangle {
 
             TabButton {
                 text: model.title
+
                 font.pixelSize: 18
                 width: Math.max(100, tabs.width / 6)
+
+                contentItem: Label {
+                    font.pixelSize: 18
+                    text: parent.text
+
+                    verticalAlignment: Qt.AlignVCenter
+                    horizontalAlignment: Qt.AlignHCenter
+
+                    color: index === tabs.currentIndex ? Constants.tab : Constants.text
+                }
+
+                background: Rectangle {
+                    implicitWidth: parent.width
+                    topLeftRadius: 7
+                    topRightRadius: 7
+                    color: index !== tabs.currentIndex ? Constants.tab : Constants.text
+                }
             }
         }
     }

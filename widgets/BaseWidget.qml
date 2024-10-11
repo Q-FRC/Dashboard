@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick 6.7
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 2.15
 
@@ -10,6 +10,8 @@ Rectangle {
     width: 100
     height: 100
     z: 2
+
+    radius: 12
 
     property int item_titleFontSize: 20
 
@@ -92,10 +94,6 @@ Rectangle {
                 }
             }
         }
-    }
-
-    Frame {
-        anchors.fill: parent
     }
 
     Menu {
@@ -284,7 +282,7 @@ Rectangle {
         font.bold: true
 
         text: model.title
-        color: "#FFFFFF"
+        color: Constants.text
 
         onTextEdited: model.title = text
 
@@ -292,10 +290,12 @@ Rectangle {
             top: parent.top
             left: parent.left
             right: parent.right
+        }
 
-            topMargin: 8
-            leftMargin: 8
-            rightMargin: 8
+        background: Rectangle {
+            topLeftRadius: 12
+            topRightRadius: 12
+            color: Constants.accent
         }
 
         horizontalAlignment: Text.AlignHCenter

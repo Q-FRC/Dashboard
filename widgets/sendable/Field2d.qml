@@ -117,7 +117,7 @@ BaseWidget {
             x = startPoint.x + xPixels
             y = startPoint.y - yPixels - height
 
-            rotation = -angleDeg
+            rotation = -angleDeg + (item_useVerticalField ? 270 : 0)
 
             path.redraw(x, y, height, width, angleDeg)
         }
@@ -161,7 +161,7 @@ BaseWidget {
                 shape.width = w
                 shape.height = h
 
-                start.x = w
+                start.x =  w
                 start.y = h / 2
 
                 middle.x = 0

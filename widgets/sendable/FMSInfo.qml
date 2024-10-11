@@ -24,7 +24,7 @@ BaseWidget {
 
         Text {
             Layout.fillWidth: true
-            color: "#FFFFFF"
+            color: Constants.text
 
             property int matchNumber: 0
             property string matchType: "Unknown"
@@ -64,7 +64,7 @@ BaseWidget {
 
         Text {
             Layout.fillWidth: true
-            color: "#FFFFFF"
+            color: Constants.text
 
             property int stationNumber: 1
             property string alliance: "Red"
@@ -103,7 +103,7 @@ BaseWidget {
 
         Text {
             Layout.fillWidth: true
-            color: "#FFFFFF"
+            color: Constants.text
 
             property string eventName: "Unknown Event"
 
@@ -137,7 +137,7 @@ BaseWidget {
 
         Text {
             Layout.fillWidth: true
-            color: "#FFFFFF"
+            color: Constants.text
 
             property string gameSpecificMessage: "None"
 
@@ -171,7 +171,7 @@ BaseWidget {
 
         Text {
             Layout.fillWidth: true
-            color: "#FFFFFF"
+            color: Constants.text
 
             property string state: "Unknown"
 

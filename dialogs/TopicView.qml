@@ -65,9 +65,12 @@ Row {
 
     Rectangle {
         id: topicView
+        radius: 10
+
         width: parent.width - 40
         height: parent.height
-        color: "#222222"
+
+        color: Constants.menu
         border {
             color: "light grey"
             width: 3
