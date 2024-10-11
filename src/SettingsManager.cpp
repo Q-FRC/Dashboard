@@ -80,6 +80,17 @@ void SettingsManager::setRecentFiles(const QStringList &newRecentFiles)
     emit recentFilesChanged();
 }
 
+QString SettingsManager::theme() const
+{
+    return Settings::Theme.value().toString();
+}
+
+void SettingsManager::setTheme(const QString &newTheme)
+{
+    Settings::Theme.setValue(newTheme);
+    emit themeChanged();
+}
+
 int SettingsManager::getPort() const
 {
     return Globals::server.port;

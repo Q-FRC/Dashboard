@@ -10,7 +10,7 @@ Rectangle {
     id: tab
     width: Constants.width
     height: Constants.height
-    color: Constants.bg
+    color: Constants.palette.bg
 
     property var latestWidget
 

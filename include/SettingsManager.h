@@ -12,6 +12,7 @@ class SettingsManager : public QObject
 
     Q_PROPERTY(bool loadRecent READ loadRecent WRITE setLoadRecent NOTIFY loadRecentChanged FINAL)
     Q_PROPERTY(QStringList recentFiles READ recentFiles WRITE setRecentFiles NOTIFY recentFilesChanged FINAL)
+    Q_PROPERTY(QString theme READ theme WRITE setTheme NOTIFY themeChanged FINAL)
 
     Q_PROPERTY(bool useTeam READ useTeam WRITE setUseTeam NOTIFY useTeamChanged FINAL)
     Q_PROPERTY(QString ip READ ip WRITE setIp NOTIFY ipChanged FINAL)
@@ -43,6 +44,9 @@ public:
     void addRecentFile(QFile &file);
 
     void reconnectServer();
+    QString theme() const;
+    void setTheme(const QString &newTheme);
+
 signals:
     void useTeamChanged();
     void ipChanged();
@@ -51,6 +55,7 @@ signals:
 
     void recentFilesChanged();
     void loadRecentChanged();
+    void themeChanged();
 };
 
 #endif // SETTINGSMANAGER_H

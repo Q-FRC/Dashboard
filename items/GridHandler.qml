@@ -110,7 +110,7 @@ Repeater {
         id: delRect
         required property int modelData
 
-        color: Constants.bg
+        color: Constants.palette.bg
         z: 1
         border {
             color: "gray"

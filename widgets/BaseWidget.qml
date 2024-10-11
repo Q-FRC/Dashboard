@@ -19,7 +19,7 @@ Rectangle {
     property alias rcMenu: rcMenu
     property alias dragArea: dragArea
 
-    color: Constants.widgetBg
+    color: Constants.palette.widgetBg
 
     Drag.active: dragArea.drag.active
 
@@ -282,7 +282,7 @@ Rectangle {
         font.bold: true
 
         text: model.title
-        color: Constants.text
+        color: Constants.palette.text
 
         onTextEdited: model.title = text
 
@@ -295,7 +295,7 @@ Rectangle {
         background: Rectangle {
             topLeftRadius: 12
             topRightRadius: 12
-            color: Constants.accent
+            color: Constants.palette.accent
         }
 
         horizontalAlignment: Text.AlignHCenter

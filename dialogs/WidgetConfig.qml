@@ -106,7 +106,7 @@ Dialog {
 
             text: displayText(model.name)
             font.pixelSize: 15
-            color: Constants.text
+            color: Constants.palette.text
         }
 
         delegate: DelegateChooser {
@@ -372,7 +372,7 @@ Dialog {
 
                         delegate: Rectangle {
                             border {
-                                color: Constants.text
+                                color: Constants.palette.text
                                 width: 2
                             }
 
@@ -388,7 +388,7 @@ Dialog {
                                 font.pixelSize: 15
                                 anchors.centerIn: parent
                                 text: display
-                                color: Constants.text
+                                color: Constants.palette.text
                             }
 
                             TableView.editDelegate: TextField {

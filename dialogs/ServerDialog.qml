@@ -33,7 +33,7 @@ Dialog {
             Text {
                 text: "Port:"
                 font.pixelSize: 17
-                color: Constants.text
+                color: Constants.palette.text
             }
 
             SpinBox {
@@ -52,7 +52,7 @@ Dialog {
             Text {
                 text: useTeam.checked ? "Team Number:" : "IP Address:"
                 font.pixelSize: 17
-                color: Constants.text
+                color: Constants.palette.text
             }
 
             TextField {

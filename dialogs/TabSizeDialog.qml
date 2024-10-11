@@ -27,7 +27,7 @@ Dialog {
             Text {
                 text: "Columns:"
                 font.pixelSize: 17
-                color: Constants.text
+                color: Constants.palette.text
             }
 
             SpinBox {
@@ -43,7 +43,7 @@ Dialog {
             Text {
                 text: "Rows:"
                 font.pixelSize: 17
-                color: Constants.text
+                color: Constants.palette.text
             }
 
             SpinBox {

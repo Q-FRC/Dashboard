@@ -25,7 +25,7 @@ Dialog {
         Text {
             text: "Input new tab name:"
             font.pixelSize: 20
-            color: Constants.text
+            color: Constants.palette.text
         }
 
         TextField {

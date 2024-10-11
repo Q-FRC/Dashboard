@@ -70,9 +70,9 @@ Row {
         width: parent.width - 40
         height: parent.height
 
-        color: Constants.menu
+        color: Constants.palette.menu
         border {
-            color: "light grey"
+            color: Constants.palette.menuBorder
             width: 3
         }
 
@@ -165,7 +165,7 @@ Row {
                 Rectangle {
                     id: background
                     anchors.fill: parent
-                    color: row === treeView.currentRow ? palette.highlight : "black"
+                    color: row === treeView.currentRow ? palette.highlight : Constants.palette.menuItem
                     opacity: (treeView.alternatingRows
                               && row % 2 !== 0) ? 0.3 : 0.1
                 }
@@ -176,6 +176,7 @@ Row {
                     anchors.verticalCenter: parent.verticalCenter
                     visible: isTreeNode && hasChildren
                     text: "▶"
+                    color: Constants.palette.text
 
                     TapHandler {
                         onSingleTapped: {
@@ -197,6 +198,8 @@ Row {
                     clip: true
                     text: model.name
 
+                    color: Constants.palette.text
+
                     font.pixelSize: 17
                 }
 
@@ -206,6 +209,8 @@ Row {
                     anchors.right: parent.right
                     clip: true
                     text: isCamera ? "" : model.type
+
+                    color: Constants.palette.text
 
                     font.pixelSize: 17
                 }

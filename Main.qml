@@ -26,6 +26,30 @@ ApplicationWindow {
                 checked: settings.loadRecent
                 onCheckedChanged: settings.loadRecent = checked
             }
+            Menu {
+                title: qsTr("&Theme")
+                Action {
+                    text: "&Light"
+                    id: light
+                    checkable: true
+                    checked: settings.theme === "light"
+                    onCheckedChanged: {
+                        settings.theme = "light"
+                        Constants.setLight()
+                    }
+                }
+
+                Action {
+                    text: "&Dark"
+                    id: dark
+                    checkable: true
+                    checked: settings.theme === "dark"
+                    onCheckedChanged: {
+                        settings.theme = "dark"
+                        Constants.setDark()
+                    }
+                }
+            }
         }
 
         Menu {

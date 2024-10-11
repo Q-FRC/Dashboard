@@ -21,6 +21,7 @@ namespace Settings {
 Q_NAMESPACE
 extern const Setting RecentFiles;
 extern const Setting LoadRecent;
+extern const Setting Theme;
 }
 
 #endif // CONSTANTS_H
