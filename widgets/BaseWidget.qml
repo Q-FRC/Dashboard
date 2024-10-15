@@ -295,7 +295,7 @@ Rectangle {
         background: Rectangle {
             topLeftRadius: 12
             topRightRadius: 12
-            color: Constants.palette.accent
+            color: Constants.accent
         }
 
         horizontalAlignment: Text.AlignHCenter

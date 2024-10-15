@@ -44,8 +44,12 @@ public:
     void addRecentFile(QFile &file);
 
     void reconnectServer();
+
     QString theme() const;
     void setTheme(const QString &newTheme);
+
+    QString accent() const;
+    void setAccent(const QString &newAccent);
 
 signals:
     void useTeamChanged();
@@ -56,6 +60,9 @@ signals:
     void recentFilesChanged();
     void loadRecentChanged();
     void themeChanged();
+    void accentChanged();
+private:
+    Q_PROPERTY(QString accent READ accent WRITE setAccent NOTIFY accentChanged FINAL)
 };
 
 #endif // SETTINGSMANAGER_H

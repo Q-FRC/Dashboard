@@ -333,14 +333,14 @@ Rectangle {
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignHCenter
 
-                    color: index === tabs.currentIndex ? Constants.palette.tab : Constants.palette.text
+                    color: index === tabs.currentIndex ? Constants.tab : Constants.palette.text
                 }
 
                 background: Rectangle {
                     implicitWidth: parent.width
                     topLeftRadius: 7
                     topRightRadius: 7
-                    color: index !== tabs.currentIndex ? Constants.palette.tab : Constants.palette.text
+                    color: index !== tabs.currentIndex ? Constants.tab : Constants.palette.text
                 }
             }
         }

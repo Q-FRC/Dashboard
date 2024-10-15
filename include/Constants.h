@@ -22,6 +22,7 @@ Q_NAMESPACE
 extern const Setting RecentFiles;
 extern const Setting LoadRecent;
 extern const Setting Theme;
+extern const Setting Accent;
 }
 
 #endif // CONSTANTS_H

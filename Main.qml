@@ -30,7 +30,6 @@ ApplicationWindow {
                 title: qsTr("&Theme")
                 Action {
                     text: "&Light"
-                    id: light
                     checkable: true
                     checked: settings.theme === "light"
                     onCheckedChanged: {
@@ -41,12 +40,34 @@ ApplicationWindow {
 
                 Action {
                     text: "&Dark"
-                    id: dark
                     checkable: true
                     checked: settings.theme === "dark"
                     onCheckedChanged: {
                         settings.theme = "dark"
                         Constants.setDark()
+                    }
+                }
+            }
+
+            Menu {
+                title: qsTr("&Accent")
+                Action {
+                    text: "&Red"
+                    checkable: true
+                    checked: settings.accent === "red"
+                    onCheckedChanged: {
+                        settings.accent = "red"
+                        Constants.setAccent("red")
+                    }
+                }
+
+                Action {
+                    text: "&Blue"
+                    checkable: true
+                    checked: settings.accent === "blue"
+                    onCheckedChanged: {
+                        settings.accent = "blue"
+                        Constants.setAccent("blue")
                     }
                 }
             }

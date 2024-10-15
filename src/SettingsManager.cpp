@@ -91,6 +91,17 @@ void SettingsManager::setTheme(const QString &newTheme)
     emit themeChanged();
 }
 
+QString SettingsManager::accent() const
+{
+    return Settings::Accent.value().toString();
+}
+
+void SettingsManager::setAccent(const QString &newAccent)
+{
+    Settings::Accent.setValue(newAccent);
+    emit accentChanged();
+}
+
 int SettingsManager::getPort() const
 {
     return Globals::server.port;
