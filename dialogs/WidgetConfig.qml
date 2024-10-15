@@ -434,7 +434,57 @@ Dialog {
                 }
             }
 
-            // TODO: QSize
+            DelegateChoice {
+                roleValue: "QSizeF"
+
+                RowLayout {
+                    clip: true
+                    width: parent.width
+
+
+                    FieldLabel {
+                        Layout.rowSpan: 4
+                    }
+
+                    Label {
+                        text: "Width:"
+                        font.pixelSize: 15
+                    }
+
+                    SpinBox {
+                        from: 0
+                        to: 2000
+
+                        id: width
+
+                        Layout.fillWidth: true
+
+                        font.pixelSize: 15
+                        value: model.itemValue.width
+
+                        onValueModified: model.itemValue.width = value
+                    }
+
+                    Label {
+                        text: "Height:"
+                        font.pixelSize: 15
+                    }
+
+                    SpinBox {
+                        from: 0
+                        to: 2000
+
+                        id: height
+
+                        Layout.fillWidth: true
+
+                        font.pixelSize: 15
+                        value: model.itemValue.height
+
+                        onValueModified: model.itemValue.height = value
+                    }
+                }
+            }
         }
     }
 

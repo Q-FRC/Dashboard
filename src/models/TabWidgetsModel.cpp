@@ -317,6 +317,9 @@ QJsonArray TabWidgetsModel::saveObject() const
             // I hate Qt
             if (iter.value().metaType() == QMetaType::fromType<QColor>()) {
                 prop.insert(iter.key(), iter.value().value<QColor>().name());
+            } else if (iter.value().metaType() == QMetaType::fromType<QSizeF>()) {
+                QSize size = iter.value().value<QSizeF>().toSize();
+                prop.insert(iter.key(), QString::number(size.width()) + "x" + QString::number(size.height()));
             } else {
                 prop.insert(iter.key(), iter.value().toJsonValue());
             }
@@ -343,7 +346,7 @@ TabWidgetsModel *TabWidgetsModel::loadObject(QObject *parent, const QJsonArray &
         w.type = obj.value("type").toString("");
         w.col = obj.value("column").toInt(0);
         w.row = obj.value("row").toInt(0);
-        w.rowSpan= obj.value("rowSpan").toInt(0);
+        w.rowSpan = obj.value("rowSpan").toInt(0);
         w.colSpan = obj.value("colSpan").toInt(0);
 
         QJsonObject properties = obj.value("properties").toObject();

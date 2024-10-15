@@ -8,7 +8,7 @@ ApplicationWindow {
     width: Constants.width
     height: Constants.height
     visible: true
-    title: qsTr("QFRCDashboard")
+    title: titleManager.title
 
     menuBar: MenuBar {
         contentWidth: parent.width

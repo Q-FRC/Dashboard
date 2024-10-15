@@ -7,6 +7,7 @@
 #include "CameraListModel.h"
 #include "Flags.h"
 #include "Globals.h"
+#include "TitleManager.h"
 #include "TopicListModel.h"
 #include "TopicStore.h"
 
@@ -25,8 +26,9 @@ int main(int argc, char *argv[])
     SettingsManager *settings = new SettingsManager(&app);
     TabListModel *tlm = new TabListModel(settings, &app);
     CameraListModel *clm = new CameraListModel(store, &app);
+    TitleManager *title = new TitleManager(&app);
 
-    Globals::inst.AddConnectionListener(true, [topics, &store, clm] (const nt::Event &event) {
+    Globals::inst.AddConnectionListener(true, [topics, &store, clm, title] (const nt::Event &event) {
         bool connected = event.Is(nt::EventFlags::kConnected);
 
         store.connect(connected);
@@ -34,9 +36,12 @@ int main(int argc, char *argv[])
         if (!connected) {
             QMetaObject::invokeMethod(topics, &TopicListModel::clear);
             QMetaObject::invokeMethod(clm, &CameraListModel::clear);
+            title->resetTitle();
         } else {
+            title->setTitle("Connected (" + QString::fromStdString(event.GetConnectionInfo()->remote_ip) + ")");
             QMetaObject::invokeMethod(clm, [=] {
-                QTimer::singleShot(2000, [=] {
+                // kind of hacky, but what works, works
+                QTimer::singleShot(1000, [=] {
                     clm->clear();
 
                     for (const std::string &st : Globals::inst.GetTable("/CameraPublisher")->GetSubTables()) {
@@ -82,6 +87,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("cameras", clm);
     engine.rootContext()->setContextProperty("topicStore", &store);
     engine.rootContext()->setContextProperty("tlm", tlm);
+    engine.rootContext()->setContextProperty("titleManager", title);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

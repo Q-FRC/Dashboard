@@ -10,10 +10,10 @@ project(QFRCDashboard VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick Multimedia)
+find_package(Qt6 6.7 REQUIRED COMPONENTS Quick Multimedia)
 add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
 
-qt_standard_project_setup(REQUIRES 6.5)
+qt_standard_project_setup(REQUIRES 6.7)
 
 if(WIN32)
     set(RCS_FILE ${CMAKE_CURRENT_BINARY_DIR}/program_info/${Dashboard_APP_NAME}.rc)
@@ -52,7 +52,6 @@ set(Dashboard_BUILD_TIMESTAMP "${TODAY}")
 add_subdirectory("program_info")
 find_package(ntcore)
 find_package(Protobuf)
-
 
 set(QRC_FILES fields.qrc)
 
@@ -107,6 +106,7 @@ set(ELEMENTS
     Globals
     Constants
     SettingsManager
+    TitleManager
 
     models/TabWidgetsModel
     models/TabListModel

@@ -25,6 +25,18 @@ BaseWidget {
     onItem_resolutionChanged: player.resetSource()
     onItem_hostChanged: player.resetSource()
 
+    MenuItem {
+        id: reconnItem
+        text: "Reconnect"
+        onTriggered: {
+            player.reconnect()
+        }
+    }
+
+    Component.onCompleted: {
+        rcMenu.addItem(reconnItem)
+    }
+
     Rectangle {
         anchors {
             top: titleField.bottom
@@ -49,14 +61,18 @@ BaseWidget {
 
             function resetSource() {
                 source = Qt.url(item_host + ":" + item_port + "/stream.mjpg?" +
-                        (item_quality !== 0 ? "compression=" + item_quality + "&" : "") +
-                        (item_fps !== 0 ? "fps=" + item_fps + "&" : "") +
-                        (item_resolution !== Qt.size(0, 0) ? "resolution=" + item_resolution.width + "x" + item_resolution.height : ""))
+                                (item_quality !== 0 ? "compression=" + item_quality + "&" : "") +
+                                (item_fps !== 0 ? "fps=" + item_fps + "&" : "") +
+                                (item_resolution !== Qt.size(0, 0) ? "resolution=" + item_resolution.width + "x" + item_resolution.height : ""))
+            }
+
+            function reconnect() {
+                player.playbackStateChanged.connect(restartVideo)
+                player.stop()
             }
 
             onSourceChanged: {
-                player.playbackStateChanged.connect(restartVideo)
-                player.stop()
+                reconnect()
             }
 
             videoOutput: video
