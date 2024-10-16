@@ -39,6 +39,7 @@ QtObject {
 
         readonly property color bg: "#111111";
         readonly property color widgetBg: "#272727";
+        readonly property color dialogBg: "#404040";
 
         readonly property color text: "#FFFFFF"
 
@@ -50,7 +51,8 @@ QtObject {
 
     property QtObject light: QtObject {
         readonly property color bg: "#FFFFFF";
-        readonly property color widgetBg: "#DEDEDE";
+        readonly property color widgetBg: "#EDEDED";
+        readonly property color dialogBg: "#DCDCDC";
 
         readonly property color text: "#000000"
 

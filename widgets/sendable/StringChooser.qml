@@ -21,6 +21,20 @@ BaseWidget {
             margins: 8
         }
 
+        delegate: ItemDelegate {
+            id: delegate
+
+            width: combo.width
+            contentItem: Text {
+                text: modelData
+                color: "white"
+                font.pixelSize: item_fontSize
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
+            highlighted: combo.highlightedIndex === index
+        }
+
         font.pixelSize: item_fontSize
 
         property list<string> choices

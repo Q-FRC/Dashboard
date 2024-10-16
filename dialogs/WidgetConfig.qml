@@ -13,6 +13,9 @@ Dialog {
 
     width: parent.width / 1.6
     height: parent.height - 60
+    background: Rectangle {
+        color: Constants.palette.dialogBg
+    }
 
     ColorDialog {
         id: colorDialog
@@ -270,6 +273,20 @@ Dialog {
 
                     ComboBox {
                         model: choices
+
+                        delegate: ItemDelegate {
+                            id: delegate
+
+                            width: choices.width
+                            contentItem: Text {
+                                text: modelData
+                                color: "white"
+                                font.pixelSize: 15
+                                elide: Text.ElideRight
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            highlighted: choices.highlightedIndex === index
+                        }
 
                         id: cb
                         font.pixelSize: 15

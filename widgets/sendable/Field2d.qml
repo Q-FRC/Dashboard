@@ -23,6 +23,12 @@ BaseWidget {
 
     property bool mirrorField: false
 
+    property var item_robotShape: "Robot"
+
+    property list<string> robotShapeChoices: ["Robot", "Circle", "Rectangle"]
+
+    property color item_robotColor: "#FF0000"
+
     function redraw() {
         robot.redraw()
     }
@@ -78,11 +84,13 @@ BaseWidget {
     }
 
     Rectangle {
-        color: "transparent"
+        color: item_robotShape === "Robot" ? "transparent" : item_robotColor
         border {
-            color: "red"
+            color: item_robotColor
             width: 2
         }
+
+        radius: item_robotShape === "Circle" ? Math.max(width, height) / 2 : 0
 
         property double xMeters: 0
         property double yMeters: 0
@@ -151,7 +159,7 @@ BaseWidget {
         ShapePath {
             id: path
             strokeWidth: 3
-            strokeColor: "light green"
+            strokeColor: item_robotShape === "Robot" ? "light green" : "transparent"
 
             PathLine {
                 id: start

@@ -95,7 +95,7 @@ BaseWidget {
             height: width
             color: "transparent"
             radius: width / 2
-            border.color: dial.pressed ? "#17a81a" : "#21be2b"
+            border.color: Constants.accent
             opacity: dial.enabled ? 1 : 0.3
         }
 
@@ -105,7 +105,7 @@ BaseWidget {
             y: dial.background.y + dial.background.height / 2 - height / 2
             width: Math.min(parent.width, parent.height) / 5
             height: Math.min(parent.width, parent.height) / 5
-            color: dial.pressed ? "#17a81a" : "#21be2b"
+            color: Constants.accent
             radius: 8
             antialiasing: true
             opacity: dial.enabled ? 1 : 0.3
@@ -143,7 +143,7 @@ BaseWidget {
             top: titleField.bottom
             horizontalCenter: parent.horizontalCenter
 
-            topMargin: 5
+            topMargin: 10
         }
 
         onMoved: {
