@@ -26,48 +26,38 @@ ApplicationWindow {
                 checked: settings.loadRecent
                 onCheckedChanged: settings.loadRecent = checked
             }
+
             Menu {
                 title: qsTr("&Theme")
-                Action {
-                    text: "&Light"
-                    checkable: true
-                    checked: settings.theme === "light"
-                    onCheckedChanged: {
-                        settings.theme = "light"
-                        Constants.setLight()
-                    }
-                }
+                Repeater {
+                    model: ["Light", "Dark", "Midnight"]
 
-                Action {
-                    text: "&Dark"
-                    checkable: true
-                    checked: settings.theme === "dark"
-                    onCheckedChanged: {
-                        settings.theme = "dark"
-                        Constants.setDark()
+                    MenuItem {
+                        text: "&" + modelData
+                        checkable: true
+                        checked: settings.theme === modelData.toLowerCase()
+                        onCheckedChanged: {
+                            if (checked)
+                                Constants.setTheme(modelData.toLowerCase())
+                        }
                     }
                 }
             }
 
             Menu {
                 title: qsTr("&Accent")
-                Action {
-                    text: "&Red"
-                    checkable: true
-                    checked: settings.accent === "red"
-                    onCheckedChanged: {
-                        settings.accent = "red"
-                        Constants.setAccent("red")
-                    }
-                }
 
-                Action {
-                    text: "&Blue"
-                    checkable: true
-                    checked: settings.accent === "blue"
-                    onCheckedChanged: {
-                        settings.accent = "blue"
-                        Constants.setAccent("blue")
+                Repeater {
+                    model: ["Red", "Blue", "Purple"]
+
+                    MenuItem {
+                        text: "&" + modelData
+                        checkable: true
+                        checked: settings.accent === modelData.toLowerCase()
+                        onCheckedChanged: {
+                            if (checked)
+                                Constants.setAccent(modelData.toLowerCase())
+                        }
                     }
                 }
             }
@@ -145,4 +135,5 @@ ApplicationWindow {
         anchors.fill: parent
     }
 }
+
 

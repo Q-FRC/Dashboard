@@ -282,7 +282,7 @@ Rectangle {
         font.bold: true
 
         text: model.title
-        color: Constants.palette.text
+        color: "#DDDDDD"
 
         onTextEdited: model.title = text
 

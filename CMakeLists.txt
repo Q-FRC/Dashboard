@@ -65,41 +65,41 @@ set_source_files_properties(Constants.qml
     QT_QML_SINGLETON_TYPE true
 )
 
-set(QML_FILES
-    Main.qml
-    Constants.qml
+set(QML_ELEMENTS
+    Main
+    Constants
 
-    items/MainScreen.qml
-    items/Tab.qml
-    items/GridHandler.qml
+    items/MainScreen
+    items/Tab
+    items/GridHandler
 
-    widgets/BaseWidget.qml
-    widgets/ResizeAnchor.qml
-    widgets/DoubleSpinBox.qml
+    widgets/BaseWidget
+    widgets/ResizeAnchor
+    widgets/DoubleSpinBox
 
-    widgets/primitive/TextWidget.qml
-    widgets/primitive/IntWidget.qml
-    widgets/primitive/IntDialWidget.qml
-    widgets/primitive/DoubleWidget.qml
-    widgets/primitive/DoubleDialWidget.qml
-    widgets/primitive/BoolWidget.qml
-    widgets/primitive/EnumWidget.qml
-    widgets/primitive/ColorWidget.qml
+    widgets/primitive/TextWidget
+    widgets/primitive/IntWidget
+    widgets/primitive/IntDialWidget
+    widgets/primitive/DoubleWidget
+    widgets/primitive/DoubleDialWidget
+    widgets/primitive/BoolWidget
+    widgets/primitive/EnumWidget
+    widgets/primitive/ColorWidget
 
-    widgets/primitive/ShapeHandler.qml
+    widgets/primitive/ShapeHandler
 
-    widgets/sendable/FMSInfo.qml
-    widgets/sendable/Field2d.qml
-    widgets/sendable/Command.qml
-    widgets/sendable/StringChooser.qml
+    widgets/sendable/FMSInfo
+    widgets/sendable/Field2d
+    widgets/sendable/Command
+    widgets/sendable/StringChooser
 
-    widgets/misc/CameraView.qml
+    widgets/misc/CameraView
 
-    dialogs/TopicView.qml
-    dialogs/TabNameDialog.qml
-    dialogs/TabSizeDialog.qml
-    dialogs/WidgetConfig.qml
-    dialogs/ServerDialog.qml
+    dialogs/TopicView
+    dialogs/TabNameDialog
+    dialogs/TabSizeDialog
+    dialogs/WidgetConfig
+    dialogs/ServerDialog
 )
 
 set(ELEMENTS
@@ -120,6 +120,10 @@ set(ELEMENTS
 foreach(ELEMENT ${ELEMENTS})
     set(HEADERS ${HEADERS} include/${ELEMENT}.h)
     set(SOURCES ${SOURCES} src/${ELEMENT}.cpp)
+endforeach()
+
+foreach(QML ${QML_ELEMENTS})
+    set(QML_FILES ${QML_FILES} ${QML}.qml)
 endforeach()
 
 set(HEADERS

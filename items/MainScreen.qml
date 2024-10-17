@@ -16,6 +16,16 @@ Rectangle {
     property bool readyDragging
     property var clipboard: null
 
+    Shortcut {
+        sequences: ["Ctrl+Tab"]
+        onActivated: swipe.incrementCurrentIndex()
+    }
+
+    Shortcut {
+        sequences: ["Ctrl+Shift+Tab"]
+        onActivated: swipe.decrementCurrentIndex()
+    }
+
     function openConf(item) {
         widgetConf.openUp(item)
     }
