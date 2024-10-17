@@ -47,36 +47,40 @@ BaseWidget {
             margins: 8
         }
 
+        Timer {
+            id: timer
+        }
+
         MediaPlayer {
             id: player
 
             source: ""
 
             function restartVideo() {
-                if (player.playbackState === StoppedState) {
-                    player.playbackStateChanged.disconnect(restartVideo)
-                    player.start()
-                }
+                console.log("Restarting.")
+                player.play()
             }
 
             function resetSource() {
-                source = Qt.url(item_host + ":" + item_port + "/stream.mjpg?" +
-                                (item_quality !== 0 ? "compression=" + item_quality + "&" : "") +
-                                (item_fps !== 0 ? "fps=" + item_fps + "&" : "") +
-                                (item_resolution !== Qt.size(0, 0) ? "resolution=" + item_resolution.width + "x" + item_resolution.height : ""))
+                source = Qt.url(item_host + ":" + item_port + "/stream.mjpg?" + (item_quality !== 0 ? "compression=" + item_quality + "&" : "") + (item_fps !== 0 ? "fps=" + item_fps + "&" : "") + (item_resolution !== Qt.size(0, 0) ? "resolution=" + item_resolution.width + "x" + item_resolution.height : ""))
             }
 
             function reconnect() {
-                player.playbackStateChanged.connect(restartVideo)
                 player.stop()
+                timer.interval = 100
+                timer.repeat = false
+                timer.onTriggered.connect(restartVideo)
+                timer.start()
             }
 
             onSourceChanged: {
+                console.log(source)
                 reconnect()
             }
 
             videoOutput: video
-            onErrorOccurred: (error, errorString) => console.error("CameraView: error:", errorString)
+            onErrorOccurred: (error, errorString) => console.error(
+                                 "CameraView: error:", errorString)
         }
 
         VideoOutput {
