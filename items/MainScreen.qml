@@ -63,12 +63,14 @@ Rectangle {
             let w = currentTab().latestWidget
             if (!w.caught) {
                 w.cancelDrag()
-                if (fromList) currentTab().removeLatest()
+                if (fromList)
+                    currentTab().removeLatest()
             } else {
                 let p = currentTab().gridHandler.occupied()
                 if (p.x === -1 || p.y === -1) {
                     w.cancelDrag()
-                    if (fromList) currentTab().removeLatest()
+                    if (fromList)
+                        currentTab().removeLatest()
                 } else {
                     w.mrow = p.x
                     w.mcolumn = p.y
@@ -80,7 +82,6 @@ Rectangle {
             }
         }
     }
-
 
     TopicView {
         id: tv
@@ -109,9 +110,9 @@ Rectangle {
             menuAnim.start()
         }
 
-        onDragging: pos => drag(pos, true);
+        onDragging: pos => drag(pos, true)
 
-        onDropped: pos => drop(pos, true);
+        onDropped: pos => drop(pos, true)
     }
 
     TopicView {
@@ -315,11 +316,15 @@ Rectangle {
 
     TabBar {
         id: tabs
+        height: 40
 
         anchors {
             top: parent.top
             left: tv.right
             right: cl.left
+
+            leftMargin: 0
+            rightMargin: 0
         }
 
         position: TabBar.Footer

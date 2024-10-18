@@ -57,7 +57,6 @@ BaseWidget {
             source: ""
 
             function restartVideo() {
-                console.log("Restarting.")
                 player.play()
             }
 
