@@ -294,6 +294,8 @@ Rectangle {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
+
+            topMargin: 0
         }
 
         currentIndex: tabs.currentIndex
@@ -325,6 +327,7 @@ Rectangle {
 
             leftMargin: 0
             rightMargin: 0
+            topMargin: 0
         }
 
         position: TabBar.Footer

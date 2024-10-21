@@ -38,6 +38,7 @@ BaseWidget {
     }
 
     Rectangle {
+        color: "transparent"
         anchors {
             top: titleField.bottom
             left: parent.left
