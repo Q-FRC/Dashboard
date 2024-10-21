@@ -340,6 +340,7 @@ Rectangle {
 
                 font.pixelSize: 18
                 width: Math.max(100, tabs.width / 6)
+                height: 40
 
                 contentItem: Label {
                     font.pixelSize: 18
@@ -353,8 +354,8 @@ Rectangle {
 
                 background: Rectangle {
                     implicitWidth: parent.width
-                    topLeftRadius: 7
-                    topRightRadius: 7
+                    topLeftRadius: 12
+                    topRightRadius: 12
                     color: index !== tabs.currentIndex ? Constants.tab : Constants.palette.text
                 }
             }

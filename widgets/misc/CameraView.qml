@@ -73,7 +73,6 @@ BaseWidget {
             }
 
             onSourceChanged: {
-                console.log(source)
                 reconnect()
             }
 
