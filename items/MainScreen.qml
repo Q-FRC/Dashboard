@@ -33,6 +33,7 @@ Rectangle {
     Component.onCompleted: {
         if (settings.loadRecent && !settings.recentFiles.empty) {
             filename = settings.recentFiles[0]
+            if (filename === "" || filename === null) return;
             tlm.load(filename)
         }
     }
