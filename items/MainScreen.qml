@@ -285,6 +285,20 @@ Rectangle {
         serverDialog.open()
     }
 
+    Text {
+        color: Constants.palette.text
+        font.pixelSize: 20
+
+        horizontalAlignment: Text.AlignHCenter
+
+        text: "Welcome to QFRCDashboard!\n" +
+        "To get started, connect to your robot WiFi\nand go to Settings -> Server Settings (Ctrl+E).\n" +
+              "Add a tab with Ctrl+T, and add a widget\n through the arrow menu on the left."
+
+        anchors.centerIn: parent
+        z: 0
+    }
+
     SwipeView {
         id: swipe
 
