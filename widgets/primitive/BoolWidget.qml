@@ -8,11 +8,6 @@ BaseWidget {
 
     property int item_checkboxSize: 20
 
-    property list<var> item_test: []
-
-    property string testValueType: "color"
-    property string testValueName: "Color"
-
     Menu {
         id: switchMenu
         title: "Switch Widget..."
@@ -69,5 +64,11 @@ BaseWidget {
         model.topic = item_topic
 
         control.checked = topicStore.getValue(item_topic)
+    }
+
+    Dialog {
+        id: config
+
+        anchors.centerIn: parent
     }
 }

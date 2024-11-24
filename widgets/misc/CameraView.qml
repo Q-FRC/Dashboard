@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 2.15
 
 import QtMultimedia
 
@@ -33,8 +34,9 @@ BaseWidget {
     }
 
     function fixUrls(value) {
-        for (let i = 0; i < value.length; ++i) {
-            if (value[i].startsWith("mjpg:")) value[i] = value[i].substring(5)
+        for (var i = 0; i < value.length; ++i) {
+            if (value[i].startsWith("mjpg:"))
+                value[i] = value[i].substring(5)
         }
     }
 
@@ -43,7 +45,8 @@ BaseWidget {
             urlChoices = ntValue
             fixUrls(urlChoices)
 
-            if (urlChoices.length > 0 && item_url === "") item_url = urlChoices[0]
+            if (urlChoices.length > 0 && item_url === "")
+                item_url = urlChoices[0]
         }
     }
 
@@ -87,7 +90,12 @@ BaseWidget {
             }
 
             function resetSource() {
-                source = Qt.url(item_url + (item_quality !== 0 ? "compression=" + item_quality + "&" : "") + (item_fps !== 0 ? "fps=" + item_fps + "&" : "") + (item_resolution !== Qt.size(0, 0) ? "resolution=" + item_resolution.width + "x" + item_resolution.height : ""))
+                source = Qt.url(item_url + (item_quality !== 0 ? "compression="
+                                                                 + item_quality + "&" : "")
+                                + (item_fps !== 0 ? "fps=" + item_fps + "&" : "")
+                                + (item_resolution !== Qt.size(
+                                       0, 0) ? "resolution=" + item_resolution.width + "x"
+                                               + item_resolution.height : ""))
             }
 
             function reconnect() {
@@ -118,6 +126,19 @@ BaseWidget {
         topicStore.subscribe(item_topic + "/streams")
         model.topic = item_topic
 
-        updateTopic(item_topic + "/streams", topicStore.getValue(model.topic + "/streams"))
+        updateTopic(item_topic + "/streams",
+                    topicStore.getValue(model.topic + "/streams"))
+    }
+
+    BaseConfigDialog {
+        id: config
+
+        height: header.height + footer.height + 10
+
+        footer: ColumnLayout {
+            TextField {
+                placeholderText: "hi"
+            }
+        }
     }
 }

@@ -80,6 +80,7 @@ set(QML_ELEMENTS
     widgets/BaseWidget
     widgets/ResizeAnchor
     widgets/DoubleSpinBox
+    widgets/BaseConfigDialog
 
     widgets/primitive/TextWidget
     widgets/primitive/IntWidget
