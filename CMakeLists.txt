@@ -101,6 +101,9 @@ set(QML_ELEMENTS
     widgets/misc/CameraView
     widgets/misc/ErrorsWidget
 
+    widgets/config/LabeledTextField
+    widgets/config/TitleComponent
+
     dialogs/TopicView
     dialogs/TabNameDialog
     dialogs/TabSizeDialog

@@ -7,6 +7,7 @@ import QtMultimedia
 import QFRCDashboard
 
 BaseWidget {
+    id: widget
     property string item_topic
 
     property var item_url: ""
@@ -133,11 +134,41 @@ BaseWidget {
     BaseConfigDialog {
         id: config
 
-        height: header.height + footer.height + 10
+        height: headerHeight + layout.height + footer.height + spacing * 2
 
-        footer: ColumnLayout {
-            TextField {
-                placeholderText: "hi"
+        function openDialog() {
+            topicField.open()
+
+            open()
+        }
+
+        onAccepted: {
+            topicField.accept()
+        }
+
+        ColumnLayout {
+            id: layout
+
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                left: parent.left
+                right: parent.right
+
+                topMargin: config.headerHeight + 12
+                bottomMargin: config.implicitFooterHeight + 10
+            }
+
+            LabeledTextField {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignTop
+
+                id: topicField
+
+                label: "Topic"
+
+                bindedProperty: "item_topic"
+                bindTarget: widget
             }
         }
     }

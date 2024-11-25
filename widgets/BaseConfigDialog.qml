@@ -6,34 +6,14 @@ import QFRCDashboard
 Dialog {
     id: config
 
-    width: 300
+    property int headerHeight: 40
 
-    header: Rectangle {
-        color: Constants.accent
-        topLeftRadius: 20
-        topRightRadius: 20
+    width: 375
+    spacing: 10
 
-        height: 40
-        width: parent.width
+    standardButtons: Dialog.Ok | Dialog.Cancel
 
-        Text {
-            id: txt
-
-            text: "Configure Widget"
-            font.pixelSize: 24
-            font.bold: true
-
-            color: "white"
-
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-
-            anchors {
-                fill: parent
-                margins: 8
-            }
-        }
-    }
+    TitleComponent {}
 
     background: Rectangle {
         color: "transparent"
