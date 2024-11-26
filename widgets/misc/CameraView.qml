@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Layouts 2.15
+import QtQuick.Layouts 6.6
 
 import QtMultimedia
 
@@ -19,12 +19,14 @@ BaseWidget {
     property int item_fps: 0
     property int fpsMax: 240
 
-    property size item_resolution: Qt.size(0, 0)
+    property int item_resW: 0
+    property int item_resH: 0
 
     onItem_urlChanged: player.resetSource()
     onItem_fpsChanged: player.resetSource()
     onItem_qualityChanged: player.resetSource()
-    onItem_resolutionChanged: player.resetSource()
+    onItem_resWChanged: player.resetSource()
+    onItem_resHChanged: player.resetSource()
 
     MenuItem {
         id: reconnItem
@@ -38,7 +40,14 @@ BaseWidget {
         for (var i = 0; i < value.length; ++i) {
             if (value[i].startsWith("mjpg:"))
                 value[i] = value[i].substring(5)
+
+            if (value[i].includes("local")) {
+                value.splice(i, 1)
+                --i
+            }
         }
+
+        console.log(value)
     }
 
     function updateTopic(ntTopic, ntValue) {
@@ -48,6 +57,8 @@ BaseWidget {
 
             if (urlChoices.length > 0 && item_url === "")
                 item_url = urlChoices[0]
+
+            player.resetSource()
         }
     }
 
@@ -94,9 +105,9 @@ BaseWidget {
                 source = Qt.url(item_url + (item_quality !== 0 ? "compression="
                                                                  + item_quality + "&" : "")
                                 + (item_fps !== 0 ? "fps=" + item_fps + "&" : "")
-                                + (item_resolution !== Qt.size(
-                                       0, 0) ? "resolution=" + item_resolution.width + "x"
-                                               + item_resolution.height : ""))
+                                + (item_resH !== Qt.size(
+                                       0, 0) ? "resolution=" + item_resW + "x"
+                                               + item_resH : ""))
             }
 
             function reconnect() {
@@ -134,20 +145,31 @@ BaseWidget {
     BaseConfigDialog {
         id: config
 
-        height: headerHeight + layout.height + footer.height + spacing * 2
+        height: 450
 
         function openDialog() {
             topicField.open()
+            titleFontField.open()
+            fpsField.open()
+            resHField.open()
+            resWField.open()
+            qualityField.open()
 
             open()
         }
 
         onAccepted: {
             topicField.accept()
+            titleFontField.accept()
+            fpsField.accept()
+            resHField.accept()
+            resWField.accept()
+            qualityField.accept()
         }
 
         ColumnLayout {
             id: layout
+            spacing: 25
 
             anchors {
                 top: parent.top
@@ -156,7 +178,119 @@ BaseWidget {
                 right: parent.right
 
                 topMargin: config.headerHeight + 12
-                bottomMargin: config.implicitFooterHeight + 10
+                bottomMargin: 45
+
+                leftMargin: 5
+                rightMargin: 5
+            }
+
+            SectionHeader {
+                label: "Font Settings"
+            }
+
+            LabeledTextField {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignTop
+
+                id: titleFontField
+
+                label: "Title Font Size"
+
+                bindedProperty: "item_titleFontSize"
+                bindTarget: widget
+
+                type: "int"
+            }
+
+            SectionHeader {
+                label: "Stream Settings"
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignTop
+                // Layout.preferredWidth: 300
+
+                LabeledTextField {
+                    Layout.fillWidth: true
+
+                    id: fpsField
+
+                    label: "FPS"
+
+                    bindedProperty: "item_fps"
+                    bindTarget: widget
+
+                    type: "int"
+                }
+
+                Text {
+                    font.pixelSize: 16
+                    text: "Resolution"
+                    color: Constants.palette.text
+                }
+
+                LabeledTextField {
+                    Layout.fillWidth: true
+                    id: resWField
+
+                    label: "Width"
+
+                    bindedProperty: "item_resW"
+                    bindTarget: widget
+
+                    type: "int"
+                }
+
+                Text {
+                    font.pixelSize: 18
+                    text: "x"
+                    color: Constants.palette.text
+                }
+
+                LabeledTextField {
+                    Layout.fillWidth: true
+                    id: resHField
+
+                    label: "Height"
+
+                    bindedProperty: "item_resH"
+                    bindTarget: widget
+
+                    type: "int"
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignTop
+
+                Text {
+                    font.pixelSize: 16
+                    text: "Quality"
+                    color: Constants.palette.text
+                }
+
+                Slider {
+                    Layout.fillWidth: true
+                    id: qualityField
+
+                    from: 0
+                    to: 100
+                    stepSize: 10
+
+                    function open() {
+                        value = widget.item_quality
+                    }
+
+                    function accept() {
+                        widget.item_quality = value
+                    }
+                }
+            }
+
+            SectionHeader {
+                label: "NT Settings"
             }
 
             LabeledTextField {

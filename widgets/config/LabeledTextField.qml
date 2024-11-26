@@ -28,7 +28,19 @@ TextField {
     }
 
     function accept() {
-        bindTarget[bindedProperty] = text
+        switch (type) {
+        case "string":
+            bindTarget[bindedProperty] = text
+            break
+        case "int":
+            bindTarget[bindedProperty] = parseInt(text)
+            break
+        case "double":
+            bindTarget[bindedProperty] = parseDouble(text)
+            break
+        default:
+            break
+        }
     }
 
     background: Rectangle {
@@ -50,7 +62,7 @@ TextField {
             left: textField.left
             bottom: textField.top
 
-            bottomMargin: -4
+            bottomMargin: -2
             leftMargin: 10
         }
     }

@@ -106,7 +106,8 @@ Rectangle {
 
         MenuItem {
             text: "Configure"
-            onTriggered: config.openDialog()
+            onTriggered: openConf(rcMenu.parent)
+            // onTriggered: config.openDialog()
         }
 
         MenuItem {
