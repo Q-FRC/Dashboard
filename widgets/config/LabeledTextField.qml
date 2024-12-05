@@ -9,9 +9,6 @@ import QFRCDashboard
 TextField {
     required property string label
 
-    /** any of: string, int, double */
-    property string type: "string"
-
     /** what property to bind to */
     required property string bindedProperty
 
@@ -28,19 +25,7 @@ TextField {
     }
 
     function accept() {
-        switch (type) {
-        case "string":
-            bindTarget[bindedProperty] = text
-            break
-        case "int":
-            bindTarget[bindedProperty] = parseInt(text)
-            break
-        case "double":
-            bindTarget[bindedProperty] = parseDouble(text)
-            break
-        default:
-            break
-        }
+        bindTarget[bindedProperty] = text
     }
 
     background: Rectangle {
@@ -64,20 +49,6 @@ TextField {
 
             bottomMargin: -2
             leftMargin: 10
-        }
-    }
-
-    validator: RegularExpressionValidator {
-        regularExpression: {
-            switch (type) {
-            case "double":
-                return /^\d*\.?\d*$/;
-            case "int":
-                return /^[-+]?[1-9]\d*$/;
-            default:
-            case "string":
-                return /.*/;
-            }
         }
     }
 }

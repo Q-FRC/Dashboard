@@ -1,9 +1,12 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Layouts
 
 import QFRCDashboard
 
 BaseWidget {
+    id: widget
+
     property string item_topic
 
     property int item_checkboxSize: 20
@@ -66,9 +69,87 @@ BaseWidget {
         control.checked = topicStore.getValue(item_topic)
     }
 
-    Dialog {
+    BaseConfigDialog {
         id: config
 
-        anchors.centerIn: parent
+        height: 300
+
+        function openDialog() {
+            topicField.open()
+            titleFontField.open()
+            checkboxField.open()
+
+            open()
+        }
+
+        onAccepted: {
+            topicField.accept()
+            titleFontField.accept()
+            checkboxField.accept()
+        }
+
+        ColumnLayout {
+            id: layout
+            spacing: 25
+
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                left: parent.left
+                right: parent.right
+
+                topMargin: config.headerHeight + 12
+                bottomMargin: 45
+
+                leftMargin: 5
+                rightMargin: 5
+            }
+
+            SectionHeader {
+                label: "Font Settings"
+            }
+
+            RowLayout {
+                uniformCellSizes: true
+
+                LabeledSpinBox {
+                    Layout.fillWidth: true
+
+                    id: titleFontField
+
+                    label: "Title Font Size"
+
+                    bindedProperty: "item_titleFontSize"
+                    bindTarget: widget
+                }
+
+                LabeledSpinBox {
+                    Layout.fillWidth: true
+
+                    id: checkboxField
+
+                    label: "Checkbox Size"
+
+                    bindedProperty: "item_checkboxSize"
+                    bindTarget: widget
+                }
+            }
+
+            SectionHeader {
+                label: "NT Settings"
+            }
+
+            LabeledTextField {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignTop
+
+                id: topicField
+
+                label: "Topic"
+
+                bindedProperty: "item_topic"
+                bindTarget: widget
+            }
+        }
     }
 }

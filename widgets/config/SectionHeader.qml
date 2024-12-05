@@ -9,6 +9,7 @@ Text {
     required property string label
 
     font.pixelSize: 18
+    font.bold: true
     color: Constants.palette.text
     text: label
 

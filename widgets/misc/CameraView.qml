@@ -188,7 +188,7 @@ BaseWidget {
                 label: "Font Settings"
             }
 
-            LabeledTextField {
+            LabeledSpinBox {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignTop
 
@@ -198,8 +198,6 @@ BaseWidget {
 
                 bindedProperty: "item_titleFontSize"
                 bindTarget: widget
-
-                type: "int"
             }
 
             SectionHeader {
@@ -211,7 +209,7 @@ BaseWidget {
                 Layout.alignment: Qt.AlignTop
                 // Layout.preferredWidth: 300
 
-                LabeledTextField {
+                LabeledSpinBox {
                     Layout.fillWidth: true
 
                     id: fpsField
@@ -220,8 +218,6 @@ BaseWidget {
 
                     bindedProperty: "item_fps"
                     bindTarget: widget
-
-                    type: "int"
                 }
 
                 Text {
@@ -230,7 +226,7 @@ BaseWidget {
                     color: Constants.palette.text
                 }
 
-                LabeledTextField {
+                LabeledSpinBox {
                     Layout.fillWidth: true
                     id: resWField
 
@@ -238,8 +234,6 @@ BaseWidget {
 
                     bindedProperty: "item_resW"
                     bindTarget: widget
-
-                    type: "int"
                 }
 
                 Text {
@@ -248,7 +242,7 @@ BaseWidget {
                     color: Constants.palette.text
                 }
 
-                LabeledTextField {
+                LabeledSpinBox {
                     Layout.fillWidth: true
                     id: resHField
 
@@ -256,8 +250,6 @@ BaseWidget {
 
                     bindedProperty: "item_resH"
                     bindTarget: widget
-
-                    type: "int"
                 }
             }
 

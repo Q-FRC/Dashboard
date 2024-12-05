@@ -80,7 +80,6 @@ set(QML_ELEMENTS
     widgets/BaseWidget
     widgets/ResizeAnchor
     widgets/DoubleSpinBox
-    widgets/BaseConfigDialog
 
     widgets/primitive/TextWidget
     widgets/primitive/IntWidget
@@ -101,7 +100,10 @@ set(QML_ELEMENTS
     widgets/misc/CameraView
     widgets/misc/ErrorsWidget
 
+    widgets/config/BaseConfigDialog
     widgets/config/LabeledTextField
+    widgets/config/LabeledSpinBox
+    widgets/config/LabeledDoubleSpinBox
     widgets/config/TitleComponent
 
     dialogs/TopicView
