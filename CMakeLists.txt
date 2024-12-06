@@ -104,7 +104,11 @@ set(QML_ELEMENTS
     widgets/config/LabeledTextField
     widgets/config/LabeledSpinBox
     widgets/config/LabeledDoubleSpinBox
+    widgets/config/LabeledComboBox
     widgets/config/TitleComponent
+    widgets/config/ColorTable
+    widgets/config/ColorField
+    widgets/config/SectionHeader
 
     dialogs/TopicView
     dialogs/TabNameDialog
@@ -119,6 +123,7 @@ set(ELEMENTS
     Constants
     SettingsManager
     TitleManager
+    Clipboard
 
     models/TabWidgetsModel
     models/TabListModel
@@ -152,7 +157,6 @@ qt_add_qml_module(${Dashboard_EXEC_NAME}
     QML_FILES ${QML_FILES}
 
     SOURCES ${SOURCES} ${HEADERS}
-    QML_FILES widgets/config/SectionHeader.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

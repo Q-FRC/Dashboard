@@ -21,6 +21,14 @@ DoubleSpinBox {
 
     font.pixelSize: 18
 
+    function open() {
+        value = bindTarget[bindedProperty]
+    }
+
+    function accept() {
+        bindTarget[bindedProperty] = value
+    }
+
     contentItem: SpinBox {
         width: spin.availableWidth
         height: spin.availableHeight
@@ -87,14 +95,6 @@ DoubleSpinBox {
             border.width: 2
             radius: 5
         }
-    }
-
-    function open() {
-        value = bindTarget[bindedProperty]
-    }
-
-    function accept() {
-        bindTarget[bindedProperty] = value
     }
 
     Text {

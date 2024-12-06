@@ -266,7 +266,7 @@ Dialog {
                             delegate: ItemDelegate {
                                 id: delegate
 
-                                width: choices.width
+                                width: cb.width
                                 contentItem: Text {
                                     text: modelData
                                     color: "white"
