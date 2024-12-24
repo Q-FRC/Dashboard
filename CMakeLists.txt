@@ -113,7 +113,7 @@ set(QML_ELEMENTS
 
     dialogs/TopicView
     dialogs/TabNameDialog
-    dialogs/TabSizeDialog
+    dialogs/TabDialog
 
     dialogs/ServerTab
     dialogs/MiscTab

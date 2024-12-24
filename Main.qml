@@ -74,15 +74,9 @@ ApplicationWindow {
             }
 
             Action {
-                text: qsTr("Tab &Size")
-                onTriggered: screen.tabSize()
+                text: qsTr("Configu&re Tab")
+                onTriggered: screen.configTab()
                 shortcut: "Ctrl+R"
-            }
-
-            Action {
-                text: qsTr("&Rename Tab")
-                onTriggered: screen.renameTab()
-                shortcut: "Ctrl+N"
             }
         }
 

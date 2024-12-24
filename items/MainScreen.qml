@@ -123,14 +123,12 @@ Rectangle {
 
     TabNameDialog {
         id: tabNameDialog
+        onAccepted: addTab()
     }
 
-    TabNameDialog {
-        id: tabRenameDialog
-    }
-
-    TabSizeDialog {
-        id: tabSizeDialog
+    TabDialog {
+        id: tabConfigDialog
+        onAccepted: setTabConfig()
     }
 
     /** SAVE */
@@ -185,35 +183,22 @@ Rectangle {
 
     /** TAB SETTINGS */
     function addTab() {
-        tabNameDialog.accepted.disconnect(addTab)
         tlm.add(tabNameDialog.tabName.text)
         swipe.setCurrentIndex(swipe.count - 1)
     }
 
     function newTab() {
-        tabNameDialog.accepted.connect(addTab)
         tabNameDialog.openUp("")
     }
 
-    function tabRename() {
-        tabRenameDialog.accepted.disconnect(tabRename)
-        currentTab().setName(tabRenameDialog.tabName.text)
+    function setTabConfig() {
+        currentTab().setSize(tabConfigDialog.rows,
+                             tabConfigDialog.columns)
+        currentTab().setName(tabConfigDialog.name)
     }
 
-    function renameTab() {
-        tabRenameDialog.accepted.connect(tabRename)
-        tabRenameDialog.openUp(currentTab().name())
-    }
-
-    function setSize() {
-        tabSizeDialog.accepted.disconnect(setSize)
-        currentTab().setSize(tabSizeDialog.rowValue.value,
-                             tabSizeDialog.columnValue.value)
-    }
-
-    function tabSize() {
-        tabSizeDialog.accepted.connect(setSize)
-        tabSizeDialog.openUp(currentTab().rows(), currentTab().cols())
+    function configTab() {
+        tabConfigDialog.openUp(currentTab().rows(), currentTab().cols(), currentTab().name())
     }
 
     function currentTab() {
