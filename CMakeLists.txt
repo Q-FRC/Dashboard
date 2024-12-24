@@ -123,6 +123,7 @@ set(QML_ELEMENTS
     dialogs/AppearanceComboBox
 
     dialogs/AccentEditor
+    dialogs/AboutDialog
 )
 
 set(ELEMENTS

@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("titleManager", title);
     engine.rootContext()->setContextProperty("accents", accents);
     engine.rootContext()->setContextProperty("clipboard", clipboard);
+    engine.rootContext()->setContextProperty("buildConfig", &BuildConfig);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

@@ -16,6 +16,10 @@ ApplicationWindow {
         anchors.centerIn: Overlay.overlay
     }
 
+    AboutDialog {
+        id: about
+    }
+
     menuBar: MenuBar {
         contentWidth: parent.width
 
@@ -87,6 +91,11 @@ ApplicationWindow {
                 onTriggered: screen.paste()
                 shortcut: "Ctrl+V"
             }
+        }
+
+        MenuBarItem {
+            text: qsTr("&About")
+            onTriggered: about.open()
         }
     }
 
