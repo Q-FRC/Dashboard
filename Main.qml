@@ -20,6 +20,11 @@ ApplicationWindow {
         id: about
     }
 
+    Shortcut {
+        sequence: "Ctrl+,"
+        onActivated: screen.settingsDialog()
+    }
+
     menuBar: MenuBar {
         contentWidth: parent.width
 
