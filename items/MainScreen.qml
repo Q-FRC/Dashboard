@@ -26,10 +26,6 @@ Rectangle {
         onActivated: swipe.decrementCurrentIndex()
     }
 
-    function openConf(item) {
-        widgetConf.openUp(item)
-    }
-
     function setTab() {
         swipe.setCurrentIndex(tlm.selectedTab)
     }
@@ -42,6 +38,9 @@ Rectangle {
         }
 
         tlm.onSelectedTabChanged.connect(setTab)
+
+        Constants.setTheme(settings.theme)
+        Constants.setAccent(settings.accent)
     }
 
     function drag(pos, fromList) {
@@ -132,10 +131,6 @@ Rectangle {
 
     TabSizeDialog {
         id: tabSizeDialog
-    }
-
-    WidgetConfig {
-        id: widgetConf
     }
 
     /** SAVE */
@@ -249,59 +244,12 @@ Rectangle {
     }
 
     /** SERVER SETTINGS */
-    ServerDialog {
-        id: serverDialog
+    SettingsDialog {
+        id: settingsDialog
     }
 
-    function serverSettings() {
-        serverDialog.open()
-    }
-
-    /** CUSTOM ACCENTS */
-    AccentEditor {
-        id: accentEditor
-    }
-
-    function editAccents() {
-        accentEditor.open()
-    }
-
-    FileDialog {
-        id: saveAccentDialog
-        currentFolder: StandardPaths.writableLocation(
-                           StandardPaths.HomeLocation)
-        fileMode: FileDialog.SaveFile
-        defaultSuffix: "json"
-        selectedNameFilter.index: 0
-        nameFilters: ["JSON files (*.json)", "All files (*)"]
-    }
-
-    function exportAccents() {
-        accents.exportJson(saveAccentDialog.selectedFile)
-    }
-
-    function exportAccentsAction() {
-        saveAccentDialog.accepted.connect(exportAccents)
-        saveAccentDialog.open()
-    }
-
-    FileDialog {
-        id: loadAccentDialog
-        currentFolder: StandardPaths.writableLocation(
-                           StandardPaths.HomeLocation)
-        fileMode: FileDialog.OpenFile
-        defaultSuffix: "json"
-        selectedNameFilter.index: 0
-        nameFilters: ["JSON files (*.json)", "All files (*)"]
-    }
-
-    function importAccents() {
-        accents.importJson(loadAccentDialog.selectedFile)
-    }
-
-    function importAccentsAction() {
-        loadAccentDialog.accepted.connect(importAccents)
-        loadAccentDialog.open()
+    function settingsDialog() {
+        settingsDialog.openDialog()
     }
 
     /** CONTENT */

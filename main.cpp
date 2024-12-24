@@ -51,8 +51,7 @@ int main(int argc, char *argv[])
     });
 
     Globals::inst.StartClient4(BuildConfig.APP_NAME.toStdString());
-    Globals::inst.SetServer(Globals::server.server.c_str(), NT_DEFAULT_PORT4);
-    Globals::inst.StartDSClient();
+    Globals::inst.StartDSClient(NT_DEFAULT_PORT4);
 
     Globals::inst.AddListener({{""}}, nt::EventFlags::kTopic, [topics] (const nt::Event &event) {
         std::string topicName(event.GetTopicInfo()->name);
