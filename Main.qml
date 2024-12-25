@@ -12,8 +12,8 @@ ApplicationWindow {
     visible: true
     title: titleManager.title
 
-    Universal.theme: Universal.Dark
-    Universal.accent: "Lime"
+    Universal.theme: settings.theme === "light" ? Universal.Light : Universal.Dark
+    Universal.accent: accents.qml(settings.accent) // "qml" is the Universal Theme accent. Affects checkboxes, etc.
 
     AccentEditor {
         id: accentEditor

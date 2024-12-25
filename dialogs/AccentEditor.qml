@@ -46,7 +46,7 @@ Dialog {
             uniformCellSizes: true
 
             Repeater {
-                model: ["Name", "Accent", "Tab"]
+                model: ["Name", "Accent", "Tab", "QML Accent"]
 
                 Rectangle {
                     color: "transparent"
