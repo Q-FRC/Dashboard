@@ -14,7 +14,7 @@ set(CMAKE_AUTORCC ON)
 option(USE_SYSTEM_NTCORE OFF "Use the system NTCore (Linux only)")
 option(USE_SYSTEM_PROTOBUF OFF "Use the system protobuf (Linux only)")
 
-find_package(Qt6 6.7 REQUIRED COMPONENTS Quick Multimedia)
+find_package(Qt6 6.7 REQUIRED COMPONENTS Quick Multimedia QuickControls2)
 add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
 
 qt_standard_project_setup(REQUIRES 6.7)
@@ -186,6 +186,7 @@ set_target_properties(${Dashboard_EXEC_NAME} PROPERTIES
 target_link_libraries(${Dashboard_EXEC_NAME}
     PRIVATE Qt6::Quick
     Qt6::Multimedia
+    Qt6::QuickControls2
     BuildConfig
     ntcore
 )

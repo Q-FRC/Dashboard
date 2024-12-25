@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 
+import QtQuick.Controls.Universal
+
 import QFRCDashboard
 
 ApplicationWindow {
@@ -9,6 +11,9 @@ ApplicationWindow {
     height: Constants.height
     visible: true
     title: titleManager.title
+
+    Universal.theme: Universal.Dark
+    Universal.accent: "Lime"
 
     AccentEditor {
         id: accentEditor
@@ -59,7 +64,8 @@ ApplicationWindow {
                     delegate: MenuItem {
                         text: qsTr("&" + index + ". " + modelData)
                         onTriggered: {
-                            if (modelData === "" || modelData === null) return;
+                            if (modelData === "" || modelData === null)
+                                return
                             tlm.clear()
                             tlm.load(modelData)
                         }
@@ -109,5 +115,3 @@ ApplicationWindow {
         anchors.fill: parent
     }
 }
-
-
