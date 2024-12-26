@@ -118,7 +118,6 @@ int SettingsManager::team() const
 void SettingsManager::setTeam(int newTeam)
 {
     Globals::server.team = newTeam;
-    qDebug() << "New Team:" << newTeam;
     emit teamChanged();
     reconnectServer();
 }

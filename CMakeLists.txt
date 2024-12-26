@@ -136,7 +136,7 @@ set(ELEMENTS
     Constants
     SettingsManager
     TitleManager
-    Clipboard
+    PlatformHelper
 
     models/TabWidgetsModel
     models/TabListModel

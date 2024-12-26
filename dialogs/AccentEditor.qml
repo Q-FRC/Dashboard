@@ -88,6 +88,7 @@ Dialog {
         }
 
         Row {
+            spacing: 25
             Button {
                 text: "Add"
 

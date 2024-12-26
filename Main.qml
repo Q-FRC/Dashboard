@@ -62,7 +62,7 @@ ApplicationWindow {
                     model: settings.recentFiles
 
                     delegate: MenuItem {
-                        text: qsTr("&" + index + ". " + modelData)
+                        text: qsTr("&" + index + ". " + platformHelper.baseName(modelData))
                         onTriggered: {
                             if (modelData === "" || modelData === null)
                                 return
