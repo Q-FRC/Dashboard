@@ -22,12 +22,12 @@ BaseWidget {
             spacing: 5
             Image {
                 source: "qrc:/" + errors[modelData * 2]
-                width: item_fontSize
-                height: item_fontSize
+                width: item_fontSize * Constants.scalar
+                height: item_fontSize * Constants.scalar
             }
 
             Text {
-                font.pixelSize: item_fontSize
+                font.pixelSize: item_fontSize * Constants.scalar
                 color: Constants.palette.text
                 text: errors[modelData * 2 + 1]
                 wrapMode: Text.WrapAnywhere
@@ -43,7 +43,7 @@ BaseWidget {
             left: parent.left
             right: parent.right
 
-            margins: 10
+            margins: 10 * Constants.scalar
         }
     }
 
@@ -76,7 +76,7 @@ BaseWidget {
     BaseConfigDialog {
         id: config
 
-        height: 325
+        height: 325 * Constants.scalar
 
         function openDialog() {
             topicField.open()
@@ -94,7 +94,7 @@ BaseWidget {
 
         ColumnLayout {
             id: layout
-            spacing: 25
+            spacing: 25 * Constants.scalar
 
             anchors {
                 top: parent.top
@@ -104,7 +104,7 @@ BaseWidget {
 
                 topMargin: -20
 
-                rightMargin: 5
+                rightMargin: 5 * Constants.scalar
             }
 
             SectionHeader {
