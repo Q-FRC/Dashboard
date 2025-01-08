@@ -15,6 +15,9 @@ BaseWidget {
     ListView {
         id: listView
 
+        interactive: false
+        clip: true
+
         model: errors.length / 2
         delegate: Row {
             required property int modelData
