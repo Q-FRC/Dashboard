@@ -12,7 +12,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_AUTORCC ON)
 
 option(USE_SYSTEM_NTCORE OFF "Use the system NTCore (Linux only)")
-option(USE_SYSTEM_PROTOBUF OFF "Use the system protobuf (Linux only)")
 
 find_package(Qt6 6.7 REQUIRED COMPONENTS Quick Multimedia QuickControls2 Network)
 add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
