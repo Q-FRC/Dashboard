@@ -107,10 +107,11 @@ jobs:
     - name: Install Build Dependencies (Linux)
       if: runner.os == 'Linux'
       run: |
-        sudo apt-get install libstdc++-10-dev gcc-10 ninja-build
+        sudo apt-get install libstdc++-12-dev gcc-12 ninja-build
 
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+
 
     - name: Install Build Dependencies (macOS)
       if: runner.os == 'macOS'
