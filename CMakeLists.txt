@@ -142,7 +142,7 @@ set(ELEMENTS
     Globals
     Constants
     SettingsManager
-    TitleManager
+    ConnManager
     PlatformHelper
     NotificationHelper
 
