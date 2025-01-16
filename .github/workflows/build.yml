@@ -26,7 +26,7 @@ jobs:
             qt_modules: 'qtmultimedia qtcharts qtwaylandcompositor'
             qt_arch: 'linux_gcc_64'
 
-          - os: ubuntu-22.04
+          - os: ubuntu-22.04-arm
             arch: "aarch64"
             appimage_arch: "aarch64"
             gcc_arch: "gcc_arm64"
