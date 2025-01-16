@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
     app.setApplicationName(BuildConfig.APP_NAME);
     app.setApplicationVersion(BuildConfig.versionString());
 
-    app.setWindowIcon(QIcon(":/QFRCDashboard"));
+    app.setWindowIcon(QIcon(":/" + BuildConfig.APP_NAME));
+    app.setDesktopFileName("" + BuildConfig.APP_NAME);
 
     QQuickStyle::setStyle("Universal");
 
