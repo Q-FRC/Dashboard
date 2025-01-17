@@ -120,6 +120,18 @@ ApplicationWindow {
         resetScalar()
         settings.scaleChanged.connect(resetScalar)
 
+        if (settings.resizeToDS) {
+            console.debug("DS Resize")
+
+            height = platformHelper.screenHeight() - 250
+            width = platformHelper.screenWidth()
+
+            // TODO: test on windows & verify geometry
+            // check if it works with scaling as well
+            x = 0
+            y = 0
+        }
+
         if (settings.loadRecent && settings.recentFiles.length > 0) {
             filename = settings.recentFiles[0]
             if (filename === "" || filename === null)

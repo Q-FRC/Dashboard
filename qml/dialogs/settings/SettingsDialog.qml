@@ -16,6 +16,7 @@ AnimatedDialog {
         server.accept()
         appearance.accept()
         misc.accept()
+        windowTab.accept()
     }
 
     standardButtons: Dialog.Ok | Dialog.Cancel
@@ -27,9 +28,11 @@ AnimatedDialog {
 
     function openDialog() {
         open()
+
         server.open()
         appearance.open()
         misc.open()
+        windowTab.open()
     }
 
     SwipeView {
@@ -53,6 +56,11 @@ AnimatedDialog {
 
         AppearanceTab {
             id: appearance
+            clip: true
+        }
+
+        WindowTab {
+            id: windowTab
             clip: true
         }
 
@@ -82,7 +90,7 @@ AnimatedDialog {
         }
 
         Repeater {
-            model: ["Network", "Appearance", "Miscellaneous"]
+            model: ["Network", "Appearance", "Window", "Miscellaneous"]
 
             SettingsTabButton {
                 required property string modelData
