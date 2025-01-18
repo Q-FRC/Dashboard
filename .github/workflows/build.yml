@@ -157,7 +157,7 @@ jobs:
         cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }}/usr
 
         cd ${{ env.INSTALL_DIR }}
-        tar --owner root --group root -czf ../QFRCDashboard.tar.gz *
+        tar --owner root --group root -czf ../QFRCDashboard.tar.zst *
 
     - name: Package AppImage & System (Linux)
       if: runner.os == 'Linux'
@@ -183,7 +183,7 @@ jobs:
         # may need to change this
         ./linuxdeploy-${{ matrix.appimage_arch }}.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt
 
-        tar czf ${{ env.INSTALL_APPIMAGE_DIR }} QFRCDashboard-System.tar.gz
+        tar czf QFRCDashboard-System.tar.zst install-appdir/*
 
     - name: Package (macOS)
       if: runner.os == 'macOS'
@@ -236,14 +236,14 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: QFRCDashboard-Linux-Binary-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
-        path: QFRCDashboard.tar.gz
+        path: QFRCDashboard.tar.zst
 
     - name: Upload system tarball (Linux)
       if: runner.os == 'Linux' && matrix.arch == 'aarch64'
       uses: actions/upload-artifact@v4
       with:
         name: QFRCDashboard-Linux-System-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
-        path: QFRCDashboard-System.tar.gz
+        path: QFRCDashboard-System.tar.zst
 
     - name: Upload AppImage (Linux)
       if: runner.os == 'Linux'
