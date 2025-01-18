@@ -185,8 +185,8 @@ jobs:
 
         cp -r ${{ runner.workspace }}/Qt/${{ matrix.qt_version }}/${{ matrix.gcc_arch }}/plugins/ ${{ env.INSTALL_APPIMAGE_DIR }}/usr/
 
-        cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libcrypto.so.1.1 ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
-        cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libssl.so.1.1 ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
+        cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libcrypto.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
+        cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libssl.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
 
         ./linuxdeploy-${{ matrix.appimage_arch }}.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt
 
