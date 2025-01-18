@@ -133,8 +133,8 @@ jobs:
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-${{ matrix.appimage_arch }}.AppImage"
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{ matrix.appimage_arch }}.AppImage"
 
-    - name: Prepare AppImage (Linux, aarch)
-      if: runner.os == 'Linux' && matrix.arch == 'amd64'
+    - name: Prepare AppImage (Linux, aarch64)
+      if: runner.os == 'Linux' && matrix.arch == 'aarch64'
       run: |
         sudo apt-get install libfuse2
 
