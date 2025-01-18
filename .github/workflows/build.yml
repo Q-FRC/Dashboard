@@ -136,7 +136,7 @@ jobs:
     - name: Prepare AppImage (Linux, aarch)
       if: runner.os == 'Linux' && matrix.arch == 'amd64'
       run: |
-        sudo apt-get install fuse2
+        sudo apt-get install libfuse2
 
         wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{ matrix.appimage_arch }}.AppImage"
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{ matrix.appimage_arch }}.AppImage"
