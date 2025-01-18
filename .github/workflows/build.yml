@@ -26,7 +26,7 @@ jobs:
             qt_modules: 'qtmultimedia qtcharts qtwaylandcompositor'
             qt_arch: 'linux_gcc_64'
 
-          - os: ubuntu-22.04
+          - os: ubuntu-22.04-arm
             arch: "aarch64"
             appimage_arch: "aarch64"
             gcc_arch: "gcc_arm64"
@@ -43,6 +43,7 @@ jobs:
             qt_modules: 'qtmultimedia qtcharts'
             qt_arch: 'win64_msvc2022_64'
 
+            # TODO: wait for the arm images to become public
           - os: windows-2022
             arch: "aarch64"
             msvc_arch: 'msvc2022_arm64'
@@ -81,6 +82,7 @@ jobs:
       uses: lukka/get-cmake@v3.28.1
 
     - name: Setup CCache
+      if: matrix.arch != 'aarch64'
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         key: ${{ runner.os }}-${{ inputs.build_type }}
@@ -134,16 +136,16 @@ jobs:
       run: |
         sudo apt-get install libstdc++-12-dev gcc-12 ninja-build libfuse2
 
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12
 
     - name: Install Build Dependencies (Linux, aarch64)
       if: matrix.qt_host == 'linux_arm64'
       run:
         sudo apt-get install gcc-aarch64-linux-gnu ninja-build libfuse2
 
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/aarch64-linux-gnu-gcc 12
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/aarch64-linux-gnu-g++ 12
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/aarch64-linux-gnu-gcc
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/aarch64-linux-gnu-g++
 
     - name: Install Build Dependencies (macOS)
       if: runner.os == 'macOS'
@@ -153,7 +155,12 @@ jobs:
 
     - name: Configure CMake
       run: |
-        cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DUSE_SYSTEM_NTCORE=OFF -DBUILD_SHARED_LIBS=OFF
+        cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DBUILD_SHARED_LIBS=OFF
+
+    - name: Configure CMake (aarch64)
+      if: matrix.arch != 'aarch64'
+      run: |
+        cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -G Ninja -DBUILD_SHARED_LIBS=OFF
 
     - name: Build
       run: |
