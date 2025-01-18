@@ -46,7 +46,7 @@ jobs:
           - os: windows-2022
             arch: "aarch64"
             msvc_arch: 'msvc2022_arm64'
-            qt_host: windows
+            qt_host: windows_arm64
             qt_version: '6.8.1'
             qt_modules: 'qtmultimedia qtcharts'
             qt_arch: 'win64_msvc2022_arm64'
@@ -121,8 +121,9 @@ jobs:
       run: |
         pip install jinja2
 
+    # This depends on linuxdeploy adding the appimage plugin for aarch64
     - name: Prepare AppImage (Linux, amd64)
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && matrix.arch == 'amd64'
       run: |
         wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{ matrix.appimage_arch }}.AppImage"
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-${{ matrix.appimage_arch }}.AppImage"
@@ -167,7 +168,7 @@ jobs:
         tar --owner root --group root -czf ../QFRCDashboard.tar.gz *
 
     - name: Package AppImage (Linux)
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && matrix.arch == 'amd64'
       shell: bash
       run: |
         sudo apt-get install libxcb-cursor-dev libxcb-cursor0
@@ -243,7 +244,7 @@ jobs:
         path: QFRCDashboard.tar.gz
 
     - name: Upload AppImage (Linux)
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && matrix.arch == 'amd64'
       uses: actions/upload-artifact@v4
       with:
         name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.appimage_arch }}.AppImage
