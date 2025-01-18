@@ -131,13 +131,11 @@ jobs:
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-${{ matrix.appimage_arch }}.AppImage"
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{ matrix.appimage_arch }}.AppImage"
 
-        #- name: Install Build Dependencies (Linux)
-        #if: matrix.qt_host == 'linux'
-        #run: |
-        #sudo apt-get install libstdc++-12-dev gcc-12 ninja-build libfuse2 libc6
-
-        #sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
-        #sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+    - name: Prepare AppImage (Linux, aarch)
+      if: runner.os == 'Linux' && matrix.arch == 'amd64'
+      run: |
+        wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{ matrix.appimage_arch }}.AppImage"
+        wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{ matrix.appimage_arch }}.AppImage"
 
     - name: Install Build Dependencies (macOS)
       if: runner.os == 'macOS'
@@ -188,6 +186,30 @@ jobs:
         cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libcrypto.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
         cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libssl.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
 
+        ./linuxdeploy-${{ matrix.appimage_arch }}.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt
+
+    - name: Package System (Linux, aarch64) (temp)
+      if: runner.os == 'Linux' && matrix.arch == 'aarch64'
+      shell: bash
+      run: |
+        sudo apt-get install libxcb-cursor-dev libxcb-cursor0
+        mkdir -p ${{ env.INSTALL_APPIMAGE_DIR}}/usr/{lib,bin}
+
+        cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_APPIMAGE_DIR }}/usr
+
+        export QML_SOURCES_PATHS="${{ runner.workspace }}/Qt/${{ matrix.qt_version }}/${{ matrix.gcc_arch }}/qml:${{ github.workspace }}"
+
+        chmod +x linuxdeploy-*.AppImage
+
+        mkdir -p ${{ env.INSTALL_APPIMAGE_DIR }}/usr/plugins/
+
+        cp -r ${{ runner.workspace }}/Qt/${{ matrix.qt_version }}/${{ matrix.gcc_arch }}/plugins/ ${{ env.INSTALL_APPIMAGE_DIR }}/usr/
+
+        cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libcrypto.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
+        cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libssl.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
+
+        # may need to change this
+        ./linuxdeploy-${{ matrix.appimage_arch }}.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --plugin qt
         ./linuxdeploy-${{ matrix.appimage_arch }}.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt
 
     - name: Package (macOS)
