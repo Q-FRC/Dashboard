@@ -146,7 +146,12 @@ jobs:
 
         update-alternatives --help
 
+        echo "gcc"
+
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/aarch64-linux-gnu-gcc 12
+
+        echo "g++"
+
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/aarch64-linux-gnu-g++ 12
 
     - name: Install Build Dependencies (macOS)
