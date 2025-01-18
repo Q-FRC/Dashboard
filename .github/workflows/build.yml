@@ -123,20 +123,10 @@ jobs:
       run: |
         pip install jinja2
 
-    # This depends on linuxdeploy adding the appimage plugin for aarch64
-    - name: Prepare AppImage (Linux, amd64)
-      if: runner.os == 'Linux' && matrix.arch == 'amd64'
+    - name: Prepare AppImage (Linux)
+      if: runner.os == 'Linux'
       run: |
-        sudo apt-get install fuse2
-
-        wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{ matrix.appimage_arch }}.AppImage"
-        wget "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-${{ matrix.appimage_arch }}.AppImage"
-        wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{ matrix.appimage_arch }}.AppImage"
-
-    - name: Prepare AppImage (Linux, aarch64)
-      if: runner.os == 'Linux' && matrix.arch == 'aarch64'
-      run: |
-        sudo apt-get install libfuse2
+        sudo apt-get install libfuse2 libgstreamer-plugins-bad1.0-dev
 
         wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{ matrix.appimage_arch }}.AppImage"
         wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{ matrix.appimage_arch }}.AppImage"
@@ -169,8 +159,8 @@ jobs:
         cd ${{ env.INSTALL_DIR }}
         tar --owner root --group root -czf ../QFRCDashboard.tar.gz *
 
-    - name: Package AppImage (Linux)
-      if: runner.os == 'Linux' && matrix.arch == 'amd64'
+    - name: Package AppImage & System (Linux)
+      if: runner.os == 'Linux'
       shell: bash
       run: |
         sudo apt-get install libxcb-cursor-dev libxcb-cursor0
@@ -178,29 +168,7 @@ jobs:
 
         cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_APPIMAGE_DIR }}/usr
 
-        export OUTPUT="QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage"
-        export QML_SOURCES_PATHS="${{ runner.workspace }}/Qt/${{ matrix.qt_version }}/${{ matrix.gcc_arch }}/qml:${{ github.workspace }}"
-
-        chmod +x linuxdeploy-*.AppImage
-
-        mkdir -p ${{ env.INSTALL_APPIMAGE_DIR }}/usr/plugins/
-
-        cp -r ${{ runner.workspace }}/Qt/${{ matrix.qt_version }}/${{ matrix.gcc_arch }}/plugins/ ${{ env.INSTALL_APPIMAGE_DIR }}/usr/
-
-        cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libcrypto.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
-        cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libssl.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
-
-        ./linuxdeploy-${{ matrix.appimage_arch }}.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt
-
-    - name: Package System (Linux, aarch64) (temp)
-      if: runner.os == 'Linux' && matrix.arch == 'aarch64'
-      shell: bash
-      run: |
-        sudo apt-get install libxcb-cursor-dev libxcb-cursor0
-        mkdir -p ${{ env.INSTALL_APPIMAGE_DIR}}/usr/{lib,bin}
-
-        cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_APPIMAGE_DIR }}/usr
-
+        export OUTPUT="QFRCDashboard-Linux-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage"
         export QML_SOURCES_PATHS="${{ runner.workspace }}/Qt/${{ matrix.qt_version }}/${{ matrix.gcc_arch }}/qml:${{ github.workspace }}"
 
         chmod +x linuxdeploy-*.AppImage
@@ -213,8 +181,9 @@ jobs:
         cp /usr/lib/${{ matrix.appimage_arch }}-linux-gnu/libssl.so ${{ env.INSTALL_APPIMAGE_DIR }}/usr/lib/
 
         # may need to change this
-        ./linuxdeploy-${{ matrix.appimage_arch }}.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --plugin qt
         ./linuxdeploy-${{ matrix.appimage_arch }}.AppImage --appdir ${{ env.INSTALL_APPIMAGE_DIR }} --output appimage --plugin qt
+
+        tar czf ${{ env.INSTALL_APPIMAGE_DIR }} QFRCDashboard-System.tar.gz
 
     - name: Package (macOS)
       if: runner.os == 'macOS'
@@ -266,21 +235,28 @@ jobs:
       if: runner.os == 'Linux'
       uses: actions/upload-artifact@v4
       with:
-        name: QFRCDashboard-${{ runner.os }}-Binary-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
+        name: QFRCDashboard-Linux-Binary-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
         path: QFRCDashboard.tar.gz
 
-    - name: Upload AppImage (Linux)
-      if: runner.os == 'Linux' && matrix.arch == 'amd64'
+    - name: Upload system tarball (Linux)
+      if: runner.os == 'Linux' && matrix.arch == 'aarch64'
       uses: actions/upload-artifact@v4
       with:
-        name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage
-        path: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage
+        name: QFRCDashboard-Linux-System-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
+        path: QFRCDashboard-System.tar.gz
+
+    - name: Upload AppImage (Linux)
+      if: runner.os == 'Linux'
+      uses: actions/upload-artifact@v4
+      with:
+        name: QFRCDashboard-Linux-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage
+        path: QFRCDashboard-Linux-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage
 
     - name: Upload tarball (macOS)
       if: runner.os == 'macOS'
       uses: actions/upload-artifact@v4
       with:
-        name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
+        name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
         path: QFRCDashboard.tar.gz
 
     - name: Upload binary zip (Windows, portable)
@@ -294,5 +270,5 @@ jobs:
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: QFRCDashboard-${{ runner.os }}-Setup-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
+        name: QFRCDashboard-Windows-Setup-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
         path: Dashboard-Setup.exe
