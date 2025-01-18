@@ -139,21 +139,6 @@ jobs:
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
 
-    - name: Install Build Dependencies (Linux, aarch64)
-      if: matrix.qt_host == 'linux_arm64'
-      run:
-        sudo apt-get install gcc-aarch64-linux-gnu ninja-build libfuse2
-
-        update-alternatives --help
-
-        echo "gcc"
-
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/aarch64-linux-gnu-gcc 12
-
-        echo "g++"
-
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/aarch64-linux-gnu-g++ 12
-
     - name: Install Build Dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
