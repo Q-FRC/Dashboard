@@ -82,7 +82,7 @@ jobs:
       uses: lukka/get-cmake@v3.28.1
 
     - name: Setup CCache
-      if: matrix.arch != 'aarch64'
+      if: matrix.arch != 'aarch64' || runner.os == 'macOS'
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         key: ${{ runner.os }}-${{ inputs.build_type }}
@@ -144,6 +144,8 @@ jobs:
       run:
         sudo apt-get install gcc-aarch64-linux-gnu ninja-build libfuse2
 
+        update-alternatives --help
+
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/aarch64-linux-gnu-gcc 12
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/aarch64-linux-gnu-g++ 12
 
@@ -154,11 +156,12 @@ jobs:
         brew install llvm ninja
 
     - name: Configure CMake
+      if: matrix.arch != 'aarch64' || runner.os == 'macOS'
       run: |
         cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -G Ninja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DBUILD_SHARED_LIBS=OFF
 
     - name: Configure CMake (aarch64)
-      if: matrix.arch != 'aarch64'
+      if: matrix.arch == 'aarch64' && runner.os != 'macOS'
       run: |
         cmake -S . -B ${{ env.BUILD_DIR }} -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -G Ninja -DBUILD_SHARED_LIBS=OFF
 
@@ -254,14 +257,14 @@ jobs:
       if: runner.os == 'Linux' && matrix.arch == 'amd64'
       uses: actions/upload-artifact@v4
       with:
-        name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.appimage_arch }}.AppImage
-        path: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.appimage_arch }}.AppImage
+        name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage
+        path: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage
 
     - name: Upload tarball (macOS)
       if: runner.os == 'macOS'
       uses: actions/upload-artifact@v4
       with:
-        name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}
+        name: QFRCDashboard-${{ runner.os }}-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}
         path: QFRCDashboard.tar.gz
 
     - name: Upload binary zip (Windows, portable)
