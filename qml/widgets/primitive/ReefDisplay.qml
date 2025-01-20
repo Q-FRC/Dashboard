@@ -96,36 +96,6 @@ BaseWidget {
                     y: shape.height
                 }
             }
-
-            Text {
-                anchors {
-                    left: parent.left
-                    leftMargin: parent.width / 3
-                    bottom: parent.bottom
-                    bottomMargin: parent.height / 3
-                }
-
-                text: String.fromCharCode(65 + modelData * 2)
-                font.pixelSize: 18
-                color: "blue"
-
-                rotation: -parent.rotation
-            }
-
-            Text {
-                anchors {
-                    right: parent.right
-                    rightMargin: parent.width / 3
-                    bottom: parent.bottom
-                    bottomMargin: parent.height / 3
-                }
-
-                text: String.fromCharCode(65 + modelData * 2 + 1)
-                font.pixelSize: 18
-                color: "blue"
-
-                rotation: -parent.rotation
-            }
         }
     }
 
