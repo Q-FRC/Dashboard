@@ -26,7 +26,7 @@ TabButton {
 
             Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
 
-            onClicked: button.click()
+            onClicked: button.clicked()
         }
 
         Label {

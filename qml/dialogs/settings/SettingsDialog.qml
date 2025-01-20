@@ -8,7 +8,7 @@ AnimatedDialog {
     id: serverDialog
 
     height: 475 * Constants.scalar
-    width: 475 * Constants.scalar
+    width: 550 * Constants.scalar
 
     title: "Settings"
 
@@ -97,6 +97,8 @@ AnimatedDialog {
                 required property int index
 
                 label: modelData
+
+                onClicked: swipe.currentIndex = index
             }
         }
     }

@@ -26,6 +26,20 @@ ApplicationWindow {
                              height / Constants.height)) * settings.scale
     }
 
+    function dsResize() {
+        if (settings.resizeToDS) {
+            console.debug("DS Resize")
+
+            height = platformHelper.screenHeight() - 234
+            width = platformHelper.screenWidth()
+
+            // TODO: test on windows & verify geometry
+            // check if it works with scaling as well
+            x = 0
+            y = 0
+        }
+    }
+
     onWidthChanged: {
         resetScalar()
     }
@@ -120,17 +134,8 @@ ApplicationWindow {
         resetScalar()
         settings.scaleChanged.connect(resetScalar)
 
-        if (settings.resizeToDS) {
-            console.debug("DS Resize")
-
-            height = platformHelper.screenHeight() - 250
-            width = platformHelper.screenWidth()
-
-            // TODO: test on windows & verify geometry
-            // check if it works with scaling as well
-            x = 0
-            y = 0
-        }
+        dsResize()
+        settings.resizeToDSChanged.connect(dsResize)
 
         if (settings.loadRecent && settings.recentFiles.length > 0) {
             filename = settings.recentFiles[0]
