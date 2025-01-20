@@ -8,17 +8,13 @@ ColumnLayout {
     spacing: 15 * Constants.scalar
 
     function accept() {
-        console.log("Before", settings.resizeToDS)
         scale.accept()
         resize.accept()
-        console.log("after", settings.resizeToDS)
     }
 
     function open() {
-        console.log("Before", settings.resizeToDS)
         scale.open()
         resize.open()
-        console.log("after", settings.resizeToDS)
     }
 
     LabeledDoubleSpinBox {
