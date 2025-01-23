@@ -140,6 +140,8 @@ set(QML_ELEMENTS
     dialogs/AboutDialog
     dialogs/NotificationPopup
     dialogs/AnimatedDialog
+
+    fields/BetterDoubleSpinBox
 )
 
 set(ELEMENTS
@@ -183,6 +185,8 @@ qt_add_qml_module(${Dashboard_EXEC_NAME}
     QML_FILES ${QML_FILES}
 
     SOURCES ${SOURCES} ${HEADERS}
+    QML_FILES qml/fields/BetterSpinBox.qml
+    QML_FILES qml/fields/BetterTextField.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
