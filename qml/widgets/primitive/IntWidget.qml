@@ -31,7 +31,7 @@ BaseWidget {
         rcMenu.addMenu(switchMenu)
     }
 
-    SpinBox {
+    BetterSpinBox {
         id: spin
 
         font.pixelSize: item_fontSize * Constants.scalar
