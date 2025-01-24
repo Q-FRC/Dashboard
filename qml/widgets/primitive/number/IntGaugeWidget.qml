@@ -16,8 +16,8 @@ BaseWidget {
     property double item_startAngle: -135
     property double item_endAngle: 135
 
-    property double item_min: 0
-    property double item_max: 100
+    property int item_min: 0
+    property int item_max: 100
 
     Menu {
         id: switchMenu
@@ -26,14 +26,14 @@ BaseWidget {
         MenuItem {
             text: "Dial"
             onTriggered: {
-                model.type = "doubleDial"
+                model.type = "dial"
             }
         }
 
         MenuItem {
             text: "Spin Box"
             onTriggered: {
-                model.type = "double"
+                model.type = "int"
             }
         }
     }
@@ -207,7 +207,7 @@ BaseWidget {
                 RowLayout {
                     uniformCellSizes: true
 
-                    LabeledDoubleSpinBox {
+                    LabeledSpinBox {
                         Layout.fillWidth: true
 
                         id: lowField
@@ -218,7 +218,7 @@ BaseWidget {
                         bindTarget: widget
                     }
 
-                    LabeledDoubleSpinBox {
+                    LabeledSpinBox {
                         Layout.fillWidth: true
 
                         id: upField
