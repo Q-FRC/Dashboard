@@ -40,20 +40,33 @@ BaseWidget {
 
     Component.onCompleted: {
         rcMenu.addMenu(switchMenu)
+
+        console.log("GO", parent.width)
+        gauge.width = parent.width
+        gauge.height = parent.height - titleField.height
+        gauge.fixSize()
+    }
+
+    onHeightChanged: {
+        gauge.height = height - titleField.height
+        gauge.width = width
+        gauge.fixSize()
+    }
+
+    onWidthChanged: {
+        gauge.height = height - titleField.height
+        gauge.width = width
+        gauge.fixSize()
     }
 
     RadialGauge {
-        id: spin
+        id: gauge
 
         valueFontSize: item_fontSize * Constants.scalar
 
         anchors {
-            top: titleField.bottom
-            bottom: parent.bottom
-
             horizontalCenter: parent.horizontalCenter
-
-            topMargin: 10
+            bottom: parent.bottom
         }
 
         function updateTopic(ntTopic, ntValue) {
@@ -89,7 +102,7 @@ BaseWidget {
         topicStore.unsubscribe(topic)
         topicStore.subscribe(item_topic)
         model.topic = item_topic
-        spin.value = topicStore.getValue(item_topic)
+        gauge.value = topicStore.getValue(item_topic)
     }
 
     BaseConfigDialog {
