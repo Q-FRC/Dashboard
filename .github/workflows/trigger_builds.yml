@@ -1,8 +1,6 @@
 name: Build Application
 
 on: [pull_request, push]
-  branches:
-    - 'master'
   paths-ignore:
     - '**.md'
     - '**/LICENSE'
