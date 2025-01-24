@@ -89,16 +89,18 @@ set(QML_ELEMENTS
     widgets/DoubleSpinBox
 
     widgets/primitive/TextWidget
-    widgets/primitive/IntWidget
-    widgets/primitive/IntDialWidget
-    widgets/primitive/DoubleWidget
-    widgets/primitive/DoubleDialWidget
     widgets/primitive/BoolWidget
     widgets/primitive/EnumWidget
     widgets/primitive/ColorWidget
     widgets/primitive/ReefDisplay
 
     widgets/primitive/ShapeHandler
+
+    widgets/primitive/number/IntWidget
+    widgets/primitive/number/IntDialWidget
+    widgets/primitive/number/DoubleWidget
+    widgets/primitive/number/DoubleGaugeWidget
+    widgets/primitive/number/DoubleDialWidget
 
     widgets/sendable/FMSInfo
     widgets/sendable/Field2d
@@ -188,6 +190,7 @@ qt_add_qml_module(${Dashboard_EXEC_NAME}
     QML_FILES ${QML_FILES}
 
     SOURCES ${SOURCES} ${HEADERS}
+    QML_FILES qml/items/RadialGauge.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
