@@ -89,8 +89,8 @@ BaseWidget {
         }
 
         function move(val) {
+            valid = val === value
             value = val
-            valid = false
             topicStore.setValue(item_topic, value)
         }
     }

@@ -217,6 +217,11 @@ Rectangle {
                     roleValue: "doubleGauge"
                     DoubleGaugeWidget {}
                 }
+
+                DelegateChoice {
+                    roleValue: "gauge"
+                    IntGaugeWidget {}
+                }
             }
         }
 

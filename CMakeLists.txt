@@ -83,6 +83,7 @@ set(QML_ELEMENTS
     items/TopicView
     items/TitleBar
     items/IconButton
+    items/RadialGauge
 
     widgets/BaseWidget
     widgets/ResizeAnchor
@@ -97,6 +98,7 @@ set(QML_ELEMENTS
     widgets/primitive/ShapeHandler
 
     widgets/primitive/number/IntWidget
+    widgets/primitive/number/IntGaugeWidget
     widgets/primitive/number/IntDialWidget
     widgets/primitive/number/DoubleWidget
     widgets/primitive/number/DoubleGaugeWidget
@@ -190,7 +192,6 @@ qt_add_qml_module(${Dashboard_EXEC_NAME}
     QML_FILES ${QML_FILES}
 
     SOURCES ${SOURCES} ${HEADERS}
-    QML_FILES qml/items/RadialGauge.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

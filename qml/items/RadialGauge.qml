@@ -29,7 +29,6 @@ Rectangle {
     color: "transparent"
 
     function fixSize() {
-        console.log("fixSize", height, width)
         if (width < height && width !== 0) {
             height = width
         } else if (height < width && height !== 0) {

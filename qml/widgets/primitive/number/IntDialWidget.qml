@@ -28,6 +28,13 @@ BaseWidget {
                 model.type = "int"
             }
         }
+
+        MenuItem {
+            text: "Radial Gauge"
+            onTriggered: {
+                model.type = "gauge"
+            }
+        }
     }
 
     Component.onCompleted: {
@@ -83,8 +90,8 @@ BaseWidget {
         }
 
         function move(val) {
+            valid = val === value
             value = val
-            valid = false
             topicStore.setValue(item_topic, value)
         }
     }
