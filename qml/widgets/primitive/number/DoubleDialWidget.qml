@@ -97,7 +97,6 @@ BaseWidget {
 
         function move(val) {
             valid = Math.abs(val - value) < 0.01
-            console.log(val, value)
             value = val
             topicStore.setValue(item_topic, value)
         }
