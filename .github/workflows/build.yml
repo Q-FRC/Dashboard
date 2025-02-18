@@ -135,7 +135,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew update
-        brew install llvm ninja
+        brew install llvm ninja create-dmg
 
     - name: Configure CMake
       if: matrix.arch != 'aarch64'
@@ -203,11 +203,26 @@ jobs:
         cp ../program_info/QFRCDashboard.icns Dashboard.app/Contents/Resources
 
         macdeployqt Dashboard.app -qmldir=$QML_DIR_PATH -qmlimport=$QML_SOURCES_PATHS -verbose=1 -appstore-compliant
-        macdeployqt Dashboard.app -qmldir=$QML_DIR_PATH -qmlimport=$QML_SOURCES_PATHS -dmg -verbose=1 -appstore-compliant
         ls
 
-        mv Dashboard.dmg ..
-        tar czf ../Dashboard.tar.gz
+        tar czf ../Dashboard.tar.gz Dashboard.app
+
+        mkdir dmg-src
+        mv Dashboard.app dmg-src
+
+        cp ../program_info/QFRCDashboard.icns .
+
+        create-dmg \
+          --volname "QFRCDashboard" \
+          --volicon "QFRCDashboard.icns" \
+          --window-pos 200 120 \
+          --window-size 800 400 \
+          --icon-size 100 \
+          --icon "Dashboard.app" 200 190 \
+          --hide-extension "Dashboard.app" \
+          --app-drop-link 600 185 \
+          "QFRCDashboard.dmg" \
+          "src/"
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
@@ -272,7 +287,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.dmg
-        path: Dashboard.dmg
+        path: ${{ env.BUILD_DIR }}/QFRCDashboard.dmg
 
     - name: Upload binary zip (Windows, portable)
       if: runner.os == 'Windows'
