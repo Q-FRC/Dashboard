@@ -135,7 +135,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew update
-        brew install llvm ninja create-dmg graphicsmagick imagemagick node
+        brew install llvm ninja graphicsmagick imagemagick node
 
     - name: Configure CMake
       if: matrix.arch != 'aarch64'
