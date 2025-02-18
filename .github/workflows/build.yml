@@ -227,6 +227,10 @@ jobs:
         #  --app-drop-link 600 185 \
         #  "QFRCDashboard.dmg" \
         #  "dmg-src/"
+        #
+        cd ..
+
+        mv QFRCDashboard*.dmg QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.dmg
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
@@ -291,7 +295,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.dmg
-        path: ${{ env.BUILD_DIR }}/QFRCDashboard.dmg
+        path: QFRCDashboard*.dmg
 
     - name: Upload binary zip (Windows, portable)
       if: runner.os == 'Windows'
