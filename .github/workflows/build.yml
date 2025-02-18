@@ -202,10 +202,12 @@ jobs:
         chmod a+x Dashboard.app/Contents/MacOS/Dashboard
         cp ../program_info/QFRCDashboard.icns Dashboard.app/Contents/Resources
 
+        macdeployqt Dashboard.app -qmldir=$QML_DIR_PATH -qmlimport=$QML_SOURCES_PATHS -verbose=1 -appstore-compliant
         macdeployqt Dashboard.app -qmldir=$QML_DIR_PATH -qmlimport=$QML_SOURCES_PATHS -dmg -verbose=1 -appstore-compliant
         ls
 
         mv Dashboard.dmg ..
+        tar czf ../Dashboard.tar.gz
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
@@ -257,6 +259,13 @@ jobs:
       with:
         name: QFRCDashboard-Linux-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage
         path: QFRCDashboard-Linux-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.AppImage
+
+    - name: Upload app (macOS)
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v4
+      with:
+        name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.app
+        path: Dashboard.tar.gz
 
     - name: Upload DMG (macOS)
       if: runner.os == 'macOS'
