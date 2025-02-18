@@ -222,7 +222,7 @@ jobs:
           --hide-extension "Dashboard.app" \
           --app-drop-link 600 185 \
           "QFRCDashboard.dmg" \
-          "src/"
+          "dmg-src/"
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
