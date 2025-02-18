@@ -135,7 +135,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew update
-        brew install llvm ninja create-dmg
+        brew install llvm ninja create-dmg graphicsmagick imagemagick node
 
     - name: Configure CMake
       if: matrix.arch != 'aarch64'
@@ -207,22 +207,26 @@ jobs:
 
         tar czf ../Dashboard.tar.gz Dashboard.app
 
-        mkdir dmg-src
-        mv Dashboard.app dmg-src
+        #mkdir dmg-src
+        #mv Dashboard.app dmg-src
 
-        cp ../program_info/QFRCDashboard.icns .
+        #cp ../program_info/QFRCDashboard.icns .
 
-        create-dmg \
-          --volname "QFRCDashboard" \
-          --volicon "QFRCDashboard.icns" \
-          --window-pos 200 120 \
-          --window-size 800 400 \
-          --icon-size 100 \
-          --icon "Dashboard.app" 200 190 \
-          --hide-extension "Dashboard.app" \
-          --app-drop-link 600 185 \
-          "QFRCDashboard.dmg" \
-          "dmg-src/"
+        sudo npm install --global create-dmg
+
+        create-dmg --dmg-title=QFRCDashboard Dashboard.app ..
+
+        #create-dmg \
+        #  --volname "QFRCDashboard" \
+        #  --volicon "QFRCDashboard.icns" \
+        #  --window-pos 200 120 \
+        #  --window-size 800 400 \
+        #  --icon-size 100 \
+        #  --icon "Dashboard.app" 200 190 \
+        #  --hide-extension "Dashboard.app" \
+        #  --app-drop-link 600 185 \
+        #  "QFRCDashboard.dmg" \
+        #  "dmg-src/"
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
