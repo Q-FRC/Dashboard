@@ -207,14 +207,15 @@ jobs:
 
         tar czf ../Dashboard.tar.gz Dashboard.app
 
+        # TODO: make this work
         #mkdir dmg-src
         #mv Dashboard.app dmg-src
 
         #cp ../program_info/QFRCDashboard.icns .
 
-        sudo npm install --global create-dmg
+        # sudo npm install --global create-dmg
 
-        create-dmg --dmg-title=QFRCDashboard Dashboard.app ..
+        # create-dmg --dmg-title=QFRCDashboard Dashboard.app ..
 
         #create-dmg \
         #  --volname "QFRCDashboard" \
@@ -228,9 +229,9 @@ jobs:
         #  "QFRCDashboard.dmg" \
         #  "dmg-src/"
         #
-        cd ..
+        #cd ..
 
-        mv QFRCDashboard*.dmg QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.dmg
+        #mv QFRCDashboard*.dmg QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.dmg
 
     - name: Package (Windows, Portable)
       if: runner.os == 'Windows'
@@ -290,12 +291,12 @@ jobs:
         name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.app
         path: Dashboard.tar.gz
 
-    - name: Upload DMG (macOS)
-      if: runner.os == 'macOS'
-      uses: actions/upload-artifact@v4
-      with:
-        name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.dmg
-        path: QFRCDashboard*.dmg
+        #- name: Upload DMG (macOS)
+        #  if: runner.os == 'macOS'
+        #  uses: actions/upload-artifact@v4
+        #  with:
+        #    name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.dmg
+        #    path: QFRCDashboard*.dmg
 
     - name: Upload binary zip (Windows, portable)
       if: runner.os == 'Windows'
