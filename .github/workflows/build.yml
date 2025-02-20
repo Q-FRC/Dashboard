@@ -135,7 +135,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew update
-        brew install llvm ninja graphicsmagick imagemagick node
+        brew install llvm ninja
 
     - name: Configure CMake
       if: matrix.arch != 'aarch64'
@@ -200,6 +200,7 @@ jobs:
         cd ${{ env.BUILD_DIR }}
         sudo codesign --sign - --deep --force --entitlements ../program_info/App.entitlements Dashboard.app
         chmod a+x Dashboard.app/Contents/MacOS/Dashboard
+        mkdir Dashboard.app/Contents/Resources -p
         cp ../program_info/QFRCDashboard.icns Dashboard.app/Contents/Resources
 
         macdeployqt Dashboard.app -qmldir=$QML_DIR_PATH -qmlimport=$QML_SOURCES_PATHS -verbose=1 -appstore-compliant
