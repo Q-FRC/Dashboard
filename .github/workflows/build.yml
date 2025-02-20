@@ -198,7 +198,6 @@ jobs:
         export QML_SOURCES_PATHS="${{ runner.workspace }}/Qt/${{ matrix.qt_version }}/macos/qml"
 
         cd ${{ env.BUILD_DIR }}
-        sudo codesign --sign - --deep --force --entitlements ../program_info/App.entitlements Dashboard.app
         chmod a+x Dashboard.app/Contents/MacOS/Dashboard
         mkdir Dashboard.app/Contents/Resources -p
         cp ../program_info/QFRCDashboard.icns Dashboard.app/Contents/Resources
@@ -206,7 +205,7 @@ jobs:
         macdeployqt Dashboard.app -qmldir=$QML_DIR_PATH -qmlimport=$QML_SOURCES_PATHS -verbose=1 -appstore-compliant
         ls
 
-        tar czf ../Dashboard.tar.gz Dashboard.app
+        mv Dashboard.app ../QFRCDashboard.app
 
         # TODO: make this work
         #mkdir dmg-src
@@ -290,7 +289,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.app
-        path: Dashboard.tar.gz
+        path: QFRCDashboard.app
 
         #- name: Upload DMG (macOS)
         #  if: runner.os == 'macOS'
