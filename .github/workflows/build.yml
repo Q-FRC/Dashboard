@@ -206,6 +206,8 @@ jobs:
         ls
 
         mv Dashboard.app ../QFRCDashboard.app
+        cd ..
+        tar czf QFRCDashboard.tar.gz QFRCDashboard.app
 
         # TODO: make this work
         #mkdir dmg-src
@@ -289,7 +291,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: QFRCDashboard-macOS-${{ env.VERSION }}-${{ inputs.build_type }}-${{ matrix.arch }}.app
-        path: QFRCDashboard.app
+        path: QFRCDashboard.tar.gz
 
         #- name: Upload DMG (macOS)
         #  if: runner.os == 'macOS'
