@@ -6,24 +6,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0074 NEW)
 
 set(FETCHCONTENT_QUIET OFF)
 
-# protobuf
-if (NOT USE_SYSTEM_PROTOBUF)
-    set(protobuf_ALLOW_CCACHE ON)
-    set(protobuf_MSVC_STATIC_RUNTIME OFF)
-    set(protobuf_BUILD_SHARED_LIBS ON)
-    set(protobuf_BUILD_TESTS OFF)
-    set(ABSL_PROPAGATE_CXX_STD ON)
-
-    set(ABSL_ENABLE_INSTALL ON)
-    FetchContent_Declare(protobuf
-      GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-      GIT_TAG        v25.6
-      SOURCE_SUBDIR  cmake
-      FIND_PACKAGE_ARGS NAMES Protobuf
-    )
-    FetchContent_MakeAvailable(Protobuf)
-endif()
-
 # WPILib
 if (NOT USE_SYSTEM_NTCORE)
     set(USE_SYSTEM_EIGEN OFF)
