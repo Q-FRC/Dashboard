@@ -103,10 +103,10 @@ jobs:
 
     - name: Install Protobuf
       uses: ConorMacBride/install-package@v1
-        with:
-          brew: protobuf
-          choco: protoc
-          apt: protobuf-compiler
+      with:
+        brew: protobuf
+        choco: protoc
+        apt: protobuf-compiler
 
     - name: Install Qt
       uses: jdpurcell/install-qt-action@v4
