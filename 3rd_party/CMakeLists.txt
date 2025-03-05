@@ -4,6 +4,23 @@ include(FetchContent)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(CMAKE_POLICY_DEFAULT_CMP0074 NEW)
 
+# protobuf
+if (NOT USE_SYSTEM_PROTOBUF)
+    set(protobuf_ALLOW_CCACHE ON)
+    set(protobuf_MSVC_STATIC_RUNTIME OFF)
+    set(protobuf_BUILD_SHARED_LIBS ON)
+    set(protobuf_BUILD_TESTS OFF)
+    set(ABSL_PROPAGATE_CXX_STD ON)
+
+    FetchContent_Declare(
+            protobuf
+            GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+            GIT_TAG        d00db12f9497e93898b9850a8f4d67ac6cc20917 # 26.0
+            OVERRIDE_FIND_PACKAGE
+    )
+    FetchContent_MakeAvailable(Protobuf)
+endif()
+
 # WPILib
 if (NOT USE_SYSTEM_NTCORE)
     set(USE_SYSTEM_EIGEN OFF)
