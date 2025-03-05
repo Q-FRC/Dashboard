@@ -115,7 +115,7 @@ jobs:
     - name: Install Protobuf (Windows)
       if: runner.os == 'Windows'
       run: |
-        winget install protobuf
+        winget install protobuf --exact --disable-interactivity --silent --no-upgrade --accept-package-agreements --accept-source-agreements
 
     - name: Install Qt
       uses: jdpurcell/install-qt-action@v4
