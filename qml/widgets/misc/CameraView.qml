@@ -120,8 +120,8 @@ BaseWidget {
             }
 
             videoOutput: video
-            onErrorOccurred: (error, errorString) => console.error(
-                                 "CameraView: error:", errorString)
+            onErrorOccurred: (error, errorString) => logs.critical(
+                                 "CameraView", errorString)
         }
 
         VideoOutput {

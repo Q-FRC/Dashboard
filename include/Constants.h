@@ -25,6 +25,7 @@ extern const Setting Theme;
 extern const Setting Accent;
 extern const Setting Scale;
 extern const Setting ResizeToDS;
+extern const Setting LogLevel;
 }
 
 #endif // CONSTANTS_H
