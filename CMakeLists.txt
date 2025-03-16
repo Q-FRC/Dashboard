@@ -160,10 +160,6 @@ set(QML_ELEMENTS
 set(ELEMENTS
     Globals
     Constants
-    SettingsManager
-    ConnManager
-    PlatformHelper
-    NotificationHelper
     MaskedMouseArea
 
     models/TabWidgetsModel
@@ -174,6 +170,13 @@ set(ELEMENTS
     models/RemoteLayoutModel
 
     stores/TopicStore
+
+    managers/SettingsManager
+    managers/ConnManager
+    managers/LogManager
+
+    helpers/PlatformHelper
+    helpers/NotificationHelper
 )
 
 foreach(ELEMENT ${ELEMENTS})
@@ -188,7 +191,7 @@ endforeach()
 set(HEADERS
     ${HEADERS}
     include/Flags.h
-    include/MetaObjectHelper.h
+    include/helpers/MetaObjectHelper.h
 )
 
 add_subdirectory(buildconfig)
@@ -199,6 +202,7 @@ qt_add_qml_module(${Dashboard_EXEC_NAME}
     QML_FILES ${QML_FILES}
 
     SOURCES ${SOURCES} ${HEADERS}
+    QML_FILES qml/widgets/config/LabeledIndexComboBox.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -224,6 +228,8 @@ target_link_libraries(${Dashboard_EXEC_NAME}
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/)
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/models)
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/stores)
+target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/managers)
+target_include_directories(${Dashboard_EXEC_NAME} PRIVATE include/helpers)
 target_include_directories(${Dashboard_EXEC_NAME} PRIVATE "$<TARGET_PROPERTY:ntcore,INTERFACE_INCLUDE_DIRECTORIES>")
 
 include(GNUInstallDirs)

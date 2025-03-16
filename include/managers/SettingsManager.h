@@ -21,6 +21,7 @@ class SettingsManager : public QObject
 
     Q_PROPERTY(double scale READ scale WRITE setScale NOTIFY scaleChanged FINAL)
     Q_PROPERTY(bool resizeToDS READ resizeToDS WRITE setResizeToDS NOTIFY resizeToDSChanged FINAL)
+    Q_PROPERTY(int logLevel READ logLevel WRITE setLogLevel NOTIFY logLevelChanged FINAL)
 
 public:
     explicit SettingsManager(QObject *parent = nullptr);
@@ -58,6 +59,9 @@ public:
     bool resizeToDS() const;
     void setResizeToDS(bool newResizeToDS);
 
+    int logLevel() const;
+    void setLogLevel(int newLogLevel);
+
 signals:
     void recentFilesChanged();
     void loadRecentChanged();
@@ -69,6 +73,7 @@ signals:
     void modeChanged();
     void scaleChanged();
     void resizeToDSChanged();
+    void logLevelChanged();
 };
 
 #endif // SETTINGSMANAGER_H

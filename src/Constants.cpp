@@ -21,3 +21,4 @@ const Setting Settings::Theme{"theme", "dark"};
 const Setting Settings::Accent{"accent", "red"};
 const Setting Settings::Scale{"scale", "1.0"};
 const Setting Settings::ResizeToDS{"resizeToDS", "false"};
+const Setting Settings::LogLevel{"logLevel", 2};

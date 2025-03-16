@@ -56,7 +56,6 @@ BaseWidget {
             if (conn) {
                 readyToUpdate = false
 
-                // button.valid = false
                 topicStore.setValue(item_topic + "/selected", currentText)
             }
         }
