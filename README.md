@@ -4,7 +4,7 @@ A reliable, high-performance, low-footprint dashboard for use with FRC.
 
 A mirror of this repository is available on my [git](https://git.swurl.xyz/QFRC/Dashboard.git) instance.
 
-![image](https://github.com/user-attachments/assets/b216db27-c499-437b-9e97-783138906dd6)
+![image](https://github.com/user-attachments/assets/5e853a0c-3615-4f8f-9f2c-eb51aa793df9)
 
 ## Lightweight
 Dashboards don't have to be resource hogs. In fact, dashboards should be designed to take up as few resources as possible. Dashboards that use up resources like nobody's business will cause **packet loss** and **comms issues** when run on driver stations!
@@ -28,7 +28,7 @@ QFRCDashboard excels with its lightweight performance thanks to many factors:
 For tutorials on getting started, robot code interaction, theming, and more, see the [wiki](https://github.com/Q-FRC/Dashboard/wiki).
 
 ## Download
-Windows, Linux, and macOS builds are available via GitHub Actions. Currently, all use WPILib 2025.1.1. Release builds are available either through Actions or in the releases tab:
+Windows, Linux, and macOS builds are available via GitHub Actions. Currently, all use WPILib 2025.3.1. Release builds are available either through Actions or in the releases tab:
 
 [![Release](https://github.com/Q-FRC/Dashboard/actions/workflows/trigger_release.yml/badge.svg)](https://github.com/Q-FRC/Dashboard/actions/workflows/trigger_release.yml)
 
@@ -57,19 +57,15 @@ cmake --install build --prefix ${PKGDIR}
 ```
 
 ### Submodules
-If you don't want to install protobuf and ntcore to your system, CMake options are provided for such:
+If you don't want to install ntcore to your system, CMake options are provided for such:
 
 - `USE_SYSTEM_NTCORE` (default OFF)
-- `USE_SYSTEM_PROTOBUF` (default OFF)
 
 Examples:
 
 ```bash
 cmake -S . -B build -DUSE_SYSTEM_NTCORE=ON
-cmake -S . -B build -DUSE_SYSTEM_NTCORE=ON -DUSE_SYSTEM_PROTOBUF=ON
 ```
-
-Using the system ntcore with the bundled protobuf is unnecessary and will break things. If you have ntcore installed to the system, protobuf will also be installed.
 
 Note that this configuration is only possible on Linux.
 

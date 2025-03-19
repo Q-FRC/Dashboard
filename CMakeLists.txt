@@ -89,7 +89,7 @@ set(QML_ELEMENTS
 
     widgets/primitive/TextWidget
     widgets/primitive/BoolWidget
-    widgets/primitive/EnumWidget
+    widgets/primitive/ColorTextWidget
     widgets/primitive/ColorWidget
     widgets/primitive/ReefDisplay
     widgets/primitive/StringDisplay
@@ -123,7 +123,6 @@ set(QML_ELEMENTS
     widgets/config/LabeledDoubleSpinBox
     widgets/config/LabeledComboBox
     widgets/config/TitleComponent
-    widgets/config/ColorTable
     widgets/config/ColorField
     widgets/config/SectionHeader
 
