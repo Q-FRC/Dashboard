@@ -52,12 +52,23 @@ BaseWidget {
             }
         }
 
-        function connected(conn) {
-            if (conn) {
-                readyToUpdate = false
+        // TODO: rewrite other widgets to use this
+        Connections {
+            target: topicStore
 
-                // button.valid = false
-                topicStore.setValue(item_topic + "/selected", currentText)
+            function onConnected(conn) {
+                if (conn) {
+                    combo.readyToUpdate = false
+
+                    button.valid = true
+                    topicStore.setValue(item_topic + "/selected",
+                                        combo.currentIndex)
+
+                    combo.enabled = true
+                } else {
+                    button.valid = false
+                    combo.enabled = false
+                }
             }
         }
 
