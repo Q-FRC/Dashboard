@@ -62,7 +62,7 @@ BaseWidget {
 
                     button.valid = true
                     topicStore.setValue(item_topic + "/selected",
-                                        combo.currentIndex)
+                                        combo.currentText)
 
                     combo.enabled = true
                 } else {
