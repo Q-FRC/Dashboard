@@ -9,6 +9,7 @@
 #include "ConnManager.h"
 #include "Flags.h"
 #include "Globals.h"
+#include "LogManager.h"
 #include "NotificationHelper.h"
 #include "PlatformHelper.h"
 #include "TopicListModel.h"
@@ -39,7 +40,8 @@ int main(int argc, char *argv[])
     topicsSorted->setFilterCaseSensitivity(Qt::CaseInsensitive);
     topicsSorted->setRecursiveFilteringEnabled(true);
 
-    SettingsManager *settings = new SettingsManager(&app);
+    LogManager *logs = new LogManager(&app);
+    SettingsManager *settings = new SettingsManager(logs, &app);
 
     TabListModel *tlm = new TabListModel(settings, &app);
 
@@ -52,22 +54,20 @@ int main(int argc, char *argv[])
 
     NotificationHelper *notification = new NotificationHelper(&app);
 
-    Globals::inst.AddConnectionListener(true, [topics, &store, conn](const nt::Event &event) {
+    Globals::inst.AddConnectionListener(true, [topics, &store, conn, logs](const nt::Event &event) {
         bool connected = event.Is(nt::EventFlags::kConnected);
 
         store.connect(connected);
 
         auto connInfo = event.GetConnectionInfo();
 
-        qDebug() << "Connected State:" << connected;
-        // qDebug() << "Log Message:" << event.GetLogMessage()->message;
-        qDebug() << "Remote Info: IP" << connInfo->remote_ip << "ID" << connInfo->remote_id << "Protocol Version" << connInfo->protocol_version;
-        qDebug() << "Client Ready";
+        logs->info("NT", QString("Connected State: ") + (connected ? "true" : "false"));
 
         if (!connected) {
             QMetaObject::invokeMethod(topics, &TopicListModel::clear);
         } else {
             conn->setAddress(QString::fromStdString(event.GetConnectionInfo()->remote_ip));
+            logs->info("NT", "Client connected to " + QString::fromStdString(connInfo->remote_ip));
         }
         conn->setConnected(connected);
     });
@@ -75,10 +75,12 @@ int main(int argc, char *argv[])
     Globals::inst.StartClient4(BuildConfig.APP_NAME.toStdString());
     Globals::inst.StartDSClient(NT_DEFAULT_PORT4);
 
-    Globals::inst.AddListener({{""}}, nt::EventFlags::kTopic, [topics](const nt::Event &event) {
+    Globals::inst.AddListener({{""}}, nt::EventFlags::kTopic, [topics, logs](const nt::Event &event) {
         std::string topicName(event.GetTopicInfo()->name);
 
         if (event.Is(nt::EventFlags::kPublish)) {
+            logs->debug("NT", "Received topic announcement for " + QString::fromStdString(topicName));
+
             QMetaObject::invokeMethod(topics, [topics, topicName] {
                 topics->add(QString::fromStdString(topicName));
             });
@@ -90,18 +92,21 @@ int main(int argc, char *argv[])
     });
 
     nt::NetworkTableEntry tabEntry = Globals::inst.GetEntry("/QFRCDashboard/Tab");
-    Globals::inst.AddListener(tabEntry, nt::EventFlags::kValueAll, [tlm](const nt::Event &event) {
+    Globals::inst.AddListener(tabEntry, nt::EventFlags::kValueAll, [tlm, logs](const nt::Event &event) {
         std::string_view value = event.GetValueEventData()->value.GetString();
         QString qvalue = QString::fromStdString(std::string{value});
+
+        logs->debug("NT", "Requested tab switch to tab " + qvalue);
 
         QMetaObject::invokeMethod(tlm, [tlm, qvalue] { tlm->selectTab(qvalue); });
     });
 
     nt::NetworkTableEntry notificationEntry = Globals::inst.GetEntry(
         "/QFRCDashboard/RobotNotifications");
+
     Globals::inst.AddListener(notificationEntry,
                               nt::EventFlags::kValueAll,
-                              [tlm, &app, notification](const nt::Event &event) {
+                              [tlm, &app, notification, logs](const nt::Event &event) {
                                   std::string_view value = event.GetValueEventData()
                                                                ->value.GetString();
                                   QString qvalue = QString::fromStdString(std::string{value});
@@ -110,6 +115,8 @@ int main(int argc, char *argv[])
                                   QMetaObject::invokeMethod(notification, [doc, notification] {
                                       notification->fromJson(doc);
                                   });
+
+                                  logs->debug("Notifications", "Received notification data " + qvalue);
                               });
 
     qmlRegisterUncreatableMetaObject(
@@ -132,6 +139,8 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("platformHelper", platform);
     engine.rootContext()->setContextProperty("notificationHelper", notification);
     engine.rootContext()->setContextProperty("buildConfig", &BuildConfig);
+    engine.rootContext()->setContextProperty("logs", logs);
+
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
@@ -139,6 +148,8 @@ int main(int argc, char *argv[])
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.loadFromModule("QFRCDashboard", "Main");
+
+    logs->info("QFRCDashboard", "Application started");
 
     return app.exec();
 }

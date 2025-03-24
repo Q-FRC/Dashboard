@@ -42,8 +42,6 @@ BaseWidget {
             if (value[i].startsWith("mjpg:"))
                 value[i] = value[i].substring(5)
         }
-
-        console.log(value)
     }
 
     // TODO: Lots of code cleanup needed here.
@@ -152,8 +150,8 @@ BaseWidget {
 
             videoOutput: video
             onErrorOccurred: (error, errorString) => {
-                                 console.error("CameraView: error:",
-                                               errorString)
+                                 logs.warn("CameraView",
+                                           "Qt reported error " + errorString)
 
                                  urlIndex++
                                  if (urlIndex >= urlChoices.length) {
@@ -164,10 +162,9 @@ BaseWidget {
 
                                  sourceTimer.start()
 
-                                 console.log(
-                                     "CameraView: cycling to url index",
-                                     urlIndex, "url", item_url,
-                                     player.mediaStatus)
+                                 logs.debug(
+                                     "CameraView",
+                                     "Cycling to index " + urlIndex + " URL " + item_url)
                              }
         }
 
