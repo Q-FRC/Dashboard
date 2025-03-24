@@ -14,7 +14,9 @@ BaseWidget {
     property double item_startAngle: 180
     property double item_endAngle: 540
 
-    property int item_lowerBound: 0
+    property int item_stepSize: 1
+
+    property int item_lowerBound: -1000
     property int item_upperBound: 1000
 
     Menu {
@@ -64,6 +66,7 @@ BaseWidget {
 
         from: item_lowerBound
         to: item_upperBound
+        stepSize: item_stepSize
 
         anchors {
             bottom: parent.bottom
@@ -130,7 +133,7 @@ BaseWidget {
             height: Math.min(parent.width, parent.height) / 5
 
             color: Constants.accent
-            radius: 8 * Constants.scalar
+            radius: width / 2
 
             antialiasing: true
             opacity: dial.enabled ? 1 : 0.3
@@ -183,8 +186,7 @@ BaseWidget {
         topicStore.subscribe(item_topic)
         model.topic = item_topic
 
-        spin.value = topicStore.getValue(item_topic)
-        dial.value = topicStore.getValue(item_topic)
+        topicStore.forceUpdate(item_topic)
     }
 
     BaseConfigDialog {
@@ -200,6 +202,8 @@ BaseWidget {
             startField.open()
             endField.open()
 
+            stepField.open()
+
             open()
         }
 
@@ -207,10 +211,13 @@ BaseWidget {
             topicField.accept()
             titleFontField.accept()
             fontField.accept()
+
             upField.accept()
             lowField.accept()
             startField.accept()
             endField.accept()
+
+            stepField.accept()
         }
 
         ScrollView {
@@ -292,6 +299,19 @@ BaseWidget {
                         bindedProperty: "item_upperBound"
                         bindTarget: widget
                     }
+                }
+
+                LabeledSpinBox {
+                    Layout.fillWidth: true
+
+                    id: stepField
+
+                    label: "Step Size"
+
+                    bindedProperty: "item_stepSize"
+                    bindTarget: widget
+
+                    from: 0
                 }
 
                 SectionHeader {

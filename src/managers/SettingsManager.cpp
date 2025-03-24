@@ -2,71 +2,45 @@
 #include "Constants.h"
 #include "Globals.h"
 
-SettingsManager::SettingsManager(QObject *parent)
+SettingsManager::SettingsManager(LogManager *logs, QObject *parent)
     : QObject{parent}
+    , m_logs(logs)
 {}
 
-QString SettingsManager::ip() const
+// TODO: Seems like this reconnect happens thrice (once for each param)
+// pls fix
+void SettingsManager::reconnectServer()
 {
-    return QString::fromStdString(Globals::server.ip);
-}
+    std::string server = QString(Settings::IP).toStdString();
+    int team = Settings::TeamNumber;
+    int mode = Settings::ConnMode;
 
-void SettingsManager::setIp(const QString &newIp)
-{
-    Globals::server.ip = newIp.toStdString();
-    emit ipChanged();
-    reconnectServer();
-}
+    switch (mode) {
+    // IP Address
+    case 0:
+        Globals::inst.SetServer(server.c_str(), NT_DEFAULT_PORT4);
+        m_logs->info("NT", "Requested connect to IP " + QString::fromStdString(server));
+        break;
+    // Team Number
+    case 1:
+        Globals::inst.SetServerTeam(team, NT_DEFAULT_PORT4);
+        m_logs->info("NT", "Requested connect to team number " + QString::number(team));
+        break;
+    // DS&
+    case 2:
+        Globals::inst.StartDSClient(NT_DEFAULT_PORT4);
+        m_logs->info("NT", "Requested connect to DS");
+        break;
+    default:
+        break;
+    }
 
-int SettingsManager::team() const
-{
-    return Globals::server.team;
-}
-
-void SettingsManager::setTeam(int newTeam)
-{
-    Globals::server.team = newTeam;
-    emit teamChanged();
-    reconnectServer();
-}
-
-int SettingsManager::mode() const
-{
-    return Globals::server.mode;
-}
-
-void SettingsManager::setMode(int newMode)
-{
-    Globals::server.mode = newMode;
-    emit modeChanged();
-    reconnectServer();
-}
-
-bool SettingsManager::loadRecent() const
-{
-    return Settings::LoadRecent.value().toBool();
-}
-
-void SettingsManager::setLoadRecent(bool newLoadRecent)
-{
-    Settings::LoadRecent.setValue(newLoadRecent);
-    emit loadRecentChanged();
-}
-
-QStringList SettingsManager::recentFiles() const
-{
-    return Settings::RecentFiles.value().toStringList();
-}
-
-void SettingsManager::setRecentFiles(const QStringList &newRecentFiles)
-{
-    Settings::RecentFiles.setValue(newRecentFiles);
-    emit recentFilesChanged();
+    Globals::inst.Disconnect();
 }
 
 void SettingsManager::addRecentFile(QFile &file)
 {
-    QStringList recentFiles = Settings::RecentFiles.value().toStringList();
+    QStringList recentFiles = Settings::RecentFiles;
 
     QString fileName = file.fileName();
     int index = recentFiles.indexOf(fileName);
@@ -81,85 +55,110 @@ void SettingsManager::addRecentFile(QFile &file)
         recentFiles.removeLast();
     }
 
-    Settings::RecentFiles.setValue(recentFiles);
+    Settings::RecentFiles = recentFiles;
 
     emit recentFilesChanged();
 }
 
-void SettingsManager::reconnectServer()
+bool SettingsManager::loadRecent() const
 {
-    std::string server = Globals::server.ip;
-    int team = Globals::server.team;
-    int mode = Globals::server.mode;
+    return Settings::LoadRecent;
+}
 
-    qDebug() << "Server Reconnect requested via settings dialog.";
+void SettingsManager::setLoadRecent(bool newLoadRecent)
+{
+    Settings::LoadRecent = newLoadRecent;
+    emit loadRecentChanged();
+}
 
-    switch (mode) {
-    // IP Address
-    case 0:
-        Globals::inst.SetServer(server.c_str(), NT_DEFAULT_PORT4);
-        qDebug() << "Requested connect to IP" << server.c_str();
-        break;
-    // Team Number
-    case 1:
-        Globals::inst.SetServerTeam(team, NT_DEFAULT_PORT4);
-        qDebug() << "Requested connect to team" << team;
-        break;
-    // DS
-    case 2:
-        Globals::inst.StartDSClient(NT_DEFAULT_PORT4);
-        qDebug() << "Requested connect to DS";
-        break;
-    default:
-        break;
-    }
+QStringList SettingsManager::recentFiles() const
+{
+    return Settings::RecentFiles;
+}
 
-    Globals::inst.Disconnect();
-
-    qDebug() << "Disconnect requested via settings. Client will automatically reconnect.";
+void SettingsManager::setRecentFiles(const QStringList &newRecentFiles)
+{
+    Settings::RecentFiles = newRecentFiles;
+    emit recentFilesChanged();
 }
 
 QString SettingsManager::theme() const
 {
-    return Settings::Theme.value().toString();
+    return Settings::Theme;
 }
 
 void SettingsManager::setTheme(const QString &newTheme)
 {
-    Settings::Theme.setValue(newTheme);
+    Settings::Theme = newTheme;
     emit themeChanged();
 }
 
 QString SettingsManager::accent() const
 {
-    return Settings::Accent.value().toString();
+    return Settings::Accent;
 }
 
 void SettingsManager::setAccent(const QString &newAccent)
 {
-    Settings::Accent.setValue(newAccent);
+    Settings::Accent = newAccent;
     emit accentChanged();
+}
+
+QString SettingsManager::ip() const
+{
+    return Settings::IP;
+}
+
+void SettingsManager::setIp(const QString &newIp)
+{
+    Settings::IP = newIp;
+    emit ipChanged();
+    reconnectServer();
+}
+
+int SettingsManager::team() const
+{
+    return Settings::TeamNumber;
+}
+
+void SettingsManager::setTeam(int newTeam)
+{
+    Settings::TeamNumber = newTeam;
+    emit teamChanged();
+    reconnectServer();
+}
+
+int SettingsManager::mode() const
+{
+    return Settings::ConnMode;
+}
+
+void SettingsManager::setMode(int newMode)
+{
+    Settings::ConnMode = newMode;
+    emit modeChanged();
+    reconnectServer();
 }
 
 double SettingsManager::scale() const
 {
-    return Settings::Scale.value().toDouble();
+    return Settings::Scale;
 }
 
 void SettingsManager::setScale(double newScale)
 {
-    Settings::Scale.setValue(newScale);
+    Settings::Scale = newScale;
     emit scaleChanged();
 }
 
 bool SettingsManager::resizeToDS() const
 {
-    return Settings::ResizeToDS.value().toBool();
+    return Settings::ResizeToDS;
 }
 
 void SettingsManager::setResizeToDS(bool newResizeToDS)
 {
-    Settings::ResizeToDS.setValue(newResizeToDS);
+    Settings::ResizeToDS = newResizeToDS;
     emit resizeToDSChanged();
 }
 

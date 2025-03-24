@@ -1,6 +1,8 @@
 #ifndef SETTINGSMANAGER_H
 #define SETTINGSMANAGER_H
 
+#include "LogManager.h"
+
 #include <QFile>
 #include <QObject>
 #include <QQmlEngine>
@@ -8,7 +10,8 @@
 class SettingsManager : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
+
+    LogManager *m_logs;
 
     Q_PROPERTY(bool loadRecent READ loadRecent WRITE setLoadRecent NOTIFY loadRecentChanged FINAL)
     Q_PROPERTY(QStringList recentFiles READ recentFiles WRITE setRecentFiles NOTIFY recentFilesChanged FINAL)
@@ -24,7 +27,7 @@ class SettingsManager : public QObject
     Q_PROPERTY(int logLevel READ logLevel WRITE setLogLevel NOTIFY logLevelChanged FINAL)
 
 public:
-    explicit SettingsManager(QObject *parent = nullptr);
+    explicit SettingsManager(LogManager *logs, QObject *parent = nullptr);
 
     // NT
     QString ip() const;

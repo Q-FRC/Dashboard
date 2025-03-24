@@ -184,8 +184,13 @@ ApplicationWindow {
     }
 
     /** Status Bar */
+    // TODO: Remove leading file:///
     ToolBar {
         id: toolbar
+
+        background: Rectangle {
+            color: Constants.accent
+        }
 
         anchors {
             left: parent.left
@@ -213,6 +218,7 @@ ApplicationWindow {
                 centerIn: parent
             }
 
+            // TODO: Remove file://
             text: filename === "" ? "No File" : filename
 
             color: Constants.palette.text

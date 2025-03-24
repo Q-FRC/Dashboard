@@ -23,6 +23,7 @@ BaseWidget {
             rightMargin: 10
         }
 
+        // TODO: Don't show GSM if there is none
         Rectangle {
             Layout.fillWidth: true
             property bool isRedAlliance: false
@@ -98,7 +99,7 @@ BaseWidget {
             Layout.fillWidth: true
             color: Constants.palette.text
 
-            property string gameSpecificMessage: "None"
+            property string gameSpecificMessage: ""
 
             id: gsm
 
@@ -134,6 +135,8 @@ BaseWidget {
                     unsubscribe()
                 }
             }
+
+            visible: gameSpecificMessage !== ""
         }
 
         Text {
@@ -172,13 +175,15 @@ BaseWidget {
 
             horizontalAlignment: Text.AlignHCenter
 
-            text: "Robot State: " + state
+            text: state
 
+            // TODO: This is really jank
+            // should have a single value descriptor in the root item
+            // that handles everything
             function update() {
                 topicStore.subscribe(item_topic + "/FMSControlData")
-                updateTopic(model.topic + "/FMSControlData",
-                            topicStore.getValue(
-                                model.topic + "/FMSControlData"))
+
+                topicStore.forceUpdate(item_topic + "/FMSControlData")
             }
 
             function unsubscribe() {

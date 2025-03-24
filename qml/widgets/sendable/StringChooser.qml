@@ -11,7 +11,7 @@ BaseWidget {
 
     property int item_fontSize: 14
 
-    BetterComboBox {
+    SearchableComboBox {
         id: combo
 
         anchors {
@@ -27,13 +27,11 @@ BaseWidget {
 
         implicitHeight: 40 * Constants.scalar
 
-        property list<string> choices
         property string active
 
         property bool readyToUpdate: true
 
         property int previousIndex: 0
-        model: choices
 
         function updateTopic(ntTopic, value) {
             if (ntTopic === item_topic + "/options") {
@@ -52,11 +50,23 @@ BaseWidget {
             }
         }
 
-        function connected(conn) {
-            if (conn) {
-                readyToUpdate = false
+        // TODO: rewrite other widgets to use this
+        Connections {
+            target: topicStore
 
-                topicStore.setValue(item_topic + "/selected", currentText)
+            function onConnected(conn) {
+                if (conn) {
+                    combo.readyToUpdate = false
+
+                    button.valid = true
+                    topicStore.setValue(item_topic + "/selected",
+                                        combo.currentText)
+
+                    combo.enabled = true
+                } else {
+                    button.valid = false
+                    combo.enabled = false
+                }
             }
         }
 

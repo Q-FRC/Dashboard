@@ -33,8 +33,15 @@ int main(int argc, char *argv[])
     TopicStore store(&app);
 
     TopicListModel *topics = new TopicListModel(store, &app);
+    QSortFilterProxyModel *topicsSorted = new QSortFilterProxyModel(&app);
 
-    SettingsManager *settings = new SettingsManager(&app);
+    topicsSorted->setSourceModel(topics);
+    topicsSorted->setFilterRole(TopicListModel::TLMRoleTypes::TOPIC);
+    topicsSorted->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    topicsSorted->setRecursiveFilteringEnabled(true);
+
+    LogManager *logs = new LogManager(&app);
+    SettingsManager *settings = new SettingsManager(logs, &app);
 
     TabListModel *tlm = new TabListModel(settings, &app);
 
@@ -46,8 +53,6 @@ int main(int argc, char *argv[])
     PlatformHelper *platform = new PlatformHelper(&app);
 
     NotificationHelper *notification = new NotificationHelper(&app);
-
-    LogManager *logs = new LogManager(&app);
 
     Globals::inst.AddConnectionListener(true, [topics, &store, conn, logs](const nt::Event &event) {
         bool connected = event.Is(nt::EventFlags::kConnected);
@@ -125,6 +130,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("topics", topics);
+    engine.rootContext()->setContextProperty("topicsSorted", topicsSorted);
     engine.rootContext()->setContextProperty("settings", settings);
     engine.rootContext()->setContextProperty("topicStore", &store);
     engine.rootContext()->setContextProperty("tlm", tlm);
