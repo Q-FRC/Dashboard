@@ -13,7 +13,7 @@ set(CMAKE_AUTORCC ON)
 
 option(USE_SYSTEM_NTCORE OFF "Use the system NTCore (Linux only)")
 
-find_package(Qt6 6.7 REQUIRED COMPONENTS Quick Multimedia QuickControls2 Network)
+find_package(Qt6 6.7 REQUIRED COMPONENTS Core Quick Multimedia QuickControls2 Network)
 add_subdirectory(3rd_party EXCLUDE_FROM_ALL)
 
 qt_standard_project_setup(REQUIRES 6.7)
@@ -89,7 +89,7 @@ set(QML_ELEMENTS
 
     widgets/primitive/TextWidget
     widgets/primitive/BoolWidget
-    widgets/primitive/EnumWidget
+    widgets/primitive/ColorTextWidget
     widgets/primitive/ColorWidget
     widgets/primitive/ReefDisplay
     widgets/primitive/StringDisplay
@@ -123,7 +123,6 @@ set(QML_ELEMENTS
     widgets/config/LabeledDoubleSpinBox
     widgets/config/LabeledComboBox
     widgets/config/TitleComponent
-    widgets/config/ColorTable
     widgets/config/ColorField
     widgets/config/SectionHeader
 
@@ -185,6 +184,10 @@ foreach(QML ${QML_ELEMENTS})
     set(QML_FILES ${QML_FILES} qml/${QML}.qml)
 endforeach()
 
+set(SOURCES
+    ${SOURCES}
+)
+
 set(HEADERS
     ${HEADERS}
     include/Flags.h
@@ -199,6 +202,7 @@ qt_add_qml_module(${Dashboard_EXEC_NAME}
     QML_FILES ${QML_FILES}
 
     SOURCES ${SOURCES} ${HEADERS}
+    QML_FILES qml/fields/SearchableComboBox.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

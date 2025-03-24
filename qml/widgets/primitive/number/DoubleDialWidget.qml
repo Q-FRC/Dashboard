@@ -8,6 +8,8 @@ BaseWidget {
     id: widget
     property string item_topic
 
+    property double item_stepSize: 0.1
+
     property int item_fontSize: 20
 
     property double item_startAngle: -180
@@ -77,6 +79,7 @@ BaseWidget {
 
         from: item_lowerBound
         to: item_upperBound
+        stepSize: item_stepSize
 
         anchors {
             bottom: parent.bottom
@@ -213,6 +216,8 @@ BaseWidget {
             startField.open()
             endField.open()
 
+            stepField.open()
+
             open()
         }
 
@@ -220,10 +225,13 @@ BaseWidget {
             topicField.accept()
             titleFontField.accept()
             fontField.accept()
+
             upField.accept()
             lowField.accept()
             startField.accept()
             endField.accept()
+
+            stepField.accept()
         }
 
         ScrollView {
@@ -306,6 +314,20 @@ BaseWidget {
                         bindedProperty: "item_upperBound"
                         bindTarget: widget
                     }
+                }
+
+                LabeledDoubleSpinBox {
+                    Layout.fillWidth: true
+
+                    id: stepField
+
+                    label: "Step Size"
+
+                    bindedProperty: "item_stepSize"
+                    bindTarget: widget
+
+                    from: 0
+                    stepSize: 0.1
                 }
 
                 SectionHeader {

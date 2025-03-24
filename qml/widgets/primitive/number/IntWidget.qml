@@ -11,8 +11,10 @@ BaseWidget {
 
     property int item_fontSize: 20
 
+    property int item_stepSize: 1
+
     property int item_upperBound: 100000
-    property int item_lowerBound: 0
+    property int item_lowerBound: -100000
 
     Menu {
         id: switchMenu
@@ -59,6 +61,7 @@ BaseWidget {
         value: 0
         from: item_lowerBound
         to: item_upperBound
+        stepSize: item_stepSize
 
         anchors {
             verticalCenter: parent.verticalCenter
@@ -107,6 +110,7 @@ BaseWidget {
 
             upField.open()
             lowField.open()
+            stepField.open()
 
             open()
         }
@@ -115,8 +119,10 @@ BaseWidget {
             topicField.accept()
             titleFontField.accept()
             fontField.accept()
+
             upField.accept()
             lowField.accept()
+            stepField.accept()
         }
 
         ColumnLayout {
@@ -192,6 +198,19 @@ BaseWidget {
                     bindedProperty: "item_upperBound"
                     bindTarget: widget
                 }
+            }
+
+            LabeledSpinBox {
+                Layout.fillWidth: true
+
+                id: stepField
+
+                label: "Step Size"
+
+                bindedProperty: "item_stepSize"
+                bindTarget: widget
+
+                from: 0
             }
 
             SectionHeader {
