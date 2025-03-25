@@ -142,6 +142,7 @@ bool Listener::operator==(const Listener &other) const {
 }
 
 void TopicStore::subscribe(QString ntTopic) {
+    if (ntTopic == "") return;
     Listener listener;
 
     listener = changeNumSubscribed(ntTopic);
@@ -167,6 +168,8 @@ void TopicStore::subscribe(QString ntTopic) {
             }
 
             QVariant var = toVariant(value);
+
+            qDebug() << "C++: TopicUpdate with params" << ntTopic << var;
 
             if (var.isValid() && !var.isNull()) {
                 emit topicUpdate(ntTopic, var);
