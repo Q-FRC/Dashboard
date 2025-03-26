@@ -16,8 +16,6 @@ BaseWidget {
     function update(value) {}
 
     function setValue(value) {
-        console.log("Widget: SetValue")
-
         valid = false
         topicStore.setValue(trueTopic, value)
     }
@@ -26,11 +24,8 @@ BaseWidget {
         if (typeof ntValue === "undefined")
             return
 
-        console.log("Topic", trueTopic, ntTopic, trueTopic === ntTopic)
-
-        if (ntTopic == trueTopic) {
+        if (ntTopic === trueTopic) {
             update(ntValue)
-            console.log("Topic Update with params", ntTopic, ntValue)
 
             valid = true
         }
@@ -48,8 +43,9 @@ BaseWidget {
 
     Component.onCompleted: {
         topicStore.topicUpdate.connect(updateTopic)
-
         item_topic = model.topic
+
+        topicStore.subscribe(trueTopic)
     }
 
     Component.onDestruction: {

@@ -28,10 +28,9 @@ SendableWidget {
             }
 
             button.valid = true
-            combo.active = value
-            combo.currentIndex = combo.indexOfValue(active)
-
+            combo.currentIndex = combo.indexOfValue(value)
             combo.previousIndex = combo.currentIndex
+
             break
         }
         }
@@ -53,8 +52,6 @@ SendableWidget {
 
         implicitHeight: 40 * Constants.scalar
 
-        property string active
-
         property int previousIndex: 0
 
         // TODO: rewrite other widgets to use this
@@ -66,7 +63,7 @@ SendableWidget {
                     widget.readyToUpdate = false
 
                     button.valid = true
-                    widget.setValue("/selected", combo.currentText)
+                    widget.setValue("selected", combo.currentText)
 
                     combo.enabled = true
                 } else {
@@ -83,7 +80,7 @@ SendableWidget {
 
                          previousIndex = index
 
-                         widget.setValue("/selected", valueAt(index))
+                         widget.setValue("selected", valueAt(index))
                      }
     }
 

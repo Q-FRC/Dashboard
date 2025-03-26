@@ -70,7 +70,6 @@ PrimitiveWidget {
         }
 
         onValueModified: {
-            console.log("SetValue")
             widget.setValue(value)
         }
     }

@@ -50,6 +50,10 @@ BaseWidget {
         topicStore.topicUpdate.connect(updateTopic)
 
         item_topic = model.topic
+
+        for (var i = 0; i < topics.length; ++i) {
+            topicStore.subscribe(item_topic + "/" + topics[i])
+        }
     }
 
     Component.onDestruction: {
