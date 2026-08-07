@@ -8,36 +8,15 @@ import QtQuick.Controls
 Row {
     id: tv
 
-    readonly property string closedText: ">>"
-    property rect geometry: Qt.rect(0, 0, 0, 0)
-    property alias menuAnim: menuAnim
-    readonly property string openText: "<<"
-    property bool opened: false
-
     signal addWidget(string name, string topic, string type)
-    signal close
     signal dragging(point pos)
     signal dropped(point pos)
-    signal open
+    signal animationFinished(bool open)
 
     function widgetAdd(name, topic, type) {
         button.text = closedText
         close()
         addWidget(name, topic, type)
-    }
-
-    height: parent.height
-    width: (parent.width / 3) + 40
-    z: 25
-
-    SmoothedAnimation {
-        id: menuAnim
-
-        duration: 500
-        property: "anchors.leftMargin"
-        target: tv
-
-        onFinished: geometry = mapToItem(parent, Qt.rect(x, y, width, height))
     }
 
     Rectangle {
@@ -46,7 +25,7 @@ Row {
         color: palette.base
         height: parent.height
         radius: 10
-        width: parent.width - 40
+        width: parent.width
 
         border {
             color: palette.windowText
@@ -198,27 +177,6 @@ Row {
                 margins: 10
                 right: parent.right
                 top: search.bottom
-            }
-        }
-    }
-
-    ToolButton {
-        id: button
-
-        font.pixelSize: 18
-        height: 40
-        text: closedText
-        width: 40
-
-        onClicked: {
-            if (text === closedText) {
-                opened = true
-                open()
-                text = openText
-            } else {
-                opened = false
-                close()
-                text = closedText
             }
         }
     }

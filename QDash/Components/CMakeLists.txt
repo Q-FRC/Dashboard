@@ -9,4 +9,5 @@ qt6_add_qml_module(QDashQmlComponents
         MainScreen.qml
         Tab.qml
         TopicView.qml
+        TopicViewLoader.qml
         SearchableComboBox.qml)

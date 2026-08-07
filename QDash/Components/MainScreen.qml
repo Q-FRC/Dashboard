@@ -135,7 +135,7 @@ Rectangle {
         }
     }
 
-    TopicView {
+    TopicViewLoader {
         id: tv
 
         z: 25
@@ -143,24 +143,41 @@ Rectangle {
         onAddWidget: (title, topic, type) => {
             currentTab().add(title, topic, type)
         }
-        onClose: {
-            menuAnim.to = -(parent.width / 3)
-            menuAnim.from = 0
-            menuAnim.start()
-        }
         onDragging: pos => drag(pos, true)
         onDropped: pos => drop(pos, true)
-        onOpen: {
-            menuAnim.from = -(parent.width / 3)
-            menuAnim.to = 0
-            menuAnim.start()
-        }
 
         anchors {
             bottom: parent.bottom
             left: parent.left
             leftMargin: -(parent.width / 3)
             top: parent.top
+        }
+    }
+
+    ToolButton {
+        id: topicViewButton
+
+        readonly property string openText: "<<"
+        readonly property string closedText: ">>"
+
+        font.pixelSize: 18
+        height: 40
+        width: 40
+        text: closedText
+
+        anchors {
+            top: parent.top
+            left: tv.right
+        }
+
+        onClicked: {
+            if (text === closedText) {
+                tv.open()
+                text = openText
+            } else {
+                tv.close()
+                text = closedText
+            }
         }
     }
 
@@ -255,7 +272,7 @@ Rectangle {
         spacing: 2
 
         anchors {
-            left: tv.right
+            left: topicViewButton.right
             leftMargin: 0
             right: parent.right
             rightMargin: 0
