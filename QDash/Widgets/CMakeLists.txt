@@ -18,6 +18,7 @@ qt_add_qml_module(QDashQmlWidgets
         sendable/FMSInfo.qml
         sendable/Field2d.qml
         sendable/StringChooser.qml
+        sendable/PIDController.qml
 
         bool/BoolWidget.qml
         bool/ColorWidget.qml

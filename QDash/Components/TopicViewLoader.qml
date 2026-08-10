@@ -20,13 +20,15 @@ Loader {
     signal opened
 
     function open() {
+        if (active) {
+            openAnim()
+        }
+
         active = true
     }
 
     SmoothedAnimation {
         id: menuAnim
-
-        property bool closing
 
         duration: 500
         property: "anchors.leftMargin"
@@ -34,23 +36,18 @@ Loader {
 
         onFinished: {
             geometry = mapToItem(mainScreen, Qt.rect(x, y, width, height))
-            if (closing) {
-                loader.active = false
-            }
         }
     }
 
     function openAnim() {
         menuAnim.from = -(mainScreen.width / 3)
         menuAnim.to = 0
-        menuAnim.closing = false
         menuAnim.start()
     }
 
     function close() {
         menuAnim.to = -(mainScreen.width / 3)
         menuAnim.from = 0
-        menuAnim.closing = true
         menuAnim.start()
     }
 

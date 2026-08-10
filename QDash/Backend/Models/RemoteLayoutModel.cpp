@@ -66,7 +66,7 @@ bool RemoteLayoutModel::load()
         return false;
     }
 
-    nt::ConnectionInfo info = conns.at(0);
+    wpi::nt::ConnectionInfo info = conns.at(0);
     QString ip = QString::fromStdString(info.remote_ip);
 
     // assume port 5800 (TODO)

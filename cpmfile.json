@@ -1,44 +1,34 @@
 {
-    "ntcore": {
-        "repo": "wpilibsuite/allwpilib",
-        "hash": "7055b38800aa00cf7d44b2ed38367c3b6f1f8c6e5022b7ba34c7088a7710d187358ec2bdfea919524cdd5daba28c875cd8d18d3feec55295881afe79f909d0ad",
-        "tag": "v%VERSION%",
-        "git_version": "2026.2.1",
-        "version": "2025.1.1",
-        "patches": [
-            "0001-wpinet-remove-executables.patch",
-            "0002-wpiutil-remove-executables.patch",
-            "0003-ntcore-remove-executables.patch"
-        ]
-    },
     "carboxyl": {
+        "bundled": "true",
+        "git_host": "git.crueter.xyz",
+        "hash": "bcde48487eda6a7bd6e0b0be1facae5f08d1cbc6d782a63db3e66497daff3a421d6c3a65f46b79e313075ab846b310e2a6eb769f34ab6ea48f54e1ad41476dc9",
         "package": "Carboxyl",
         "repo": "crueter/Carboxyl",
-        "git_host": "git.crueter.xyz",
-        "sha": "618487377a",
-        "hash": "bcde48487eda6a7bd6e0b0be1facae5f08d1cbc6d782a63db3e66497daff3a421d6c3a65f46b79e313075ab846b310e2a6eb769f34ab6ea48f54e1ad41476dc9",
-        "bundled": "true"
+        "version": "618487377a"
+    },
+    "ffmpeg": {
+        "artifact": "ffmpeg-macos-universal-%NUMERIC_VERSION%.tar.zst",
+        "bundled": true,
+        "hash": "96b502a1450fe943a243738d48b2794cffccf25880ac88a6b8a64b4b87ac888a23c16355236665cc646e1511878edfbf4091c02db8c4c4bb1bce98f8a8d9499c",
+        "numeric_version": "8.2-f16c3cc5aa",
+        "repo": "crueter-ci/FFmpeg-Qt",
+        "version": "v%NUMERIC_VERSION%"
+    },
+    "ntcore": {
+        "hash": "cb336446177b8e7db039242b47c0913a4a51d32d875e4e475e03ef836ce69d55e648dfd56b87dffc086bf73425b67614e5ad76caa6c1672afeeec36fd302af11",
+        "repo": "wpilibsuite/allwpilib",
+        "version": "35fb996001"
     },
     "zlib": {
-        "repo": "madler/zlib",
-        "package": "ZLIB",
-        "min_version": "1.2",
-        "version": "1.2",
         "hash": "8c9642495bafd6fad4ab9fb67f09b268c69ff9af0f4f20cf15dfc18852ff1f312bd8ca41de761b3f8d8e90e77d79f2ccacd3d4c5b19e475ecf09d021fdfe9088",
+        "min_version": "1.2",
         "options": [
             "ZLIB_BUILD_SHARED OFF",
             "ZLIB_INSTALL OFF"
         ],
-        "git_version": "1.3.1",
-        "tag": "v%VERSION%"
-    },
-    "ffmpeg": {
-        "repo": "crueter-ci/FFmpeg-Qt",
-        "package": "FFmpeg",
-        "hash": "96b502a1450fe943a243738d48b2794cffccf25880ac88a6b8a64b4b87ac888a23c16355236665cc646e1511878edfbf4091c02db8c4c4bb1bce98f8a8d9499c",
-        "git_version": "8.2-f16c3cc5aa",
-        "tag": "v%VERSION%",
-        "artifact": "ffmpeg-macos-universal-%VERSION%.tar.zst",
-        "bundled": true
+        "package": "ZLIB",
+        "repo": "madler/zlib",
+        "version": "v1.3.1"
     }
 }

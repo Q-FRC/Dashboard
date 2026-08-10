@@ -24,4 +24,7 @@ public:
 private:
     QStringList m_data;
     TopicStore *m_store;
+
+    // used to track paths
+    QHash<QString, QStandardItem *> m_items;
 };

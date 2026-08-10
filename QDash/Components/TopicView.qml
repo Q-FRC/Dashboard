@@ -13,12 +13,6 @@ Row {
     signal dropped(point pos)
     signal animationFinished(bool open)
 
-    function widgetAdd(name, topic, type) {
-        button.text = closedText
-        close()
-        addWidget(name, topic, type)
-    }
-
     Rectangle {
         id: topicView
 
@@ -100,14 +94,12 @@ Row {
                         let global = mapToItem(topicView, centroid.position)
                         if (!topicView.contains(global)) {
                             if (!ready) {
-                                widgetAdd(model.name, model.topic, model.type)
+                                addWidget(model.name, model.topic, model.type)
 
                                 ready = true
                             }
 
-                            let p = mapToItem(tv, centroid.position)
-                            p.x += tv.x
-                            dragging(p)
+                            dragging(mapToItem(mainScreen, centroid.position))
                         }
                     }
 

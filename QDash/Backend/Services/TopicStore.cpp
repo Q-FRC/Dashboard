@@ -6,13 +6,13 @@
 
 TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
     : QObject(parent), m_logs(logs), m_engine(engine),
-      m_instance{nt::NetworkTableInstance::GetDefault()}
+      m_instance{wpi::nt::NetworkTableInstance::GetDefault()}
 {
-    m_instance.StartClient4(BuildConfig.APPLICATION_NAME.toStdString());
+    m_instance.StartClient(BuildConfig.APPLICATION_NAME.toStdString());
 
     // Connections //
-    m_instance.AddConnectionListener(true, [this](const nt::Event &event) {
-        bool connected = event.Is(nt::EventFlags::kConnected);
+    m_instance.AddConnectionListener(true, [this](const wpi::nt::Event &event) {
+        bool connected = event.Is(wpi::nt::EventFlags::CONNECTED);
         QString remoteIP = QString::fromStdString(event.GetConnectionInfo()->remote_ip);
 
         QMetaObject::invokeMethod(this, [this, remoteIP, connected] {
@@ -29,24 +29,26 @@ TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
     });
 
     // Topic Publishes //
-    m_instance.AddListener({{""}}, nt::EventFlags::kPublish, [this](const nt::Event &event) {
-        std::string topicName(event.GetTopicInfo()->name);
-        QMetaObject::invokeMethod(this, [this, topicName]() {
-            m_logs->debug("NT",
-                          "Received topic announcement for " + QString::fromStdString(topicName));
-            emit topicPublished(topicName);
-        });
-    });
+    m_instance.AddListener({{""}}, wpi::nt::EventFlags::PUBLISH,
+                           [this](const wpi::nt::Event &event) {
+                               std::string topicName(event.GetTopicInfo()->name);
+                               QMetaObject::invokeMethod(this, [this, topicName]() {
+                                   m_logs->debug("NT", "Received topic announcement for " +
+                                                           QString::fromStdString(topicName));
+                                   emit topicPublished(topicName);
+                               });
+                           });
 
     // Topic Unpublishes //
-    m_instance.AddListener({{""}}, nt::EventFlags::kUnpublish, [this](const nt::Event &event) {
-        std::string topicName(event.GetTopicInfo()->name);
-        QMetaObject::invokeMethod(this, [this, topicName]() {
-            m_logs->debug("NT", "Received topic unpublish event for " +
-                                    QString::fromStdString(topicName));
-            emit topicUnpublished(topicName);
-        });
-    });
+    m_instance.AddListener({{""}}, wpi::nt::EventFlags::UNPUBLISH,
+                           [this](const wpi::nt::Event &event) {
+                               std::string topicName(event.GetTopicInfo()->name);
+                               QMetaObject::invokeMethod(this, [this, topicName]() {
+                                   m_logs->debug("NT", "Received topic unpublish event for " +
+                                                           QString::fromStdString(topicName));
+                                   emit topicUnpublished(topicName);
+                               });
+                           });
 }
 
 bool Listener::operator==(const Listener &other) const
@@ -54,7 +56,7 @@ bool Listener::operator==(const Listener &other) const
     return (other.topic() == m_topic);
 }
 
-Listener::Listener(QQmlEngine *engine, nt::NetworkTableInstance instance, QString topic,
+Listener::Listener(QQmlEngine *engine, wpi::nt::NetworkTableInstance instance, QString topic,
                    QObject *parent)
     : QObject(parent), m_topic(topic), m_engine(engine), m_instance{instance}
 {
@@ -95,10 +97,10 @@ bool Listener::empty()
     return m_funcs.empty();
 }
 
-void Listener::updateEvent(const nt::Event &event)
+void Listener::updateEvent(const wpi::nt::Event &event)
 {
     QVariant value;
-    if (!event.Is(nt::EventFlags::kValueAll))
+    if (!event.Is(wpi::nt::EventFlags::VALUE_ALL))
         value = getValue();
     else // TODO(crueter): Evaluate perf
         value = TopicStore::toVariant(event.GetValueEventData()->value);
@@ -134,9 +136,9 @@ QVariant Listener::getValue()
 
 void Listener::bindHandle()
 {
-    m_callback = [this](const nt::Event &event) {
+    m_callback = [this](const wpi::nt::Event &event) {
         // queue listener invocation so it runs on QSG thread
-        QVariant value = event.Is(nt::EventFlags::kValueAll)
+        QVariant value = event.Is(wpi::nt::EventFlags::VALUE_ALL)
                              ? TopicStore::toVariant(event.GetValueEventData()->value)
                              : getValue();
 
@@ -144,7 +146,7 @@ void Listener::bindHandle()
             this, [this, v = std::move(value)]() { update(v); }, Qt::QueuedConnection);
     };
 
-    m_handle = m_instance.AddListener(m_entry, nt::EventFlags::kValueAll, m_callback);
+    m_handle = m_instance.AddListener(m_entry, wpi::nt::EventFlags::VALUE_ALL, m_callback);
 }
 
 void TopicStore::subscribe(const QString &topic, const QJSValue &func)
@@ -190,14 +192,14 @@ void TopicStore::subscribeOneShot(const QString &topic, std::function<void(QVari
     if (topic.isEmpty() || !callback)
         return;
 
-    nt::NetworkTableEntry entry = m_instance.GetEntry(topic.toStdString());
+    wpi::nt::NetworkTableEntry entry = m_instance.GetEntry(topic.toStdString());
 
     // The lambda needs to reference its own handle in order to destruct it.
     // Shared pointer is used because otherwise you get weird thread contention stuff,
     // and also we can't just delete an integer.
     auto handle = std::make_shared<NT_Listener>(0);
 
-    auto ntCallback = [callback, handle, entry, this](const nt::Event &event) mutable {
+    auto ntCallback = [callback, handle, entry, this](const wpi::nt::Event &event) mutable {
         QVariant value = toVariant(event.GetValueEventData()->value);
         callback(value);
 
@@ -205,7 +207,7 @@ void TopicStore::subscribeOneShot(const QString &topic, std::function<void(QVari
         m_instance.RemoveListener(*handle);
     };
 
-    *handle = m_instance.AddListener(entry, nt::EventFlags::kValueAll, ntCallback);
+    *handle = m_instance.AddListener(entry, wpi::nt::EventFlags::VALUE_ALL, ntCallback);
 
     m_logs->debug("TopicStore", "One-shot subscription requested to topic " + topic);
 }
@@ -237,30 +239,30 @@ void TopicStore::forceUpdate(const QString &topic)
 
 QString TopicStore::typeString(const QString &topic)
 {
-    nt::NetworkTableEntry entry = m_instance.GetEntry(topic.toStdString());
-    nt::NetworkTableType type = entry.GetType();
+    wpi::nt::NetworkTableEntry entry = m_instance.GetEntry(topic.toStdString());
+    wpi::nt::NetworkTableType type = entry.GetType();
 
     switch (type) {
-    case nt::NetworkTableType::kBoolean:
+    case wpi::nt::NetworkTableType::BOOLEAN:
         return "bool";
-    case nt::NetworkTableType::kDouble:
+    case wpi::nt::NetworkTableType::DOUBLE:
         return "double";
-    case nt::NetworkTableType::kFloat:
+    case wpi::nt::NetworkTableType::FLOAT:
         return "double";
-    case nt::NetworkTableType::kString:
+    case wpi::nt::NetworkTableType::STRING:
         return "string";
-    case nt::NetworkTableType::kInteger:
+    case wpi::nt::NetworkTableType::INTEGER:
         return "int";
-    // case nt::NetworkTableType::kBooleanArray:
+    // case wpi::nt::NetworkTableType::kBooleanArray:
     //     return "reef";
-    // case nt::NetworkTableType::kStringArray:
+    // case wpi::nt::NetworkTableType::kStringArray:
     //     return "errors";
     default:
         return "";
     }
 }
 
-QVariant TopicStore::toVariant(const nt::Value &value)
+QVariant TopicStore::toVariant(const wpi::nt::Value &value)
 {
     QVariant v;
 
@@ -315,29 +317,29 @@ QVariant TopicStore::toVariant(const nt::Value &value)
     return v;
 }
 
-nt::Value TopicStore::toValue(const QVariant &value)
+wpi::nt::Value TopicStore::toValue(const QVariant &value)
 {
     if (!value.isValid())
         goto end;
 
     switch (value.typeId()) {
     case QMetaType::Type::QString:
-        return nt::Value::MakeString(std::string_view{value.toString().toStdString()});
+        return wpi::nt::Value::MakeString(std::string_view{value.toString().toStdString()});
     case QMetaType::Type::Bool:
-        return nt::Value::MakeBoolean(value.toBool());
+        return wpi::nt::Value::MakeBoolean(value.toBool());
     case QMetaType::Type::Double:
-        return nt::Value::MakeDouble(value.toDouble());
+        return wpi::nt::Value::MakeDouble(value.toDouble());
     case QMetaType::Type::Float:
-        return nt::Value::MakeFloat(value.toFloat());
+        return wpi::nt::Value::MakeFloat(value.toFloat());
     case QMetaType::Type::Int:
-        return nt::Value::MakeInteger(value.toInt());
+        return wpi::nt::Value::MakeInteger(value.toInt());
     case QMetaType::Type::QStringList: {
         std::vector<std::string> v;
         for (const QString &s : value.toStringList()) {
             v.emplace_back(s.toStdString());
         }
 
-        return nt::Value::MakeStringArray(v);
+        return wpi::nt::Value::MakeStringArray(v);
     }
     default:
         break;
@@ -349,11 +351,11 @@ nt::Value TopicStore::toValue(const QVariant &value)
             v.emplace_back(b.toBool());
         }
 
-        return nt::Value::MakeBooleanArray(v);
+        return wpi::nt::Value::MakeBooleanArray(v);
     }
 
 end:
-    return nt::Value();
+    return wpi::nt::Value();
 }
 
 Listener *TopicStore::entry(const QString &topic)
@@ -362,12 +364,12 @@ Listener *TopicStore::entry(const QString &topic)
 }
 
 // NT Interface //
-nt::NetworkTableEntry TopicStore::getRawEntry(const std::string_view &path)
+wpi::nt::NetworkTableEntry TopicStore::getRawEntry(const std::string_view &path)
 {
     return m_instance.GetEntry(path);
 }
 
-std::vector<nt::ConnectionInfo> TopicStore::getConnections() const
+std::vector<wpi::nt::ConnectionInfo> TopicStore::getConnections() const
 {
     return m_instance.GetConnections();
 }
@@ -379,7 +381,7 @@ void TopicStore::setServer(const std::string &server)
 
 void TopicStore::setServerTeam(const int team)
 {
-    m_instance.SetServerTeam(team);
+    m_instance.SetServerTeam(QString::number(team).toStdString());
 }
 
 void TopicStore::startDSClient()

@@ -5,9 +5,8 @@
 
 #include "Services/Logger.h"
 
-#include "networktables/NetworkTableEntry.h"
-#include "networktables/NetworkTableInstance.h"
-#include "ntcore_cpp.h"
+#include "wpi/nt/NetworkTableEntry.hpp"
+#include "wpi/nt/NetworkTableInstance.hpp"
 
 #include <QHash>
 #include <QJSValue>
@@ -19,7 +18,8 @@ class Listener : public QObject {
     Q_OBJECT
 
 public:
-    Listener(QQmlEngine *engine, nt::NetworkTableInstance instance, QString topic, QObject *parent);
+    Listener(QQmlEngine *engine, wpi::nt::NetworkTableInstance instance, QString topic,
+             QObject *parent);
 
     QString topic() const;
 
@@ -47,7 +47,7 @@ public:
      * @param event The NetworkTables event associated with this update.
      *   Set to a blank event or omit to automatically fetch the data from NT.
      */
-    Q_INVOKABLE void updateEvent(const nt::Event &event = nt::Event());
+    Q_INVOKABLE void updateEvent(const wpi::nt::Event &event = wpi::nt::Event());
 
     /**
      * @brief update Update all subscribers with the provided value.
@@ -80,12 +80,12 @@ public:
 private:
     QString m_topic = {};
     NT_Listener m_handle = 0;
-    nt::ListenerCallback m_callback = nt::ListenerCallback();
+    wpi::nt::ListenerCallback m_callback = wpi::nt::ListenerCallback();
     QList<QJSValue> m_funcs = {};
-    nt::NetworkTableEntry m_entry = nt::NetworkTableEntry{};
+    wpi::nt::NetworkTableEntry m_entry = wpi::nt::NetworkTableEntry{};
 
     QQmlEngine *m_engine = nullptr;
-    nt::NetworkTableInstance m_instance;
+    wpi::nt::NetworkTableInstance m_instance;
 
     bool operator==(const Listener &other) const;
 };
@@ -99,16 +99,16 @@ private:
 
     Logger *m_logs;
     QQmlEngine *m_engine;
-    nt::NetworkTableInstance m_instance;
+    wpi::nt::NetworkTableInstance m_instance;
 
 public:
-    static QVariant toVariant(const nt::Value &value);
-    static nt::Value toValue(const QVariant &value);
+    static QVariant toVariant(const wpi::nt::Value &value);
+    static wpi::nt::Value toValue(const QVariant &value);
 
     TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent = nullptr);
 
-    nt::NetworkTableEntry getRawEntry(const std::string_view &path);
-    std::vector<nt::ConnectionInfo> getConnections() const;
+    wpi::nt::NetworkTableEntry getRawEntry(const std::string_view &path);
+    std::vector<wpi::nt::ConnectionInfo> getConnections() const;
 
     void setServer(const std::string &server);
     void setServerTeam(const int team);

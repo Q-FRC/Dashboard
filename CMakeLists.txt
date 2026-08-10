@@ -10,7 +10,7 @@ set(QDASH_REPO https://git.crueter.xyz/${QDASH_ORG}/${QDASH_NAME})
 project(${QDASH_NAME} VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
 set(BUILD_SHARED_LIBS OFF)
 
@@ -45,7 +45,6 @@ set(QDASH_QT_LIBRARIES
     Qt6::Core Qt6::Quick Qt6::QuickControls2 Qt6::Qml
     Carboxyl::Carboxyl
 
-
     Qt6::QuickDialogs2)
 
 if (QDASH_WEBVIEW)
@@ -71,8 +70,8 @@ endif()
 
 if (QDASH_BUNDLE_QT)
     if (APPLE AND NOT IOS AND QDASH_CAMVIEW)
-        AddJsonPackage(NAME ffmpeg MODULE)
-        set(FFMPEG_DIR "${FFmpeg_SOURCE_DIR}")
+        AddJsonPackage(NAME ffmpeg MODULE_PATH)
+        set(FFMPEG_DIR "${ffmpeg_SOURCE_DIR}")
     endif()
 
     AddQt(QDash-CI/Qt 6.11.1)

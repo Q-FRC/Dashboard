@@ -13,14 +13,23 @@ import QtQuick.Layouts
 SendableWidget {
     id: widget
 
-    readOnly: false
-    roleString: "String Chooser"
-
-    propertyKeys: ["fontSize"]
-    topics: ["options", "active", "selected"]
-
     property int fontSize: 14
     property bool readyToUpdate: true
+
+    readonly property string remoteValueTopic: "selected/value"
+    readonly property string localValueTopic: "selected/tune"
+
+    readOnly: false
+    roleString: "Selectable"
+
+    propertyKeys: ["fontSize"]
+    topics: ["options", remoteValueTopic, localValueTopic]
+
+    // /default: the default value (which we do not need)
+    // /options: an array of possible options
+    // /selected:
+    //   /value: the current remote value
+    //   /tune: set to change the value
 
     function update(topic, value) {
         widget.connected = true
@@ -30,7 +39,7 @@ SendableWidget {
                 combo.choices = value
                 break
             }
-        case "active":
+        case remoteValueTopic:
             {
                 if (!readyToUpdate) {
                     readyToUpdate = true
@@ -44,6 +53,10 @@ SendableWidget {
                 break
             }
         }
+    }
+
+    function select(value) {
+        setValue(localValueTopic, value)
     }
 
     Item {
@@ -72,7 +85,7 @@ SendableWidget {
 
                 previousIndex = index
 
-                widget.setValue("selected", valueAt(index))
+                select(valueAt(index))
             }
 
             anchors {
@@ -88,7 +101,7 @@ SendableWidget {
                             logs.info("StringChooser", "Force-updating chooser \"" + item_topic + "\" to value " + combo.currentText)
 
                             widget.readyToUpdate = false
-                            widget.setValue("selected", combo.currentText)
+                            select(combo.currentText)
                         }
                     }
                 }

@@ -2,68 +2,87 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Carboxyl.Clover
-import QDash.Controls
 
+import Carboxyl.Contour
+
+import QDash.Components
+import QDash.Controls
 import QDash.Core
 import QDash.Widgets
+
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
 
-PrimitiveWidget {
+SendableWidget {
     id: widget
 
     readOnly: false
-    roleString: "double"
-    typeString: "double"
-    widgetLabel: "Spin Box"
+    roleString: "PIDController"
 
     propertyKeys: ["stepSize", "fontSize", "lowerBound", "upperBound"]
-    property int fontSize: QDashSettings.defaultFontSize
-    property double lowerBound: -100000.0
+    topics: ["p", "i", "d", "izone", "setpoint"]
+
+    // /{p,i,d} and izone correspond to constants
+    // setpoint is the controller's current setpoint
+
+    // map for topic to spinbox ref
+    property var spinboxMap: new Map()
+
+    property int fontSize: 12
+    property double lowerBound: -100.0
     property double stepSize: 0.1
-    property double upperBound: 100000.0
+    property double upperBound: 100.0
 
-    function update(value) {
+    function update(topic, value) {
         widget.connected = true
-        spin.value = value
+
+        console.log(topic, value)
+
+        let spinbox = widget.spinboxMap.get(topic)
+        if (spinbox) {
+            spinbox.setValue(value)
+        }
     }
 
-    Item {
+    ColumnLayout {
         anchors {
-            left: parent.left
-            right: parent.right
             bottom: parent.bottom
-            top: titleField.bottom
-
+            left: parent.left
             leftMargin: 10
+            right: parent.right
             rightMargin: 10
+            top: titleField.bottom
         }
 
-        DoubleSpinBox {
-            id: spin
+        PIDControllerRow {
+            label: "P"
+            topic: "p"
+        }
 
-            editable: true
-            enabled: widget.connected
+        PIDControllerRow {
+            label: "I"
+            topic: "i"
+        }
 
-            font.pixelSize: widget.fontSize
+        PIDControllerRow {
+            label: "D"
+            topic: "d"
+        }
 
-            from: widget.lowerBound
-            to: widget.upperBound
-            stepSize: widget.stepSize
+        PIDControllerRow {
+            label: "Setpoint"
+            topic: "setpoint"
+        }
 
-            value: 0
-
-            onValueModified: widget.setValue(value)
-
-            anchors {
-                left: parent.left
-                right: parent.right
-                verticalCenter: parent.verticalCenter
-            }
+        PIDControllerRow {
+            label: "I Zone"
+            topic: "izone"
         }
     }
 
+    // TODO(crueter): Alongside deduping the loader stuff, most of this is just
+    // type-label-property, with maybe a few extras... possible schema candidate?
     configComponent: Component {
         ColumnLayout {
             anchors.fill: parent

@@ -46,6 +46,8 @@ Rectangle {
         if (currentTab() !== null) {
             let w = currentTab().latestWidget
 
+            if (typeof w === 'undefined')
+                return
             w.x = pos.x
             w.y = pos.y - (fromList ? tabs.height + 5 : 0) - w.titleField.height
 
@@ -141,6 +143,7 @@ Rectangle {
         z: 25
 
         onAddWidget: (title, topic, type) => {
+            topicViewButton.close()
             currentTab().add(title, topic, type)
         }
         onDragging: pos => drag(pos, true)
@@ -170,13 +173,21 @@ Rectangle {
             left: tv.right
         }
 
+        function close() {
+            tv.close()
+            text = closedText
+        }
+
+        function open() {
+            tv.open()
+            text = openText
+        }
+
         onClicked: {
             if (text === closedText) {
-                tv.open()
-                text = openText
+                open()
             } else {
-                tv.close()
-                text = closedText
+                close()
             }
         }
     }

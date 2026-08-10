@@ -4,26 +4,6 @@
 #include "Services/TopicStore.h"
 #include "TopicListModel.h"
 
-QList<QStandardItem *> recursiveSearch(QStandardItem *item, const QString &topic)
-{
-    QList<QStandardItem *> foundItems;
-
-    // Check if the current item matches the search term
-    if (item->data(TopicListModel::TOPIC) == topic) {
-        foundItems.append(item);
-    }
-
-    // Recursively search through all child items
-    for (int i = 0; i < item->rowCount(); ++i) {
-        QStandardItem *childItem = item->child(i, 0);
-        if (childItem) {
-            foundItems.append(recursiveSearch(childItem, topic));
-        }
-    }
-
-    return foundItems;
-}
-
 TopicListModel::TopicListModel(TopicStore *store, QObject *parent)
     : QStandardItemModel(parent), m_store(store)
 {
@@ -60,93 +40,84 @@ void TopicListModel::reload()
     fetchMore(QModelIndex());
 }
 
-void TopicListModel::add(const QString &toAdd)
+void TopicListModel::add(const QString &fullPath)
 {
-    if (toAdd.isEmpty() || toAdd == "/")
+    if (fullPath.isEmpty() || fullPath == "/")
         return;
 
-    QStringList split = toAdd.split('/');
-    if (split.at(0).isEmpty())
-        split.remove(0);
+    const QStringList segments = fullPath.split('/', Qt::SkipEmptyParts);
 
-    QStringList newList = split;
-    newList.removeLast();
-    QString parentPath('/' + newList.join('/'));
+    // search for a .type entry, aka sendables (now tunables?)
+    QStringList parentSegments = segments;
+    parentSegments.removeLast();
+    QString parentPath('/' + parentSegments.join('/'));
 
-    nt::NetworkTableEntry type = m_store->getRawEntry(parentPath.toStdString() + "/.type");
-
-    bool hasType = type.Exists();
+    wpi::nt::NetworkTableEntry typeEntry =
+        m_store->getRawEntry(parentPath.toStdString() + "/.type");
+    bool hasTypeEntry = typeEntry.Exists();
 
     QStandardItem *parentItem = invisibleRootItem();
+    QString currentPath;
 
-    // TODO: refactor
-    QString total = "";
-    for (const QString &sub : std::as_const(split)) {
-        total += "/" + sub;
-        bool isLast = sub == split.last();
+    for (size_t i = 0; i < segments.size(); ++i) {
+        const QString &segment = segments.at(i);
+        currentPath += '/' % segment;
+        const bool isLast = (i == segments.size() - 1);
 
-        auto results = recursiveSearch(invisibleRootItem(), total);
+        // check if the parent node has already been visited
+        // if yes, cool, descend into it
+        // if not, the node will be made later
+        if (QStandardItem *parent = m_items.value(currentPath, nullptr)) {
+            parentItem = parent;
+            continue;
+        }
 
-        if (results.isEmpty()) {
-            QStandardItem *item = new QStandardItem(sub);
-            item->setData(total, TOPIC);
+        // make node
+        QStandardItem *item = new QStandardItem(segment);
+        item->setData(currentPath, TOPIC);
 
-            if (isLast) {
-                if (hasType) {
-                    if (sub == ".type") {
-                        std::string value = type.GetString("invalid");
-
-                        if (value == "invalid") {
-                            m_store->subscribeOneShot(toAdd, [this, parentItem, parentPath](
-                                                                 const QVariant &value) mutable {
-                                parentItem->setData(parentPath, TOPIC);
-                                QString typeStr = value.toString();
-                                parentItem->setData(typeStr, TYPE);
-                            });
-                        } else {
+        // leaf
+        if (isLast) {
+            // if .type exists, this is a tunable
+            // so reflect that value onto its parent node
+            if (hasTypeEntry && segment == ".type") {
+                const std::string value = typeEntry.GetString("invalid");
+                if (value == "invalid") {
+                    // subscribe once to grab the type
+                    m_store->subscribeOneShot(
+                        fullPath, [this, parentItem, parentPath](const QVariant &value) mutable {
+                            // and set the parent node type
                             parentItem->setData(parentPath, TOPIC);
-                            QString typeStr = QString::fromStdString(value);
-                            parentItem->setData(typeStr, TYPE);
-                        }
-
-                        item->setData(toAdd, TLMRoleTypes::TOPIC);
-                        item->setData(m_store->typeString(toAdd), TYPE);
-                    }
-                }
-                item->setData(toAdd, TLMRoleTypes::TOPIC);
-                item->setData(m_store->typeString(toAdd), TYPE);
-            } else {
-#ifdef QDASH_CAMVIEW
-                if (parentItem && parentItem->text() == "CameraPublisher") {
-                    item->setData("/CameraPublisher/" + sub, TLMRoleTypes::TOPIC);
-                    item->setData("camera", TYPE);
+                            parentItem->setData(value.toString(), TYPE);
+                        });
                 } else {
-                    item->setData("", TYPE);
+                    // if type is already determined, awesome
+                    parentItem->setData(parentPath, TOPIC);
+                    parentItem->setData(QString::fromStdString(value), TYPE);
                 }
-#else
-                item->setData("", TYPE);
-#endif
             }
 
-            parentItem->appendRow(item);
-            parentItem = item;
+            // leaf nodes always have data
+            // TODO: Separate field that indicates mutability
+            item->setData(fullPath, TOPIC);
+            item->setData(m_store->typeString(fullPath), TYPE);
         } else {
-            for (QStandardItem *item : std::as_const(results)) {
-
-                if (item->parent() != nullptr &&
-                    item->parent()->data(TLMRoleTypes::TYPE).toString() != "")
-                    goto end;
-
-                if (item->parent() == nullptr || item->parent()->text() == parentItem->text()) {
-                    parentItem = item;
-                }
+            // TODO: move this to a separate store
+#ifdef QDASH_CAMVIEW
+            if (parentItem->text() == "CameraPublisher") {
+                item->setData("/CameraPublisher/" + segment, TOPIC);
+                item->setData("camera", TYPE);
+            } else
+#endif
+            {
+                item->setData("", TYPE);
             }
         }
-    }
 
-end:
-    type.Unpublish();
-    return;
+        parentItem->appendRow(item);
+        m_items.insert(currentPath, item);
+        parentItem = item;
+    }
 }
 
 void TopicListModel::remove(const QString &toRemove)
