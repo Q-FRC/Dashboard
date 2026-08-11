@@ -5,6 +5,7 @@ qt_add_library(QDashServices STATIC
     ConnManager.cpp ConnManager.h
     SettingsManager.cpp SettingsManager.h
     Logger.cpp Logger.h
-    TopicStore.cpp TopicStore.h)
+    TopicStore.cpp TopicStore.h
+    StructStore.h StructStore.cpp)
 
 target_link_libraries(QDashServices PRIVATE ntcore Qt6::Core Qt6::Qml Qt6::Gui)

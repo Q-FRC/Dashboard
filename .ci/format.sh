@@ -5,6 +5,12 @@
 
 find QDash -name '*.cpp' -o -name '*.h' | xargs clang-format -i -style=file:QDash/.clang-format
 
-find QDash -name '*.qml' | xargs /usr/lib64/qt6/bin/qmlformat -i --ignore-settings \
-	--objects-spacing --functions-spacing --semicolon-rule essential -S \
-	--single-line-empty-objects
+find QDash -name '*.qml' | while read -r file; do
+    case "$file" in
+        *WidgetType*) continue ;;
+        *WidgetDelegate*) continue ;;
+    esac
+    /usr/lib64/qt6/bin/qmlformat -i --ignore-settings \
+        --objects-spacing --functions-spacing --semicolon-rule essential -S \
+        --single-line-empty-objects "$file"
+done

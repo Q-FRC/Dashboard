@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Carboxyl.Contour
+
+import QDash.Widgets
 import QtQuick
 import QtQuick.Controls
 
@@ -103,7 +105,7 @@ Row {
                         }
                     }
 
-                    enabled: model.type !== ""
+                    enabled: model.type !== "" && model.draggable && WidgetTypeList.types.includes(model.type)
                     target: null
 
                     onActiveChanged: if (!active && ready) {

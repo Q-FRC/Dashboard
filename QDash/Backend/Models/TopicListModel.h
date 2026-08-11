@@ -5,13 +5,15 @@
 
 #include <QStandardItemModel>
 
+#include "Services/StructStore.h"
+
 class TopicStore;
 
 class TopicListModel : public QStandardItemModel {
     Q_OBJECT
 
 public:
-    enum TLMRoleTypes { NAME = Qt::UserRole, TYPE, TOPIC };
+    enum TLMRoleTypes { NAME = Qt::UserRole, TYPE, TOPIC, DRAGGABLE };
 
     TopicListModel(TopicStore *store, QObject *parent = nullptr);
 
@@ -24,6 +26,12 @@ public:
 private:
     QStringList m_data;
     TopicStore *m_store;
+
+    // struct helpers
+    void addStructChildren(QStandardItem *parent, const QString &topicPath,
+                           const QString &typeString);
+    void populateStructChildren(QStandardItem *parent, const QString &topicPath,
+                                const QList<StructNode> &tree, bool draggable = true);
 
     // used to track paths
     QHash<QString, QStandardItem *> m_items;

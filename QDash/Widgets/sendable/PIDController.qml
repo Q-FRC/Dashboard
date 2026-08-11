@@ -37,8 +37,6 @@ SendableWidget {
     function update(topic, value) {
         widget.connected = true
 
-        console.log(topic, value)
-
         let spinbox = widget.spinboxMap.get(topic)
         if (spinbox) {
             spinbox.setValue(value)

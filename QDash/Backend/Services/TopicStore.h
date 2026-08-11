@@ -3,10 +3,9 @@
 
 #pragma once
 
-#include "Services/Logger.h"
-
 #include "wpi/nt/NetworkTableEntry.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
+#include "wpi/nt/NetworkTableValue.hpp"
 
 #include <QHash>
 #include <QJSValue>
@@ -14,12 +13,15 @@
 #include <QObject>
 #include <QQmlEngine>
 
+class StructStore;
+class Logger;
+
 class Listener : public QObject {
     Q_OBJECT
 
 public:
-    Listener(QQmlEngine *engine, wpi::nt::NetworkTableInstance instance, QString topic,
-             QObject *parent);
+    Listener(QQmlEngine *engine, wpi::nt::NetworkTableInstance instance, StructStore *structStore,
+             QString topic, QObject *parent);
 
     QString topic() const;
 
@@ -72,11 +74,6 @@ public:
      */
     QVariant getValue();
 
-    /**
-     * @brief bindHandle Create the callback and bind the NT handle for this listener.
-     */
-    void bindHandle();
-
 private:
     QString m_topic = {};
     NT_Listener m_handle = 0;
@@ -86,6 +83,9 @@ private:
 
     QQmlEngine *m_engine = nullptr;
     wpi::nt::NetworkTableInstance m_instance;
+    StructStore *m_structStore;
+
+    QVariant decodeValue(const wpi::nt::Value &ntValue);
 
     bool operator==(const Listener &other) const;
 };
@@ -100,6 +100,7 @@ private:
     Logger *m_logs;
     QQmlEngine *m_engine;
     wpi::nt::NetworkTableInstance m_instance;
+    StructStore *m_structStore;
 
 public:
     static QVariant toVariant(const wpi::nt::Value &value);
@@ -109,6 +110,7 @@ public:
 
     wpi::nt::NetworkTableEntry getRawEntry(const std::string_view &path);
     std::vector<wpi::nt::ConnectionInfo> getConnections() const;
+    StructStore *structStore() const;
 
     void setServer(const std::string &server);
     void setServerTeam(const int team);

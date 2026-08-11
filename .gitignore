@@ -82,3 +82,4 @@ build
 
 WidgetDelegate.qml
 WidgetTypeMap.qml
+WidgetTypeList.qml

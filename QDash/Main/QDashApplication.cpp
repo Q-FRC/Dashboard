@@ -141,7 +141,6 @@ QString QDashApplication::wordToState(int val)
 
 void QDashApplication::reload()
 {
-    qDebug() << "Reload called";
     QString program = QGuiApplication::applicationFilePath();
 #if defined(TARGET_OS_IOS) || defined(__ANDROID__)
     qWarning() << "Platform does not support native reload, exiting instead";

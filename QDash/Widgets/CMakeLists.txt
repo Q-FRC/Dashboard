@@ -97,6 +97,9 @@ foreach(file ${files})
 
     string(APPEND DELEGATES ${delegate_choice})
 
+    ## WidgetTypeList ##
+    string(APPEND TYPE_LIST "\n        \"${role_string}\",")
+
     # The rest of this is only needed for typed widgets.
     # Misc and sendable don't need any of this
     if (file MATCHES "sendable" OR file MATCHES "misc")
@@ -135,11 +138,13 @@ endforeach()
 
 configure_file(WidgetDelegate.qml.in ${CMAKE_CURRENT_SOURCE_DIR}/WidgetDelegate.qml)
 configure_file(WidgetTypeMap.qml.in ${CMAKE_CURRENT_SOURCE_DIR}/WidgetTypeMap.qml)
+configure_file(WidgetTypeList.qml.in ${CMAKE_CURRENT_SOURCE_DIR}/WidgetTypeList.qml)
 
-set_source_files_properties(WidgetTypeMap.qml
+set_source_files_properties(WidgetTypeMap.qml WidgetTypeList.qml
     PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_target_qml_sources(QDashQmlWidgets
     QML_FILES
     WidgetDelegate.qml
-    WidgetTypeMap.qml)
+    WidgetTypeMap.qml
+    WidgetTypeList.qml)

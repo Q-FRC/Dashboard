@@ -11,6 +11,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 6.8
 import QtQuick.Shapes 2.15
 
+// TODO: Refactor to a sendable
 PrimitiveWidget {
     id: widget
 

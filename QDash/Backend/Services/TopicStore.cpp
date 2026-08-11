@@ -2,11 +2,15 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "BuildConfig/BuildConfig.h"
+#include "Services/Logger.h"
+#include "Services/StructStore.h"
 #include "Services/TopicStore.h"
+#include "wpi/nt/NetworkTableType.hpp"
 
 TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
     : QObject(parent), m_logs(logs), m_engine(engine),
-      m_instance{wpi::nt::NetworkTableInstance::GetDefault()}
+      m_instance{wpi::nt::NetworkTableInstance::GetDefault()},
+      m_structStore{new StructStore(m_instance, m_logs)}
 {
     m_instance.StartClient(BuildConfig.APPLICATION_NAME.toStdString());
 
@@ -56,14 +60,39 @@ bool Listener::operator==(const Listener &other) const
     return (other.topic() == m_topic);
 }
 
-Listener::Listener(QQmlEngine *engine, wpi::nt::NetworkTableInstance instance, QString topic,
-                   QObject *parent)
-    : QObject(parent), m_topic(topic), m_engine(engine), m_instance{instance}
+Listener::Listener(QQmlEngine *engine, wpi::nt::NetworkTableInstance instance,
+                   StructStore *structStore, QString topic, QObject *parent)
+    : QObject(parent), m_topic(topic), m_engine(engine), m_instance{instance},
+      m_structStore(structStore)
 {
     m_topic = topic;
     m_entry = m_instance.GetEntry(topic.toStdString());
 
-    bindHandle();
+    // bind callback and handle
+    m_callback = [this](const wpi::nt::Event &event) {
+        const auto data = event.GetValueEventData();
+        const auto ntValue = data ? data->value : m_entry.GetValue();
+
+        const auto raw = ntValue.GetRaw();
+
+        // queue invocation so it gets passed to QSG
+        // must decode stuff here as well because structStore isn't thread-safe
+        QMetaObject::invokeMethod(
+            this,
+            [this, raw, ntValue]() {
+                QVariant value = decodeValue(ntValue);
+                update(value);
+            },
+            Qt::QueuedConnection);
+    };
+
+    // always re-fire on struct schemas
+    if (m_entry.GetTopic().GetTypeString().starts_with("struct:")) {
+        connect(m_structStore, &StructStore::schemaAdded, this,
+                [this](const QString &typeName) { m_callback(wpi::nt::Event()); });
+    }
+
+    m_handle = m_instance.AddListener(m_entry, wpi::nt::EventFlags::VALUE_ALL, m_callback);
 }
 
 QString Listener::topic() const
@@ -134,19 +163,13 @@ QVariant Listener::getValue()
     return TopicStore::toVariant(m_entry.GetValue());
 }
 
-void Listener::bindHandle()
+QVariant Listener::decodeValue(const wpi::nt::Value &ntValue)
 {
-    m_callback = [this](const wpi::nt::Event &event) {
-        // queue listener invocation so it runs on QSG thread
-        QVariant value = event.Is(wpi::nt::EventFlags::VALUE_ALL)
-                             ? TopicStore::toVariant(event.GetValueEventData()->value)
-                             : getValue();
-
-        QMetaObject::invokeMethod(
-            this, [this, v = std::move(value)]() { update(v); }, Qt::QueuedConnection);
-    };
-
-    m_handle = m_instance.AddListener(m_entry, wpi::nt::EventFlags::VALUE_ALL, m_callback);
+    const auto typeString = m_entry.GetTopic().GetTypeString();
+    if (typeString.starts_with("struct:")) {
+        return m_structStore->decode(typeString, ntValue.GetRaw());
+    }
+    return TopicStore::toVariant(ntValue);
 }
 
 void TopicStore::subscribe(const QString &topic, const QJSValue &func)
@@ -160,13 +183,13 @@ void TopicStore::subscribe(const QString &topic, const QJSValue &func)
         // TODO: fmt
         m_logs->debug("TopicStore", "Creating new listener for topic " + topic);
 
-        listener = new Listener(m_engine, m_instance, topic, this);
+        listener = new Listener(m_engine, m_instance, m_structStore, topic, this);
         m_listeners.insert(topic, listener);
     }
 
     listener->addListener(func);
 
-    m_logs->info("TopicStore", "Subscribed to topic " + topic);
+    m_logs->debug("TopicStore", "Subscribed to topic " + topic);
 }
 
 void TopicStore::unsubscribe(const QString &topic, const QJSValue &func)
@@ -193,6 +216,7 @@ void TopicStore::subscribeOneShot(const QString &topic, std::function<void(QVari
         return;
 
     wpi::nt::NetworkTableEntry entry = m_instance.GetEntry(topic.toStdString());
+    "string";
 
     // The lambda needs to reference its own handle in order to destruct it.
     // Shared pointer is used because otherwise you get weird thread contention stuff,
@@ -253,6 +277,8 @@ QString TopicStore::typeString(const QString &topic)
         return "string";
     case wpi::nt::NetworkTableType::INTEGER:
         return "int";
+    case wpi::nt::NetworkTableType::RAW:
+        return QString::fromStdString(entry.GetTopic().GetTypeString());
     // case wpi::nt::NetworkTableType::kBooleanArray:
     //     return "reef";
     // case wpi::nt::NetworkTableType::kStringArray:
@@ -312,6 +338,14 @@ QVariant TopicStore::toVariant(const wpi::nt::Value &value)
             newList << i;
 
         v = QVariant::fromValue(newList);
+    } else if (value.IsRaw()) {
+        const std::span<const uint8_t> a = value.GetRaw();
+        QString newStr;
+        newStr.reserve(a.size());
+        for (const uint8_t i : a) {
+            newStr = newStr % QChar(i);
+        }
+        v = newStr;
     }
 
     return v;
@@ -361,6 +395,11 @@ end:
 Listener *TopicStore::entry(const QString &topic)
 {
     return m_listeners.value(topic, nullptr);
+}
+
+StructStore *TopicStore::structStore() const
+{
+    return m_structStore;
 }
 
 // NT Interface //

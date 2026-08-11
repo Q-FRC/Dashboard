@@ -11,6 +11,7 @@ TopicListModel::TopicListModel(TopicStore *store, QObject *parent)
     rez.insert(TLMRoleTypes::NAME, "name");
     rez.insert(TLMRoleTypes::TYPE, "type");
     rez.insert(TLMRoleTypes::TOPIC, "topic");
+    rez.insert(TLMRoleTypes::DRAGGABLE, "draggable");
 
     QStandardItemModel::setItemRoleNames(rez);
 
@@ -28,8 +29,12 @@ QVariant TopicListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (role == TLMRoleTypes::NAME) {
+    switch (role) {
+    case NAME:
         return itemFromIndex(index)->text();
+    case DRAGGABLE:
+        const QVariant v = itemFromIndex(index)->data(role);
+        return v.isValid() ? v : true;
     }
 
     return QStandardItemModel::data(index, role);
@@ -47,7 +52,7 @@ void TopicListModel::add(const QString &fullPath)
 
     const QStringList segments = fullPath.split('/', Qt::SkipEmptyParts);
 
-    // search for a .type entry, aka sendables (now tunables?)
+    // search for a .type entry, aka complex types
     QStringList parentSegments = segments;
     parentSegments.removeLast();
     QString parentPath('/' + parentSegments.join('/'));
@@ -100,7 +105,12 @@ void TopicListModel::add(const QString &fullPath)
             // leaf nodes always have data
             // TODO: Separate field that indicates mutability
             item->setData(fullPath, TOPIC);
-            item->setData(m_store->typeString(fullPath), TYPE);
+            const auto type = m_store->typeString(fullPath);
+            item->setData(type, TYPE);
+
+            // struct handler
+            if (type.startsWith("struct:"))
+                addStructChildren(item, fullPath, type);
         } else {
             // TODO: move this to a separate store
 #ifdef QDASH_CAMVIEW
@@ -156,5 +166,48 @@ void TopicListModel::remove(const QString &toRemove)
                 }
             }
         }
+    }
+}
+
+void TopicListModel::addStructChildren(QStandardItem *parent, const QString &topicPath,
+                                       const QString &typeString)
+{
+    // don't expand arrays
+    // TODO: figure out how to handle these
+    if (typeString.endsWith("[]"))
+        return;
+
+    const QList<StructNode> tree = m_store->structStore()->schemaTree(typeString.toStdString());
+    if (!tree.isEmpty()) {
+        populateStructChildren(parent, topicPath, tree);
+        return;
+    }
+
+    // the schema has not arrived yet
+    // try to repopulate
+    // TODO: lifetime, see when repopulations are actually needed.
+    connect(m_store->structStore(), &StructStore::schemaAdded, this,
+            [this, parent, typeString, topicPath](const QString &typeName) {
+                const QList<StructNode> tree =
+                    m_store->structStore()->schemaTree(typeString.toStdString());
+                if (!tree.isEmpty()) {
+                    populateStructChildren(parent, topicPath, tree);
+                }
+            });
+}
+
+void TopicListModel::populateStructChildren(QStandardItem *parent, const QString &topicPath,
+                                            const QList<StructNode> &tree, bool draggable)
+{
+    for (const StructNode &node : tree) {
+        auto *child = new QStandardItem(node.name);
+        child->setData(topicPath, TOPIC);
+        child->setData(node.type, TYPE);
+        child->setData(draggable, DRAGGABLE);
+
+        if (!node.children.isEmpty() && !node.isArray)
+            populateStructChildren(child, topicPath, node.children, draggable);
+
+        parent->appendRow(child);
     }
 }
