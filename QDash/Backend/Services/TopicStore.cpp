@@ -14,6 +14,44 @@ TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
 {
     m_instance.StartClient(BuildConfig.APPLICATION_NAME.toStdString());
 
+    // Pending Structs //
+    connect(m_structStore, &StructStore::schemaAdded, this, [this](const QString &typeName) {
+        QHashIterator iter(m_pendingStructs);
+        while (iter.hasNext()) {
+            iter.next();
+            const auto topic = iter.key();
+            const auto pending = iter.value();
+
+            // try to decode the struct again
+            dispatch(topic, pending.typeName, pending.value);
+        }
+    });
+
+    // Values //
+    const auto callback = [this](const wpi::nt::Event &event) {
+        const auto data = event.GetValueEventData();
+        if (!data)
+            return;
+
+        const auto topic = QString::fromStdString(wpi::nt::GetTopicName(data->topic));
+
+        bool subscribed = false;
+        {
+            std::lock_guard lock(m_subMutex);
+            subscribed = m_subscribed.contains(topic);
+        }
+        if (!subscribed)
+            return;
+
+        const std::string typeString = wpi::nt::GetTopicTypeString(data->topic);
+        const auto value = data->value;
+
+        QMetaObject::invokeMethod(
+            this, [this, topic, typeString, value] { dispatch(topic, typeString, value); });
+    };
+
+    m_instance.AddListener({{""}}, wpi::nt::EventFlags::VALUE_ALL, callback);
+
     // Connections //
     m_instance.AddConnectionListener(true, [this](const wpi::nt::Event &event) {
         bool connected = event.Is(wpi::nt::EventFlags::CONNECTED);
@@ -55,121 +93,45 @@ TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
                            });
 }
 
-bool Listener::operator==(const Listener &other) const
+QVariant TopicStore::decodeValue(const std::string &typeString, const wpi::nt::Value &ntValue)
 {
-    return (other.topic() == m_topic);
-}
-
-Listener::Listener(QQmlEngine *engine, wpi::nt::NetworkTableInstance instance,
-                   StructStore *structStore, QString topic, QObject *parent)
-    : QObject(parent), m_topic(topic), m_engine(engine), m_instance{instance},
-      m_structStore(structStore)
-{
-    m_topic = topic;
-    m_entry = m_instance.GetEntry(topic.toStdString());
-
-    // bind callback and handle
-    m_callback = [this](const wpi::nt::Event &event) {
-        const auto data = event.GetValueEventData();
-        const auto ntValue = data ? data->value : m_entry.GetValue();
-
-        const auto raw = ntValue.GetRaw();
-
-        // queue invocation so it gets passed to QSG
-        // must decode stuff here as well because structStore isn't thread-safe
-        QMetaObject::invokeMethod(
-            this,
-            [this, raw, ntValue]() {
-                QVariant value = decodeValue(ntValue);
-                update(value);
-            },
-            Qt::QueuedConnection);
-    };
-
-    // always re-fire on struct schemas
-    if (m_entry.GetTopic().GetTypeString().starts_with("struct:")) {
-        connect(m_structStore, &StructStore::schemaAdded, this,
-                [this](const QString &typeName) { m_callback(wpi::nt::Event()); });
-    }
-
-    m_handle = m_instance.AddListener(m_entry, wpi::nt::EventFlags::VALUE_ALL, m_callback);
-}
-
-QString Listener::topic() const
-{
-    return m_topic;
-}
-
-void Listener::addListener(const QJSValue &func)
-{
-    m_funcs.emplaceBack(func);
-
-    updateEvent();
-}
-
-bool Listener::rmListener(const QJSValue &func)
-{
-    // QJSValue lacks an operator== :(
-    for (qsizetype i = 0; i < m_funcs.size(); ++i) {
-        const QJSValue &f = m_funcs.at(i);
-        if (f.strictlyEquals(func)) {
-            m_funcs.removeAt(i);
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool Listener::empty()
-{
-    return m_funcs.empty();
-}
-
-void Listener::updateEvent(const wpi::nt::Event &event)
-{
-    QVariant value;
-    if (!event.Is(wpi::nt::EventFlags::VALUE_ALL))
-        value = getValue();
-    else // TODO(crueter): Evaluate perf
-        value = TopicStore::toVariant(event.GetValueEventData()->value);
-
-    update(value);
-}
-
-void Listener::update(const QVariant &value)
-{
-    if (value.isNull() || !value.isValid())
-        return;
-
-    for (const QJSValue &func : std::as_const(m_funcs)) {
-        func.call({m_engine->toScriptValue(value)});
-    }
-}
-
-void Listener::unpublish()
-{
-    m_entry.Unpublish();
-    m_instance.RemoveListener(m_handle);
-}
-
-void Listener::setValue(const QVariant &value)
-{
-    m_entry.SetValue(TopicStore::toValue(value));
-}
-
-QVariant Listener::getValue()
-{
-    return TopicStore::toVariant(m_entry.GetValue());
-}
-
-QVariant Listener::decodeValue(const wpi::nt::Value &ntValue)
-{
-    const auto typeString = m_entry.GetTopic().GetTypeString();
     if (typeString.starts_with("struct:")) {
         return m_structStore->decode(typeString, ntValue.GetRaw());
     }
-    return TopicStore::toVariant(ntValue);
+    return toVariant(ntValue);
+}
+
+void TopicStore::dispatch(const QString &topic, const std::string &typeString,
+                          const wpi::nt::Value &value)
+{
+    // topic was unsubscribed since the event was queued
+    if (!m_consumers.contains(topic))
+        return;
+
+    const QVariant decoded = decodeValue(typeString, value);
+    if (decoded.isNull() || !decoded.isValid()) {
+        // struct whose schema hasn't arrived yet
+        if (typeString.starts_with("struct:")) {
+            // TODO: make this a util function
+            std::string_view ts(typeString);
+            ts = ts.substr(7);
+            if (ts.ends_with("[]"))
+                ts.remove_suffix(2);
+
+            m_pendingStructs.insert(topic, {std::string{ts}, value});
+        }
+
+        return;
+    }
+
+    // remove from queue, if applicable
+    m_pendingStructs.remove(topic);
+
+    const auto funcs = m_consumers.value(topic);
+    const auto arg = m_engine->toScriptValue(decoded);
+    for (const QJSValue &func : funcs) {
+        func.call({arg});
+    }
 }
 
 void TopicStore::subscribe(const QString &topic, const QJSValue &func)
@@ -177,34 +139,31 @@ void TopicStore::subscribe(const QString &topic, const QJSValue &func)
     if (topic == "")
         return;
 
-    Listener *listener = entry(topic);
-
-    if (!listener) {
-        // TODO: fmt
-        m_logs->debug("TopicStore", "Creating new listener for topic " + topic);
-
-        listener = new Listener(m_engine, m_instance, m_structStore, topic, this);
-        m_listeners.insert(topic, listener);
+    {
+        std::lock_guard lock(m_subMutex);
+        m_subscribed.insert(topic);
     }
-
-    listener->addListener(func);
-
+    m_consumers[topic].append(func);
     m_logs->debug("TopicStore", "Subscribed to topic " + topic);
 }
 
 void TopicStore::unsubscribe(const QString &topic, const QJSValue &func)
 {
-    Listener *l = entry(topic);
-    if (!l)
+    auto it = m_consumers.find(topic);
+    if (it == m_consumers.end())
         return;
 
-    l->rmListener(func);
+    for (qsizetype i = 0; i < it->size(); ++i)
+        if (it->at(i).strictlyEquals(func)) {
+            it->removeAt(i);
+            break;
+        }
 
-    if (l->empty()) {
-        m_logs->debug("TopicStore", "Destructing listener for topic " + topic);
-        l->unpublish();
-        m_listeners.remove(topic);
-        l->deleteLater();
+    if (it->isEmpty()) {
+        m_consumers.erase(it);
+        m_pendingStructs.remove(topic);
+        std::lock_guard lock(m_subMutex);
+        m_subscribed.remove(topic);
     }
 
     m_logs->debug("TopicStore", "Unsubscribed from topic " + topic);
@@ -216,7 +175,6 @@ void TopicStore::subscribeOneShot(const QString &topic, std::function<void(QVari
         return;
 
     wpi::nt::NetworkTableEntry entry = m_instance.GetEntry(topic.toStdString());
-    "string";
 
     // The lambda needs to reference its own handle in order to destruct it.
     // Shared pointer is used because otherwise you get weird thread contention stuff,
@@ -236,29 +194,20 @@ void TopicStore::subscribeOneShot(const QString &topic, std::function<void(QVari
     m_logs->debug("TopicStore", "One-shot subscription requested to topic " + topic);
 }
 
-QVariant TopicStore::getValue(const QString &topic)
-{
-    Listener *l = entry(topic);
-    if (l)
-        return l->getValue();
-
-    return QVariant{};
-}
-
 void TopicStore::setValue(const QString &topic, const QVariant &value)
 {
-    Listener *l = entry(topic);
-    if (l)
-        l->setValue(value);
+    m_instance.GetEntry(topic.toStdString()).SetValue(toValue(value));
 }
 
 void TopicStore::forceUpdate(const QString &topic)
 {
     m_logs->debug("TopicStore", "Force-updating topic " + topic);
 
-    Listener *l = entry(topic);
-    if (l)
-        l->updateEvent();
+    if (!m_consumers.contains(topic))
+        return;
+
+    const auto entry = m_instance.GetEntry(topic.toStdString());
+    dispatch(topic, entry.GetTopic().GetTypeString(), entry.GetValue());
 }
 
 QString TopicStore::typeString(const QString &topic)
@@ -390,11 +339,6 @@ wpi::nt::Value TopicStore::toValue(const QVariant &value)
 
 end:
     return wpi::nt::Value();
-}
-
-Listener *TopicStore::entry(const QString &topic)
-{
-    return m_listeners.value(topic, nullptr);
 }
 
 StructStore *TopicStore::structStore() const

@@ -187,9 +187,12 @@ void TopicListModel::addStructChildren(QStandardItem *parent, const QString &top
     // try to repopulate
     // TODO: lifetime, see when repopulations are actually needed.
     connect(m_store->structStore(), &StructStore::schemaAdded, this,
-            [this, parent, typeString, topicPath](const QString &typeName) {
-                const QList<StructNode> tree =
-                    m_store->structStore()->schemaTree(typeString.toStdString());
+            [this, typeString, topicPath](const QString &typeName) {
+                QStandardItem *parent = m_items.value(topicPath, nullptr);
+                if (!parent)
+                    return;
+
+                const auto tree = m_store->structStore()->schemaTree(typeString.toStdString());
                 if (!tree.isEmpty()) {
                     populateStructChildren(parent, topicPath, tree);
                 }

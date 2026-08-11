@@ -144,7 +144,6 @@ Rectangle {
 
         onAddWidget: (title, topic, type) => {
             topicViewButton.close()
-            console.log("Add", title, topic, type)
             currentTab().add(title, topic, type)
         }
         onDragging: pos => drag(pos, true)
