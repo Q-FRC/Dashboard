@@ -13,7 +13,7 @@ PrimitiveWidget {
     id: widget
 
     readOnly: false
-    roleString: "dial"
+    roleString: "intDial"
     typeString: "int"
     widgetLabel: "Dial"
 

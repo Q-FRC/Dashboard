@@ -13,9 +13,9 @@ PrimitiveWidget {
     id: widget
 
     readOnly: true
-    roleString: "color"
+    roleString: "boolDisplay"
     typeString: "bool"
-    widgetLabel: "Color"
+    widgetLabel: "Color Display"
 
     property color falseColor: "#FF0000"
     property color trueColor: "#00FF00"

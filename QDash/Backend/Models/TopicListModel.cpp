@@ -11,7 +11,7 @@ TopicListModel::TopicListModel(TopicStore *store, QObject *parent)
     rez.insert(TLMRoleTypes::NAME, "name");
     rez.insert(TLMRoleTypes::TYPE, "type");
     rez.insert(TLMRoleTypes::TOPIC, "topic");
-    rez.insert(TLMRoleTypes::DRAGGABLE, "draggable");
+    rez.insert(TLMRoleTypes::DISPLAY_TYPE, "displayType");
 
     QStandardItemModel::setItemRoleNames(rez);
 
@@ -32,9 +32,6 @@ QVariant TopicListModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case NAME:
         return itemFromIndex(index)->text();
-    case DRAGGABLE:
-        const QVariant v = itemFromIndex(index)->data(role);
-        return v.isValid() ? v : true;
     }
 
     return QStandardItemModel::data(index, role);
@@ -47,7 +44,7 @@ void TopicListModel::reload()
 
 void TopicListModel::add(const QString &fullPath)
 {
-    if (fullPath.isEmpty() || fullPath == "/")
+    if (fullPath.isEmpty() || fullPath == "/" || fullPath.startsWith("/.schema"))
         return;
 
     const QStringList segments = fullPath.split('/', Qt::SkipEmptyParts);
@@ -94,19 +91,28 @@ void TopicListModel::add(const QString &fullPath)
                             // and set the parent node type
                             parentItem->setData(parentPath, TOPIC);
                             parentItem->setData(value.toString(), TYPE);
+                            parentItem->setData(value.toString(), DISPLAY_TYPE);
                         });
                 } else {
                     // if type is already determined, awesome
                     parentItem->setData(parentPath, TOPIC);
                     parentItem->setData(QString::fromStdString(value), TYPE);
+                    parentItem->setData(QString::fromStdString(value), DISPLAY_TYPE);
                 }
             }
 
             // leaf nodes always have data
             // TODO: Separate field that indicates mutability
             item->setData(fullPath, TOPIC);
+
             const auto type = m_store->typeString(fullPath);
-            item->setData(type, TYPE);
+            item->setData(type, DISPLAY_TYPE);
+
+            // telemetry is usually read-only, so use the display types if possible
+            if (fullPath.contains("/Telemetry/"))
+                item->setData(QStringLiteral("%1Display").arg(type), TYPE);
+            else
+                item->setData(type, TYPE);
 
             // struct handler
             if (type.startsWith("struct:"))
@@ -117,10 +123,12 @@ void TopicListModel::add(const QString &fullPath)
             if (parentItem->text() == "CameraPublisher") {
                 item->setData("/CameraPublisher/" + segment, TOPIC);
                 item->setData("camera", TYPE);
+                item->setData("camera", DISPLAY_TYPE);
             } else
 #endif
             {
                 item->setData("", TYPE);
+                item->setData("", DISPLAY_TYPE);
             }
         }
 
@@ -200,18 +208,18 @@ void TopicListModel::addStructChildren(QStandardItem *parent, const QString &top
 }
 
 void TopicListModel::populateStructChildren(QStandardItem *parent, const QString &topicPath,
-                                            const QList<StructNode> &tree, bool draggable)
+                                            const QList<StructNode> &tree)
 {
     for (const StructNode &node : tree) {
         const QString childTopic = topicPath % "/" % node.name;
         auto *child = new QStandardItem(node.name);
 
         child->setData(childTopic, TOPIC);
-        child->setData(node.type, TYPE);
-        // child->setData(draggable, DRAGGABLE);
+        child->setData(node.type, DISPLAY_TYPE);
+        child->setData(QStringLiteral("%1Display").arg(node.type), TYPE);
 
         if (!node.children.isEmpty() && !node.isArray)
-            populateStructChildren(child, childTopic, node.children, draggable);
+            populateStructChildren(child, childTopic, node.children);
 
         parent->appendRow(child);
     }

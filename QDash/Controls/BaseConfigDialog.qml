@@ -3,6 +3,7 @@
 
 import Carboxyl.Clover
 import Carboxyl.Contour
+import QDash.Components
 
 import QDash.Core
 
@@ -24,7 +25,7 @@ CarboxylDialog {
         twm.modified = true
     }
 
-    ScrollView {
+    QDashScrollView {
         id: scroll
         contentChildren: [content.item]
         onWidthChanged: contentWidth = width - effectiveScrollBarWidth

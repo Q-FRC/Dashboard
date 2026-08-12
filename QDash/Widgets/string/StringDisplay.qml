@@ -13,7 +13,7 @@ PrimitiveWidget {
     id: widget
 
     readOnly: true
-    roleString: "textDisplay"
+    roleString: "stringDisplay"
     typeString: "string"
     widgetLabel: "Text Display"
 

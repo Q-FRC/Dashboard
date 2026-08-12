@@ -13,7 +13,7 @@ class TopicListModel : public QStandardItemModel {
     Q_OBJECT
 
 public:
-    enum TLMRoleTypes { NAME = Qt::UserRole, TYPE, TOPIC, DRAGGABLE };
+    enum TLMRoleTypes { NAME = Qt::UserRole, TYPE, TOPIC, DISPLAY_TYPE };
 
     TopicListModel(TopicStore *store, QObject *parent = nullptr);
 
@@ -31,7 +31,7 @@ private:
     void addStructChildren(QStandardItem *parent, const QString &topicPath,
                            const QString &typeString);
     void populateStructChildren(QStandardItem *parent, const QString &topicPath,
-                                const QList<StructNode> &tree, bool draggable = true);
+                                const QList<StructNode> &tree);
 
     // used to track paths
     QHash<QString, QStandardItem *> m_items;

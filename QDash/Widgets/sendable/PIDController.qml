@@ -43,7 +43,9 @@ SendableWidget {
         }
     }
 
-    ColumnLayout {
+    QDashScrollView {
+        id: scroll
+
         anchors {
             bottom: parent.bottom
             left: parent.left
@@ -53,29 +55,31 @@ SendableWidget {
             top: titleField.bottom
         }
 
-        PIDControllerRow {
-            label: "P"
-            topic: "p"
-        }
+        ColumnLayout {
+            PIDControllerRow {
+                label: "P"
+                topic: "p"
+            }
 
-        PIDControllerRow {
-            label: "I"
-            topic: "i"
-        }
+            PIDControllerRow {
+                label: "I"
+                topic: "i"
+            }
 
-        PIDControllerRow {
-            label: "D"
-            topic: "d"
-        }
+            PIDControllerRow {
+                label: "D"
+                topic: "d"
+            }
 
-        PIDControllerRow {
-            label: "Setpoint"
-            topic: "setpoint"
-        }
+            PIDControllerRow {
+                label: "Setpoint"
+                topic: "setpoint"
+            }
 
-        PIDControllerRow {
-            label: "I Zone"
-            topic: "izone"
+            PIDControllerRow {
+                label: "I Zone"
+                topic: "izone"
+            }
         }
     }
 

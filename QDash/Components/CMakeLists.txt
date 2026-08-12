@@ -12,4 +12,5 @@ qt6_add_qml_module(QDashQmlComponents
         TopicViewLoader.qml
         SearchableComboBox.qml
 
-        PIDControllerRow.qml)
+        PIDControllerRow.qml
+        QML_FILES QDashScrollView.qml)
