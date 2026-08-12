@@ -1,13 +1,14 @@
 // SPDX-FileCopyrightText: Copyright 2026 crueter
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include <qvariant.h>
 #include "BuildConfig/BuildConfig.h"
 #include "Services/Logger.h"
 #include "Services/StructStore.h"
 #include "Services/TopicStore.h"
+#include "wpi/nt/GenericEntry.hpp"
 #include "wpi/nt/NetworkTableEntry.hpp"
 #include "wpi/nt/NetworkTableType.hpp"
+#include "wpi/nt/NetworkTableValue.hpp"
 
 TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
     : QObject(parent), m_logs(logs), m_engine(engine),
@@ -175,9 +176,9 @@ void TopicStore::dispatch(const QString &topic, const std::string &typeString,
     call(topic, decoded);
 }
 
-QString TopicStore::structParent(const std::string &topic)
+QString TopicStore::structParent(const QString &topic)
 {
-    const auto segments = QString::fromStdString(topic).split('/');
+    const auto segments = topic.split('/');
     int n = segments.size() - 1;
     for (; n > 0; --n) {
         const auto parent = segments.sliced(0, n).join('/');
@@ -198,7 +199,7 @@ void TopicStore::subscribe(const QString &topic, const QJSValue &func)
 
     m_consumers[topic].append(func);
 
-    const auto structParent = this->structParent(topic.toStdString());
+    const auto structParent = this->structParent(topic);
     if (structParent.isEmpty()) {
         m_logs->debug("TopicStore", "Subscribed to topic " + topic);
 
@@ -233,11 +234,33 @@ void TopicStore::unsubscribe(const QString &topic, const QJSValue &func)
             break;
         }
 
-    if (it->isEmpty()) {
+    const bool lastConsumer = it->isEmpty();
+    if (lastConsumer) {
         m_consumers.erase(it);
         m_pendingStructs.remove(topic);
         std::lock_guard lock(m_subMutex);
         m_subscribed.remove(topic);
+    }
+
+    // drop this subscription's pseudotopic entry
+    for (auto iter = m_pseudoTopics.begin(); iter != m_pseudoTopics.end();) {
+        if (iter.value().func.strictlyEquals(func))
+            iter = m_pseudoTopics.erase(iter);
+        else
+            ++iter;
+    }
+
+    // nothing subscribes to the struct anymore
+    if (lastConsumer) {
+        const auto parent = structParent(topic);
+        const QString parentTopic = parent.isEmpty() ? topic : parent;
+        if (StructStore::isStruct(m_instance.GetTopic(parentTopic.toStdString()).GetTypeString()) &&
+            !m_consumers.contains(parentTopic) && !m_pseudoTopics.contains(parentTopic)) {
+            m_structPublishers.erase(parentTopic);
+            m_pendingStructs.remove(parentTopic);
+            std::lock_guard lock(m_subMutex);
+            m_subscribed.remove(parentTopic);
+        }
     }
 
     m_logs->debug("TopicStore", "Unsubscribed from topic " + topic);
@@ -270,7 +293,67 @@ void TopicStore::subscribeOneShot(const QString &topic, std::function<void(QVari
 
 void TopicStore::setValue(const QString &topic, const QVariant &value)
 {
-    m_instance.GetEntry(topic.toStdString()).SetValue(toValue(value));
+    // write struct to nt
+    const auto writeStruct = [this](const std::string &typeString, const QString &topic,
+                                    const QVariant &value) {
+        const auto data = m_structStore->encode(typeString, value);
+
+        // cache struct publishers, if applicable
+        if (!m_structPublishers.contains(topic)) {
+            m_structPublishers.emplace(
+                topic, wpi::nt::GenericEntry(
+                           m_instance.GetTopic(topic.toStdString()).GetGenericEntry(typeString)));
+        }
+
+        m_structPublishers[topic].SetRaw(data);
+    };
+
+    const auto strTopic = topic.toStdString();
+    const auto topicType = m_instance.GetTopic(strTopic).GetTypeString();
+
+    // direct struct write
+    if (StructStore::isStruct(topicType)) {
+        return writeStruct(topicType, topic, value);
+    }
+
+    // regular field
+    const auto structParent = this->structParent(topic);
+    if (structParent.isEmpty()) {
+        m_instance.GetEntry(strTopic).SetValue(toValue(value));
+        return;
+    }
+
+    // struct subfield
+    const std::function<QVariant(const QVariantMap, const QStringList, const QVariant)> walk =
+        [this, &walk](const QVariantMap &map, const QStringList &path,
+                      const QVariant &newValue) -> QVariant {
+        QVariantMap mutableMap = map;
+
+        QString key = path.first();
+        QVariant value = map[key];
+
+        if (path.size() > 1) {
+            if (value.typeId() == QMetaType::Type::QVariantMap) {
+                mutableMap[key] = walk(value.toMap(), path.mid(1), newValue);
+            }
+            // TODO: Handle lists here.
+        } else {
+            mutableMap[key] = newValue;
+        }
+
+        return mutableMap;
+    };
+
+    const auto path = topic.mid(structParent.size()).split('/', Qt::SkipEmptyParts);
+
+    // get existing struct data
+    const auto parentEntry = m_instance.GetEntry(structParent.toStdString());
+    const auto parentTypeStr = parentEntry.GetTopic().GetTypeString();
+    const auto rawData = parentEntry.GetRaw({});
+    const auto decoded = m_structStore->decode(parentTypeStr, rawData).toMap();
+
+    QVariant newValue = walk(decoded, path, value);
+    writeStruct(parentTypeStr, structParent, newValue);
 }
 
 void TopicStore::forceUpdate(const QString &topic)
@@ -278,7 +361,7 @@ void TopicStore::forceUpdate(const QString &topic)
     m_logs->debug("TopicStore", "Force-updating topic " + topic);
 
     // check for struct parents...
-    const auto structParent = this->structParent(topic.toStdString());
+    const auto structParent = this->structParent(topic);
 
     QString name;
     if (structParent.isEmpty()) {

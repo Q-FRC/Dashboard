@@ -4,6 +4,8 @@
 #pragma once
 
 #include <mutex>
+#include <unordered_map>
+#include "wpi/nt/GenericEntry.hpp"
 #include "wpi/nt/NetworkTableEntry.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/nt/NetworkTableValue.hpp"
@@ -30,7 +32,7 @@ private:
     void dispatch(const QString &topic, const std::string &typeString, const wpi::nt::Value &value);
 
     // get the struct parent of this pseudotopic, if applicable
-    QString structParent(const std::string &topic);
+    QString structParent(const QString &topic);
 
     // topics with at least one subscriber
     std::mutex m_subMutex;
@@ -38,6 +40,16 @@ private:
 
     // {topic, subscriber function}
     QHash<QString, QList<QJSValue>> m_consumers;
+
+    // {struct topic, entry}
+    // QHash doesn't work with move-only types
+    struct QStringHash {
+        size_t operator()(const QString &s) const noexcept
+        {
+            return static_cast<size_t>(qHash(s));
+        }
+    };
+    std::unordered_map<QString, wpi::nt::GenericEntry, QStringHash> m_structPublishers;
 
     // struct parents
     typedef struct PseudoTopic {

@@ -28,7 +28,9 @@ public:
     const wpi::util::StructDescriptor *find(QString type);
     const wpi::util::StructDescriptor *find(const std::string_view type);
 
+    // TODO: Make a better decode/encode API
     QVariant decode(const std::string_view typeString, std::span<const uint8_t> data);
+    std::vector<uint8_t> encode(const std::string_view typeString, const QVariant &value);
     QList<StructNode> schemaTree(const std::string_view typeString);
 
 private:
@@ -40,6 +42,12 @@ private:
     QVariant decodeStruct(const wpi::util::StructDescriptor *desc, std::span<const uint8_t> data);
     QVariant decodeField(const wpi::util::StructFieldDescriptor *field,
                          std::span<const uint8_t> data);
+
+    // encode helpers
+    bool encodeStruct(const wpi::util::StructDescriptor *desc, const QVariantMap &map,
+                      wpi::util::MutableDynamicStruct &ds);
+    void encodeField(const wpi::util::StructFieldDescriptor *field, const QVariant &value,
+                     wpi::util::MutableDynamicStruct &ds);
 
     // schema tree helpers
     QList<StructNode> fieldTree(const wpi::util::StructDescriptor *desc);

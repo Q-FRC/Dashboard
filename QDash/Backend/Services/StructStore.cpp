@@ -110,26 +110,6 @@ QVariant StructStore::decode(const std::string_view typeString, std::span<const 
     return decodeStruct(find(name), data);
 }
 
-QList<StructNode> StructStore::schemaTree(const std::string_view typeString)
-{
-    if (!isStruct(typeString)) {
-        m_logger->critical("StructStore",
-                           QStringLiteral("Type string %1 is not a struct")
-                               .arg(QString::fromUtf8(typeString.data(), typeString.size())));
-        return {};
-    }
-
-    // strip struct: prefix
-    std::string_view name = typeString.substr(7);
-
-    const auto *desc = find(name);
-
-    if (desc == nullptr || !desc->IsValid())
-        return {};
-
-    return fieldTree(desc);
-}
-
 QVariant StructStore::decodeStruct(const wpi::util::StructDescriptor *desc,
                                    std::span<const uint8_t> data)
 {
@@ -216,6 +196,161 @@ QVariant StructStore::decodeField(const wpi::util::StructFieldDescriptor *field,
     }
 
     return list;
+}
+
+std::vector<uint8_t> StructStore::encode(const std::string_view typeString, const QVariant &value)
+{
+    if (!isStruct(typeString)) {
+        m_logger->critical("StructStore",
+                           QStringLiteral("Type string %1 is not a struct")
+                               .arg(QString::fromUtf8(typeString.data(), typeString.size())));
+        return {};
+    }
+
+    // strip struct: prefix
+    std::string_view name = typeString.substr(7);
+
+    m_logger->debug("StructStore", QStringLiteral("Encoding struct with type %1").arg(name));
+
+    if (name.ends_with("[]")) {
+        name.remove_suffix(2);
+    }
+
+    const auto *desc = find(name);
+    if (desc == nullptr || !desc->IsValid()) {
+        m_logger->critical("StructStore", QStringLiteral("Invalid struct descriptor for type %1")
+                                              .arg(QString::fromUtf8(name.data(), name.size())));
+        return {};
+    }
+
+    const auto encodeOne = [&](const QVariant &v) {
+        std::vector<uint8_t> buffer(desc->GetSize());
+        wpi::util::MutableDynamicStruct ds{desc, buffer};
+        encodeStruct(desc, v.toMap(), ds);
+        return buffer;
+    };
+
+    // concat each element's bytes
+    if (value.typeId() == QMetaType::Type::QVariantList) {
+        std::vector<uint8_t> out;
+        for (const QVariant &element : value.toList()) {
+            auto encoded = encodeOne(element);
+            out.insert(out.end(), encoded.begin(), encoded.end());
+        }
+
+        return out;
+    }
+
+    return encodeOne(value);
+}
+
+bool StructStore::encodeStruct(const wpi::util::StructDescriptor *desc, const QVariantMap &map,
+                               wpi::util::MutableDynamicStruct &ds)
+{
+    if (desc == nullptr || !desc->IsValid()) {
+        m_logger->critical("StructStore", QStringLiteral("Invalid struct descriptor"));
+        return {};
+    }
+
+    // encode each field individually into the DynamicStruct
+    for (const auto &field : desc->GetFields()) {
+        const auto key = QString::fromStdString(field.GetName());
+        if (!map.contains(key)) {
+            m_logger->debug("StructStore",
+                            QStringLiteral("Struct %1 missing field %2").arg(desc->GetName(), key));
+            continue;
+        }
+
+        encodeField(&field, map.value(key), ds);
+    }
+
+    return true;
+}
+
+void StructStore::encodeField(const wpi::util::StructFieldDescriptor *field, const QVariant &value,
+                              wpi::util::MutableDynamicStruct &ds)
+{
+    const size_t arraySize = field->GetArraySize();
+
+    const auto type = field->GetType();
+
+    // "char" is actually a string, and is declared as an array...
+    // so we have to skip the array path entirely
+    if (type == wpi::util::StructFieldType::CHAR) {
+        ds.SetStringField(field, value.toString().toStdString());
+        return;
+    }
+
+    // i is the array index. non-arrays just use 0
+    const auto element = [&](const QVariant &element, size_t i = 0) {
+        switch (type) {
+        case wpi::util::StructFieldType::BOOL:
+            ds.SetBoolField(field, element.toBool(), i);
+            break;
+        case wpi::util::StructFieldType::INT8:
+        case wpi::util::StructFieldType::INT16:
+        case wpi::util::StructFieldType::INT32:
+        case wpi::util::StructFieldType::INT64:
+            ds.SetIntField(field, element.toLongLong(), i);
+            break;
+        case wpi::util::StructFieldType::UINT8:
+        case wpi::util::StructFieldType::UINT16:
+        case wpi::util::StructFieldType::UINT32:
+        case wpi::util::StructFieldType::UINT64:
+            ds.SetUintField(field, element.toULongLong(), i);
+            break;
+        case wpi::util::StructFieldType::FLOAT:
+            ds.SetFloatField(field, element.toFloat(), i);
+            break;
+        case wpi::util::StructFieldType::DOUBLE:
+            ds.SetDoubleField(field, element.toDouble(), i);
+            break;
+        case wpi::util::StructFieldType::STRUCT: {
+            // recursive structs :)
+            const auto subStruct = field->GetStruct();
+            std::vector<uint8_t> out(subStruct->GetSize());
+            wpi::util::MutableDynamicStruct subDs{subStruct, out};
+            encodeStruct(subStruct, element.toMap(), subDs);
+            ds.SetStructField(field, subDs, i);
+            break;
+        }
+        default:
+            m_logger->critical("StructStore",
+                               QStringLiteral("Invalid struct type %1").arg((int) type));
+            break;
+        }
+    };
+
+    // plain fields
+    if (arraySize == 1)
+        return element(value);
+
+    // encode each element
+    const QVariantList &list = value.toList();
+    const size_t count = std::min(list.size(), qlonglong(arraySize));
+    for (size_t i = 0; i < count; ++i) {
+        element(list[i], i);
+    }
+}
+
+QList<StructNode> StructStore::schemaTree(const std::string_view typeString)
+{
+    if (!isStruct(typeString)) {
+        m_logger->critical("StructStore",
+                           QStringLiteral("Type string %1 is not a struct")
+                               .arg(QString::fromUtf8(typeString.data(), typeString.size())));
+        return {};
+    }
+
+    // strip struct: prefix
+    std::string_view name = typeString.substr(7);
+
+    const auto *desc = find(name);
+
+    if (desc == nullptr || !desc->IsValid())
+        return {};
+
+    return fieldTree(desc);
 }
 
 QList<StructNode> StructStore::fieldTree(const wpi::util::StructDescriptor *desc)
