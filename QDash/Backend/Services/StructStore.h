@@ -22,7 +22,7 @@ public:
     explicit StructStore(wpi::nt::NetworkTableInstance instance, Logger *logger,
                          QObject *parent = nullptr);
 
-    bool isStruct(const std::string_view typeString);
+    static bool isStruct(const std::string_view typeString);
 
     // TODO
     const wpi::util::StructDescriptor *find(QString type);

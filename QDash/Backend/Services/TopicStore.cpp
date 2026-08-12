@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: Copyright 2026 crueter
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <qvariant.h>
 #include "BuildConfig/BuildConfig.h"
 #include "Services/Logger.h"
 #include "Services/StructStore.h"
 #include "Services/TopicStore.h"
+#include "wpi/nt/NetworkTableEntry.hpp"
 #include "wpi/nt/NetworkTableType.hpp"
 
 TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
@@ -104,34 +106,89 @@ QVariant TopicStore::decodeValue(const std::string &typeString, const wpi::nt::V
 void TopicStore::dispatch(const QString &topic, const std::string &typeString,
                           const wpi::nt::Value &value)
 {
+    auto queueSchema = [this, topic, typeString, value]() {
+        // struct whose schema hasn't arrived yet
+        if (typeString.starts_with("struct:")) {
+            m_pendingStructs.insert(topic, {std::string{typeString}, value});
+        }
+    };
+
+    auto call = [this, topic](const QString &effectiveTopic, const QVariant &value) {
+        const auto funcs = m_consumers.value(effectiveTopic);
+        const auto arg = m_engine->toScriptValue(value);
+        for (const QJSValue &func : funcs) {
+            func.call({arg});
+        }
+    };
+
+    // pseudotopic handling
+    if (m_pseudoTopics.contains(topic)) {
+        const QVariant decoded = decodeValue(typeString, value);
+
+        // TODO: dedup these pathways
+        if (decoded.isNull() || !decoded.isValid()) {
+            queueSchema();
+            return;
+        }
+
+        m_pendingStructs.remove(topic);
+
+        const std::function<QVariant(const QVariantMap, const QStringList)> walk =
+            [this, &walk](const QVariantMap &map, const QStringList &path) -> QVariant {
+            QString key = path.first();
+            QVariant value = map[key];
+
+            if (path.size() > 1) {
+                if (value.typeId() == QMetaType::Type::QVariantMap) {
+                    return walk(value.toMap(), path.mid(1));
+                }
+                // TODO: Handle lists here.
+            }
+
+            return value;
+        };
+
+        // now go through all pseudotopics...
+        for (const PseudoTopic &t : m_pseudoTopics.values(topic)) {
+            // and walk through the struct
+            const auto path = t.path.split('/');
+            const auto value = walk(decoded.toMap(), path);
+
+            // then call the update func
+            call(QStringLiteral("%1/%2").arg(topic, t.path), value);
+        }
+    }
+
     // topic was unsubscribed since the event was queued
     if (!m_consumers.contains(topic))
         return;
 
     const QVariant decoded = decodeValue(typeString, value);
     if (decoded.isNull() || !decoded.isValid()) {
-        // struct whose schema hasn't arrived yet
-        if (typeString.starts_with("struct:")) {
-            // TODO: make this a util function
-            std::string_view ts(typeString);
-            ts = ts.substr(7);
-            if (ts.ends_with("[]"))
-                ts.remove_suffix(2);
-
-            m_pendingStructs.insert(topic, {std::string{ts}, value});
-        }
-
+        queueSchema();
         return;
     }
 
     // remove from queue, if applicable
     m_pendingStructs.remove(topic);
 
-    const auto funcs = m_consumers.value(topic);
-    const auto arg = m_engine->toScriptValue(decoded);
-    for (const QJSValue &func : funcs) {
-        func.call({arg});
+    call(topic, decoded);
+}
+
+QString TopicStore::structParent(const std::string &topic)
+{
+    const auto segments = QString::fromStdString(topic).split('/');
+    int n = segments.size() - 1;
+    for (; n > 0; --n) {
+        const auto parent = segments.sliced(0, n).join('/');
+        const auto parentType = m_instance.GetTopic(parent.toStdString()).GetTypeString();
+
+        if (StructStore::isStruct(parentType)) {
+            return parent;
+        }
     }
+
+    return {};
 }
 
 void TopicStore::subscribe(const QString &topic, const QJSValue &func)
@@ -139,12 +196,29 @@ void TopicStore::subscribe(const QString &topic, const QJSValue &func)
     if (topic == "")
         return;
 
-    {
+    m_consumers[topic].append(func);
+
+    const auto structParent = this->structParent(topic.toStdString());
+    if (structParent.isEmpty()) {
+        m_logs->debug("TopicStore", "Subscribed to topic " + topic);
+
         std::lock_guard lock(m_subMutex);
         m_subscribed.insert(topic);
+        return;
     }
-    m_consumers[topic].append(func);
-    m_logs->debug("TopicStore", "Subscribed to topic " + topic);
+
+    PseudoTopic pseudoTopic{
+        .path = topic.last(topic.length() - structParent.length() - 1),
+        .func = func,
+    };
+
+    m_logs->debug("TopicStore",
+                  QStringLiteral("Subscribed to pseudo-topic %1, with struct parent %2")
+                      .arg(topic, structParent));
+
+    m_pseudoTopics.insert(structParent, pseudoTopic);
+    std::lock_guard lock(m_subMutex);
+    m_subscribed.insert(structParent);
 }
 
 void TopicStore::unsubscribe(const QString &topic, const QJSValue &func)
@@ -203,11 +277,21 @@ void TopicStore::forceUpdate(const QString &topic)
 {
     m_logs->debug("TopicStore", "Force-updating topic " + topic);
 
-    if (!m_consumers.contains(topic))
-        return;
+    // check for struct parents...
+    const auto structParent = this->structParent(topic.toStdString());
 
-    const auto entry = m_instance.GetEntry(topic.toStdString());
-    dispatch(topic, entry.GetTopic().GetTypeString(), entry.GetValue());
+    QString name;
+    if (structParent.isEmpty()) {
+        if (!m_consumers.contains(topic))
+            return;
+
+        name = topic;
+    } else {
+        name = structParent;
+    }
+
+    const auto entry = m_instance.GetEntry(name.toStdString());
+    dispatch(name, entry.GetTopic().GetTypeString(), entry.GetValue());
 }
 
 QString TopicStore::typeString(const QString &topic)

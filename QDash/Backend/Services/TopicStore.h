@@ -29,12 +29,24 @@ private:
 
     void dispatch(const QString &topic, const std::string &typeString, const wpi::nt::Value &value);
 
+    // get the struct parent of this pseudotopic, if applicable
+    QString structParent(const std::string &topic);
+
     // topics with at least one subscriber
     std::mutex m_subMutex;
     QSet<QString> m_subscribed;
 
     // {topic, subscriber function}
     QHash<QString, QList<QJSValue>> m_consumers;
+
+    // struct parents
+    typedef struct PseudoTopic {
+        QString path;
+        QJSValue func;
+    } PseudoTopic;
+
+    // {parent struct, path + func}
+    QMultiHash<QString, PseudoTopic> m_pseudoTopics;
 
     typedef struct PendingStruct {
         std::string typeName;

@@ -97,11 +97,15 @@ PrimitiveWidget {
                 LabeledSpinBox {
                     bindedProperty: "lowerBound"
                     label: "Lower Bound"
+
+                    from: -1E9
                 }
 
                 LabeledSpinBox {
                     bindedProperty: "upperBound"
                     label: "Upper Bound"
+
+                    from: -1E9
                 }
             }
 

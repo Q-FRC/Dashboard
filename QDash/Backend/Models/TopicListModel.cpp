@@ -203,13 +203,15 @@ void TopicListModel::populateStructChildren(QStandardItem *parent, const QString
                                             const QList<StructNode> &tree, bool draggable)
 {
     for (const StructNode &node : tree) {
+        const QString childTopic = topicPath % "/" % node.name;
         auto *child = new QStandardItem(node.name);
-        child->setData(topicPath, TOPIC);
+
+        child->setData(childTopic, TOPIC);
         child->setData(node.type, TYPE);
-        child->setData(draggable, DRAGGABLE);
+        // child->setData(draggable, DRAGGABLE);
 
         if (!node.children.isEmpty() && !node.isArray)
-            populateStructChildren(child, topicPath, node.children, draggable);
+            populateStructChildren(child, childTopic, node.children, draggable);
 
         parent->appendRow(child);
     }
