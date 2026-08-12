@@ -4,18 +4,17 @@
 #pragma once
 
 #include <mutex>
-#include <unordered_map>
 #include "wpi/nt/GenericEntry.hpp"
 #include "wpi/nt/NetworkTableEntry.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/nt/NetworkTableValue.hpp"
 
-#include <QHash>
 #include <QJSValue>
 #include <QObject>
 #include <QQmlEngine>
-#include <QSet>
+#include <ankerl/unordered_dense.h>
 
+class StructManager;
 class StructStore;
 class Logger;
 
@@ -26,52 +25,35 @@ private:
     QQmlEngine *m_engine;
     wpi::nt::NetworkTableInstance m_instance;
     StructStore *m_structStore;
+    StructManager *m_structs;
 
-    QVariant decodeValue(const std::string &typeString, const wpi::nt::Value &ntValue);
+    // Subscriptions //
 
-    void dispatch(const QString &topic, const std::string &typeString, const wpi::nt::Value &value);
+    // represents a subscription (either to a topic or a struct child)
+    struct Subscription {
+        QString rawTopic; // the original topic the caller asked for
+        QStringList path; // the struct child path, if applicable
+        QJSValue func;
+    };
 
-    // get the struct parent of this pseudotopic, if applicable
-    QString structParent(const QString &topic);
+    ankerl::unordered_dense::map<std::string, QList<Subscription>> m_subscriptions;
 
     // topics with at least one subscriber
     std::mutex m_subMutex;
-    QSet<QString> m_subscribed;
+    ankerl::unordered_dense::set<std::string> m_subscribed;
 
-    // {topic, subscriber function}
-    QHash<QString, QList<QJSValue>> m_consumers;
+    // private iface //
 
-    // {struct topic, entry}
-    // QHash doesn't work with move-only types
-    struct QStringHash {
-        size_t operator()(const QString &s) const noexcept
-        {
-            return static_cast<size_t>(qHash(s));
-        }
-    };
-    std::unordered_map<QString, wpi::nt::GenericEntry, QStringHash> m_structPublishers;
-
-    // struct parents
-    typedef struct PseudoTopic {
-        QString path;
-        QJSValue func;
-    } PseudoTopic;
-
-    // {parent struct, path + func}
-    QMultiHash<QString, PseudoTopic> m_pseudoTopics;
-
-    typedef struct PendingStruct {
-        std::string typeName;
-        wpi::nt::Value value;
-    } PendingStruct;
-
-    QHash<QString, PendingStruct> m_pendingStructs;
+    // Dispatch struct resolution to the queue, or call functions
+    void handleValue(const std::string &topic, const std::string &typeString,
+                     const wpi::nt::Value &value);
+    void callConsumers(const std::string &topic, const QVariant &value);
 
 public:
-    static QVariant toVariant(const wpi::nt::Value &value);
-    static wpi::nt::Value toValue(const QVariant &value);
-
     TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent = nullptr);
+
+    // re-resolve all subscriptions against the current structure
+    void reconcile();
 
     wpi::nt::NetworkTableEntry getRawEntry(const std::string_view &path);
     std::vector<wpi::nt::ConnectionInfo> getConnections() const;

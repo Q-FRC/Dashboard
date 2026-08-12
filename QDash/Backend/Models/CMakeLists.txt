@@ -20,4 +20,5 @@ qt6_add_qml_module(QDashModels
 target_link_libraries(QDashModels PRIVATE
     Qt6::Core Qt6::Qml Qt6::Gui
     QDashModelsplugin
+    QDashServices
     ${extra_libs})

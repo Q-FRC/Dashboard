@@ -33,3 +33,6 @@ AddJsonPackage(ntcore)
 
 # Carboxyl
 AddJsonPackage(carboxyl)
+
+# ankerl
+AddJsonPackage(unordered_dense)

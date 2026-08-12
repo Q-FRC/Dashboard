@@ -137,6 +137,7 @@ add_subdirectory(externals)
 
 find_package(ntcore)
 find_package(Carboxyl)
+find_package(unordered_dense)
 
 set(QT_QML_GENERATE_QMLLS_INI ON)
 

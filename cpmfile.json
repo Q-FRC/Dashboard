@@ -20,6 +20,12 @@
         "repo": "wpilibsuite/allwpilib",
         "version": "35fb996001"
     },
+    "unordered_dense": {
+        "hash": "02bd2ea117cabaf58c38117bc5b725e579a3b8460fbcb2e65604568f600d328e8a2d81ca5d3ecf1eb8ea0651bfca3c6359efbdc0dd6ce479d07c21f4623cf949",
+        "package": "unordered_dense",
+        "repo": "martinus/unordered_dense",
+        "version": "v4.9.1"
+    },
     "zlib": {
         "hash": "8c9642495bafd6fad4ab9fb67f09b268c69ff9af0f4f20cf15dfc18852ff1f312bd8ca41de761b3f8d8e90e77d79f2ccacd3d4c5b19e475ecf09d021fdfe9088",
         "min_version": "1.2",

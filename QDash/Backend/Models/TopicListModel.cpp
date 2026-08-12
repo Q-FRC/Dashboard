@@ -15,13 +15,24 @@ TopicListModel::TopicListModel(TopicStore *store, QObject *parent)
 
     QStandardItemModel::setItemRoleNames(rez);
 
-    connect(m_store, &TopicStore::topicPublished, this,
-            [this](const std::string &topicName) { add(QString::fromStdString(topicName)); });
+    connect(m_store, &TopicStore::topicPublished, this, [this](const std::string &topicName) {
+        // a newly-published topic (e.g. a struct parent gaining its type)
+        // may make previously-unresolvable subfield subscriptions resolvable
+        m_store->reconcile();
+        add(QString::fromStdString(topicName));
+    });
 
     // TODO: handle unpublishing
     // topics->remove(QString::fromStdString(topicName));
 
-    connect(m_store, &TopicStore::disconnected, this, [this]() { clear(); });
+    connect(m_store, &TopicStore::disconnected, this, [this]() {
+        clear();
+        m_items.clear();
+    });
+
+    // a newly-arrived struct schema may make subfield subscriptions resolvable
+    connect(m_store->structStore(), &StructStore::schemaAdded, this,
+            [this](const QString &) { m_store->reconcile(); });
 }
 
 QVariant TopicListModel::data(const QModelIndex &index, int role) const
@@ -86,13 +97,16 @@ void TopicListModel::add(const QString &fullPath)
                 const std::string value = typeEntry.GetString("invalid");
                 if (value == "invalid") {
                     // subscribe once to grab the type
-                    m_store->subscribeOneShot(
-                        fullPath, [this, parentItem, parentPath](const QVariant &value) mutable {
-                            // and set the parent node type
-                            parentItem->setData(parentPath, TOPIC);
-                            parentItem->setData(value.toString(), TYPE);
-                            parentItem->setData(value.toString(), DISPLAY_TYPE);
-                        });
+                    m_store->subscribeOneShot(fullPath, [this, parentPath](const QVariant &value) {
+                        QStandardItem *parent = m_items.value(parentPath, nullptr);
+                        if (!parent)
+                            return;
+
+                        // and set the parent node type
+                        parent->setData(parentPath, TOPIC);
+                        parent->setData(value.toString(), TYPE);
+                        parent->setData(value.toString(), DISPLAY_TYPE);
+                    });
                 } else {
                     // if type is already determined, awesome
                     parentItem->setData(parentPath, TOPIC);
@@ -201,9 +215,8 @@ void TopicListModel::addStructChildren(QStandardItem *parent, const QString &top
                     return;
 
                 const auto tree = m_store->structStore()->schemaTree(typeString.toStdString());
-                if (!tree.isEmpty()) {
+                if (!tree.isEmpty() && parent->rowCount() == 0)
                     populateStructChildren(parent, topicPath, tree);
-                }
             });
 }
 
