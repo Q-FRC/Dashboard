@@ -81,7 +81,7 @@ BaseWidget {
     }
 
     Connections {
-        function onConnected(conn) {
+        function onConnectedStateChanged(conn) {
             if (conn) {
                 for (var i = 0; i < topics.length; ++i) {
                     let suffix = "/" + topics[i]
@@ -90,8 +90,7 @@ BaseWidget {
                 }
             } else {
                 widget.valid = false
-                if (QDashSettings.disableWidgets)
-                    widget.connected = false
+                widget.connected = false
             }
         }
 

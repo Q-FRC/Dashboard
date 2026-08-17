@@ -8,7 +8,8 @@ qt_add_library(QDashServices STATIC
     TopicStore.cpp TopicStore.h
     StructStore.h StructStore.cpp
     StructManager.h StructManager.cpp
-    QtNTInterface.h QtNTInterface.cpp)
+    QtNTInterface.h QtNTInterface.cpp
+    EntryStore.h EntryStore.cpp)
 
 target_link_libraries(QDashServices PRIVATE
     ntcore

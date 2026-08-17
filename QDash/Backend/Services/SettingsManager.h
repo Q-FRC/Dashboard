@@ -56,7 +56,6 @@ extern const Setting LogLevel;
 extern const Setting ConnMode;
 extern const Setting TeamNumber;
 extern const Setting IP;
-extern const Setting DisableWidgets;
 } // namespace Settings
 
 class Logger;
@@ -92,9 +91,9 @@ class SettingsManager : public QObject {
     property(int, windowX, WindowX);
     property(int, windowY, WindowY);
 
-    property(bool, hannahMontanaMode, HannahMontanaMode)
+    property(bool, hannahMontanaMode, HannahMontanaMode);
 
-        property(int, defaultFontSize, DefaultFontSize);
+    property(int, defaultFontSize, DefaultFontSize);
     property(int, defaultDisplayFontSize, DefaultDisplayFontSize);
     property(int, defaultTitleFontSize, DefaultTitleFontSize);
 
@@ -105,7 +104,6 @@ class SettingsManager : public QObject {
     property(double, scale, Scale);
     property(bool, resizeToDS, ResizeToDS);
     property(int, logLevel, LogLevel);
-    property(bool, disableWidgets, DisableWidgets);
 
 public:
     explicit SettingsManager(Logger *logs, TopicStore *store, QObject *parent = nullptr);

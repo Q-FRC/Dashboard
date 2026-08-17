@@ -72,12 +72,11 @@ BaseWidget {
     }
 
     Connections {
-        function onConnected(conn) {
+        function onConnectedStateChanged(conn) {
             if (conn) {
                 TopicStore.forceUpdate(widget.trueTopic)
             } else {
-                if (QDashSettings.disableWidgets)
-                    widget.connected = false
+                widget.connected = false
                 widget.valid = false
             }
         }

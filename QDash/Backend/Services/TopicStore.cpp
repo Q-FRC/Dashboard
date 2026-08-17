@@ -4,19 +4,22 @@
 #include "BuildConfig/BuildConfig.h"
 #include "Services/Logger.h"
 #include "Services/QtNTInterface.h"
+
+#include "Services/EntryStore.h"
 #include "Services/StructManager.h"
 #include "Services/StructStore.h"
 #include "Services/TopicStore.h"
+
 #include "wpi/nt/GenericEntry.hpp"
-#include "wpi/nt/NetworkTableEntry.hpp"
 #include "wpi/nt/NetworkTableType.hpp"
 #include "wpi/nt/NetworkTableValue.hpp"
+#include "wpi/nt/ntcore_cpp.hpp"
 
 TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
     : QObject(parent), m_logs(logs), m_engine(engine),
       m_instance{wpi::nt::NetworkTableInstance::GetDefault()},
-      m_structStore{new StructStore(m_instance, m_logs)},
-      m_structs{new StructManager(m_instance, m_structStore, m_logs, this)}
+      m_structStore{new StructStore(m_instance, m_logs)}, m_entries(new EntryStore(m_instance)),
+      m_structs{new StructManager(m_instance, m_structStore, m_entries, m_logs, this)}
 {
     m_instance.StartClient(BuildConfig.APPLICATION_NAME.toStdString());
 
@@ -25,44 +28,28 @@ TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
         m_structs, &StructManager::structValueReady, this,
         [this](const std::string &topic, const QVariant &value) { callConsumers(topic, value); });
 
-    // Values //
-    const auto callback = [this](const wpi::nt::Event &event) {
-        const auto data = event.GetValueEventData();
-        if (!data)
-            return;
-
-        const auto topic = wpi::nt::GetTopicName(data->topic);
-
-        bool subscribed = false;
-        {
-            std::lock_guard lock(m_subMutex);
-            subscribed = m_subscribed.contains(topic);
-        }
-        if (!subscribed)
-            return;
-
-        const std::string typeString = wpi::nt::GetTopicTypeString(data->topic);
-        const auto value = data->value;
-
-        QMetaObject::invokeMethod(
-            this, [this, topic, typeString, value] { handleValue(topic, typeString, value); });
-    };
-
-    m_instance.AddListener({{""}}, wpi::nt::EventFlags::VALUE_ALL, callback);
-
     // Connections //
     m_instance.AddConnectionListener(true, [this](const wpi::nt::Event &event) {
         bool connected = event.Is(wpi::nt::EventFlags::CONNECTED);
         QString remoteIP = QString::fromStdString(event.GetConnectionInfo()->remote_ip);
 
         QMetaObject::invokeMethod(this, [this, remoteIP, connected] {
+            // reset callbacks before widgets can update anything
+            if (connected)
+                reconcile();
+
             emit connectedStateChanged(connected);
 
             if (connected) {
-                m_logs->info("NT", "Client connected to " + remoteIP);
+                m_logs->info("NT", QStringLiteral("Client connected to %1").arg(remoteIP));
                 emit this->connected(remoteIP);
             } else {
                 m_logs->info("NT", "Client disconnected");
+
+                // clear struct and entry caches
+                m_structs->clear();
+                m_entries->clear();
+
                 emit this->disconnected();
             }
         });
@@ -94,6 +81,10 @@ TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
 void TopicStore::handleValue(const std::string &topic, const std::string &typeString,
                              const wpi::nt::Value &value)
 {
+    // this topic doesn't have a value yet, the callback will deliver it
+    if (!value.IsValid())
+        return;
+
     const auto result = m_structs->process(topic, typeString, value);
     switch (result) {
     case StructManager::Handled:
@@ -111,13 +102,32 @@ void TopicStore::callConsumers(const std::string &topic, const QVariant &value)
     const auto it = m_subscriptions.find(topic);
     if (it == m_subscriptions.end())
         return;
-    const auto list = it->second;
 
     for (const Subscription &sub : std::as_const(it->second)) {
         // if this is a subfield, grab it from the struct
         const QVariant v = sub.path.isEmpty() ? value : m_structs->getField(value, sub.path);
         sub.func.call({m_engine->toScriptValue(v)});
     }
+}
+
+void TopicStore::addCallback(const std::string &topic)
+{
+    // don't listen to unpublished topics
+    if (m_instance.GetTopic(topic).GetType() == wpi::nt::NetworkTableType::UNASSIGNED)
+        return;
+
+    // now add callback
+    m_entries->addCallback(topic, [this, topic](const wpi::nt::Event &event) {
+        const auto data = event.GetValueEventData();
+        if (!data)
+            return;
+
+        const std::string typeString = wpi::nt::GetTopicTypeString(data->topic);
+        const auto value = data->value;
+
+        QMetaObject::invokeMethod(
+            this, [this, topic, typeString, value] { handleValue(topic, typeString, value); });
+    });
 }
 
 // called from QML
@@ -128,8 +138,10 @@ void TopicStore::subscribe(const QString &topic, const QJSValue &func)
 
     // add subscription
     const auto resolved = m_structs->resolve(topic);
+    const auto source = resolved.source.toStdString();
+
     const Subscription newSub(topic, resolved.path, func);
-    m_subscriptions[resolved.source.toStdString()].append(newSub);
+    m_subscriptions[source].append(newSub);
 
     // log
     if (resolved.path.isEmpty()) {
@@ -140,8 +152,7 @@ void TopicStore::subscribe(const QString &topic, const QJSValue &func)
                           .arg(topic, resolved.source));
     }
 
-    std::lock_guard lock(m_subMutex);
-    m_subscribed.insert(resolved.source.toStdString());
+    addCallback(source);
 }
 
 // called when the NT topology changes
@@ -161,13 +172,20 @@ void TopicStore::reconcile()
         }
     }
 
+    // topics that lost all subscribers
+    for (const auto &[oldSource, list] : m_subscriptions) {
+        if (!migrated.contains(oldSource)) {
+            m_entries->removeEntry(oldSource);
+        }
+    }
+
     m_subscriptions = std::move(migrated);
 
-    // keep the value-listener filter in sync with the (possibly migrated) sources
-    std::lock_guard lock(m_subMutex);
-    for (const auto &[source, subs] : m_subscriptions)
+    // reset callbaks as needed
+    for (const auto &[source, subs] : m_subscriptions) {
         if (!subs.isEmpty())
-            m_subscribed.insert(source);
+            addCallback(source);
+    }
 }
 
 void TopicStore::unsubscribe(const QString &topic, const QJSValue &func)
@@ -195,9 +213,7 @@ void TopicStore::unsubscribe(const QString &topic, const QJSValue &func)
     const auto toDrop = it->first;
     m_subscriptions.erase(it);
     m_structs->drop(toDrop);
-
-    std::lock_guard lock(m_subMutex);
-    m_subscribed.erase(source);
+    m_entries->removeEntry(toDrop);
 
     m_logs->debug("TopicStore", "Unsubscribed from topic " + topic);
 }
@@ -233,8 +249,12 @@ void TopicStore::subscribeOneShot(const QString &topic, std::function<void(QVari
 void TopicStore::setValue(const QString &topic, const QVariant &value)
 {
     // structs are handled by StructManager
-    if (!m_structs->publish(topic.toStdString(), value))
-        m_instance.GetEntry(topic.toStdString()).SetValue(QtNTInterface::toValue(value));
+    const auto source = topic.toStdString();
+    if (m_structs->publish(source, value))
+        return;
+
+    const auto typeString = m_instance.GetTopic(source).GetTypeString();
+    m_entries->setValue(source, typeString, QtNTInterface::toValue(value));
 }
 
 void TopicStore::forceUpdate(const QString &topic)
@@ -242,8 +262,14 @@ void TopicStore::forceUpdate(const QString &topic)
     m_logs->debug("TopicStore", "Force-updating topic " + topic);
 
     const auto source = m_structs->resolve(topic).source.toStdString();
-    const auto entry = m_instance.GetEntry(source);
-    handleValue(source, entry.GetTopic().GetTypeString(), entry.GetValue());
+    const auto typeString = m_instance.GetTopic(source).GetTypeString();
+
+    // this topic has not been published yet
+    if (typeString.empty())
+        return;
+
+    const auto &entry = m_entries->getEntry(source, typeString);
+    handleValue(source, typeString, entry.Get());
 }
 
 QString TopicStore::typeString(const QString &topic)
@@ -273,9 +299,9 @@ StructStore *TopicStore::structStore() const
 }
 
 // NT Interface //
-wpi::nt::NetworkTableEntry TopicStore::getRawEntry(const std::string_view &path)
+wpi::nt::GenericEntry TopicStore::getRawEntry(const std::string_view &path)
 {
-    return m_instance.GetEntry(path);
+    return m_instance.GetTopic(path).GetGenericEntry();
 }
 
 std::vector<wpi::nt::ConnectionInfo> TopicStore::getConnections() const

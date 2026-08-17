@@ -40,17 +40,6 @@ ColumnLayout {
     }
 
     LabeledCheckbox {
-        id: disable
-
-        Layout.alignment: centered ? Qt.AlignCenter : Qt.AlignLeft
-        bindTarget: QDashSettings
-        bindedProperty: "disableWidgets"
-        implicitHeight: 45
-        implicitWidth: controlWidth
-        label: qsTr("Disable Widgets on Disconnect?")
-    }
-
-    LabeledCheckbox {
         id: resize
 
         Layout.alignment: centered ? Qt.AlignCenter : Qt.AlignLeft

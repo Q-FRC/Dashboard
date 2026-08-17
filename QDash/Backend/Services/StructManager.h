@@ -8,6 +8,7 @@
 #include "wpi/nt/GenericEntry.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
 
+class EntryStore;
 class StructStore;
 class Logger;
 
@@ -15,8 +16,8 @@ class Logger;
 class StructManager : public QObject {
     Q_OBJECT
 public:
-    explicit StructManager(wpi::nt::NetworkTableInstance instance, StructStore *store,
-                           Logger *logger, QObject *parent = nullptr);
+    explicit StructManager(wpi::nt::NetworkTableInstance &instance, StructStore *store,
+                           EntryStore *entries, Logger *logger, QObject *parent = nullptr);
 
     enum Result {
         Handled, // decoded
@@ -50,6 +51,9 @@ public:
     QVariant getField(const QVariant &value, const QStringList &path);
     QVariant setField(QVariant value, const QStringList &path, const QVariant &toSet);
 
+    // clear the entire pending struct queue
+    void clear();
+
 private:
     QString structParent(const QString &topic) const;
     void writeStruct(const std::string &typeString, const std::string &topic,
@@ -57,10 +61,8 @@ private:
 
     wpi::nt::NetworkTableInstance m_instance;
     StructStore *m_store;
+    EntryStore *m_entries;
     Logger *m_logger;
-
-    // publisher cache
-    ankerl::unordered_dense::map<std::string, wpi::nt::GenericEntry> m_publishers;
 
     // structs that are still awaiting their schemas
     typedef struct PendingStruct {

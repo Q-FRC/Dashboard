@@ -65,8 +65,7 @@ void TopicListModel::add(const QString &fullPath)
     parentSegments.removeLast();
     QString parentPath('/' + parentSegments.join('/'));
 
-    wpi::nt::NetworkTableEntry typeEntry =
-        m_store->getRawEntry(parentPath.toStdString() + "/.type");
+    wpi::nt::GenericEntry typeEntry = m_store->getRawEntry(parentPath.toStdString() + "/.type");
     bool hasTypeEntry = typeEntry.Exists();
 
     QStandardItem *parentItem = invisibleRootItem();

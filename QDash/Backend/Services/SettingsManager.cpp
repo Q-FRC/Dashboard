@@ -136,5 +136,4 @@ const Setting LogLevel{"logLevel", 2};
 const Setting ConnMode{"connMode", 0};
 const Setting TeamNumber{"teamNumber", "0"};
 const Setting IP{"ip", "0.0.0.0"};
-const Setting DisableWidgets{"disableWidgets", true};
 } // namespace Settings

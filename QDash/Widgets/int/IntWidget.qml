@@ -52,9 +52,7 @@ PrimitiveWidget {
 
             value: 0
 
-            onValueModified: {
-                widget.setValue(value)
-            }
+            onValueModified: widget.setValue(value)
 
             // TODO: Bring back validity handling
             // valid: widget.valid

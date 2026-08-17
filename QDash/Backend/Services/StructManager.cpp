@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <optional>
+#include "Services/EntryStore.h"
 #include "Services/StructStore.h"
 #include "StructManager.h"
-#include "wpi/nt/RawTopic.hpp"
 
-StructManager::StructManager(wpi::nt::NetworkTableInstance instance, StructStore *store,
-                             Logger *logger, QObject *parent)
-    : QObject{parent}, m_instance(instance), m_store(store), m_logger(logger)
+StructManager::StructManager(wpi::nt::NetworkTableInstance &instance, StructStore *store,
+                             EntryStore *entries, Logger *logger, QObject *parent)
+    : QObject{parent}, m_instance(instance), m_store(store), m_entries(entries), m_logger(logger)
 {
     // Pending Structs //
     connect(m_store, &StructStore::schemaAdded, this, [this](const QString &typeName) {
@@ -52,16 +52,28 @@ bool StructManager::publish(const std::string &topic, const QVariant &value)
 
     // subfield
     const auto resolved = resolve(topic);
+    const auto source = resolved.source.toStdString();
 
     // this is a plain topic
     if (resolved.path.isEmpty())
         return false;
 
     // get parent struct data
-    const auto parentEntry = m_instance.GetEntry(resolved.source.toStdString());
-    const auto parentTypeStr = parentEntry.GetTopic().GetTypeString();
-    const auto rawData = parentEntry.GetRaw({});
+    const auto parentTypeStr = m_instance.GetTopic(source).GetTypeString();
+    const auto parentValue = m_entries->getValue(source, parentTypeStr);
+
+    // the parent topic hasn't received a value, ignore
+    if (!parentValue.IsValid() || !parentValue.IsRaw())
+        return true;
+
+    const auto rawData = parentValue.GetRaw();
     const auto decoded = m_store->decode(parentTypeStr, rawData).toMap();
+
+    if (decoded.empty()) {
+        m_logger->debug("StructManager", QStringLiteral("Parent %1 not cached, dropping write op")
+                                             .arg(QString::fromStdString(source)));
+        return true;
+    }
 
     // and write
     QVariant newValue = setField(decoded, resolved.path, value);
@@ -72,7 +84,6 @@ bool StructManager::publish(const std::string &topic, const QVariant &value)
 void StructManager::drop(const std::string &topic)
 {
     m_pending.erase(topic);
-    m_publishers.erase(topic);
 }
 
 StructManager::Result StructManager::process(const std::string &topic,
@@ -87,7 +98,7 @@ StructManager::Result StructManager::process(const std::string &topic,
     if (decoded.isNull() || !decoded.isValid()) {
         // schema hasn't arrived yet, so enqueue
         PendingStruct pending(typeString, value);
-        m_pending.emplace(topic, pending);
+        m_pending.insert_or_assign(topic, pending);
 
         return Pending;
     }
@@ -189,6 +200,11 @@ QVariant StructManager::setField(QVariant value, const QStringList &path, const 
     }
 }
 
+void StructManager::clear()
+{
+    m_pending.clear();
+}
+
 QString StructManager::structParent(const QString &topic) const
 {
     const auto segments = topic.split('/');
@@ -208,14 +224,7 @@ void StructManager::writeStruct(const std::string &typeString, const std::string
                                 const QVariant &value)
 {
     const auto data = m_store->encode(typeString, value);
-
-    // cache struct publishers, if applicable
-    if (!m_publishers.contains(topic)) {
-        m_publishers.emplace(
-            topic, wpi::nt::GenericEntry(m_instance.GetTopic(topic).GetGenericEntry(typeString)));
-    }
-
-    m_publishers[topic].SetRaw(data);
+    m_entries->setValue(topic, typeString, wpi::nt::Value::MakeRaw(data));
 }
 
 std::optional<int> StructManager::parseArrayIndex(const QString &index, const size_t max)

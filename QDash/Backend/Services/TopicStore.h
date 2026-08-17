@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include <mutex>
 #include "wpi/nt/GenericEntry.hpp"
-#include "wpi/nt/NetworkTableEntry.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/nt/NetworkTableValue.hpp"
 
@@ -14,6 +12,7 @@
 #include <QQmlEngine>
 #include <ankerl/unordered_dense.h>
 
+class EntryStore;
 class StructManager;
 class StructStore;
 class Logger;
@@ -24,7 +23,9 @@ private:
     Logger *m_logs;
     QQmlEngine *m_engine;
     wpi::nt::NetworkTableInstance m_instance;
+
     StructStore *m_structStore;
+    EntryStore *m_entries;
     StructManager *m_structs;
 
     // Subscriptions //
@@ -38,10 +39,6 @@ private:
 
     ankerl::unordered_dense::map<std::string, QList<Subscription>> m_subscriptions;
 
-    // topics with at least one subscriber
-    std::mutex m_subMutex;
-    ankerl::unordered_dense::set<std::string> m_subscribed;
-
     // private iface //
 
     // Dispatch struct resolution to the queue, or call functions
@@ -49,13 +46,16 @@ private:
                      const wpi::nt::Value &value);
     void callConsumers(const std::string &topic, const QVariant &value);
 
+    // {re-,}make the callback
+    void addCallback(const std::string &topic);
+
 public:
     TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent = nullptr);
 
     // re-resolve all subscriptions against the current structure
     void reconcile();
 
-    wpi::nt::NetworkTableEntry getRawEntry(const std::string_view &path);
+    wpi::nt::GenericEntry getRawEntry(const std::string_view &path);
     std::vector<wpi::nt::ConnectionInfo> getConnections() const;
     StructStore *structStore() const;
 
