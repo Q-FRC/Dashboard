@@ -352,7 +352,7 @@ void TopicListModel::repopulateArray(const QString &topicPath, const std::string
 QStandardItem *TopicListModel::makeArrayChild(const QString &topicPrefix, qsizetype i,
                                               const QString &type, const QList<StructNode> &tree)
 {
-    const QString childTopic = QStringLiteral("%1/%2").arg(topicPrefix).arg(i);
+    const QString childTopic = arrayChildPath(topicPrefix, i);
     auto *child = new QStandardItem(QStringLiteral("[%1]").arg(i));
     child->setData(childTopic, TOPIC);
     child->setData(type, DISPLAY_TYPE);
@@ -364,6 +364,11 @@ QStandardItem *TopicListModel::makeArrayChild(const QString &topicPrefix, qsizet
     return child;
 }
 
+QString TopicListModel::arrayChildPath(const QString &prefix, const qsizetype i)
+{
+    return QStringLiteral("%1/%2").arg(prefix).arg(i);
+}
+
 void TopicListModel::populateArrayChildren(QStandardItem *parent, const QString &topicPrefix,
                                            const QString &type, qsizetype len,
                                            const QList<StructNode> &tree)
@@ -373,9 +378,14 @@ void TopicListModel::populateArrayChildren(QStandardItem *parent, const QString 
 
     if (len < cur) {
         parent->removeRows(len, cur - len);
+        for (qsizetype i = len; i < cur; ++i)
+            m_items.remove(arrayChildPath(topicPrefix, i));
         return;
     }
 
-    for (qsizetype i = cur; i < len; ++i)
-        parent->appendRow(makeArrayChild(topicPrefix, i, type, tree));
+    for (qsizetype i = cur; i < len; ++i) {
+        auto *child = makeArrayChild(topicPrefix, i, type, tree);
+        parent->appendRow(child);
+        m_items.insert(arrayChildPath(topicPrefix, i), child);
+    }
 }

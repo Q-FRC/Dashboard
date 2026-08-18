@@ -44,6 +44,8 @@ private:
     QStandardItem *makeArrayChild(const QString &topicPrefix, qsizetype i, const QString &type,
                                   const QList<StructNode> &tree);
 
+    QString arrayChildPath(const QString &prefix, const qsizetype i);
+
     // used to track paths
     QHash<QString, QStandardItem *> m_items;
 
