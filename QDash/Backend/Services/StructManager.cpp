@@ -67,9 +67,19 @@ bool StructManager::publish(const std::string &topic, const QVariant &value)
         return true;
 
     const auto rawData = parentValue.GetRaw();
-    const auto decoded = m_store->decode(parentTypeStr, rawData).toMap();
+    const auto decoded = m_store->decode(parentTypeStr, rawData);
 
-    if (decoded.empty()) {
+    bool empty = true;
+    switch (decoded.typeId()) {
+    case QMetaType::Type::QVariantMap:
+        empty = decoded.toMap().isEmpty();
+        break;
+    case QMetaType::Type::QVariantList:
+        empty = decoded.toList().isEmpty();
+        break;
+    }
+
+    if (empty) {
         m_logger->debug("StructManager", QStringLiteral("Parent %1 not cached, dropping write op")
                                              .arg(QString::fromStdString(source)));
         return true;
@@ -134,9 +144,8 @@ QVariant StructManager::getField(const QVariant &value, const QStringList &path)
     case QMetaType::Type::QVariantList: {
         const auto list = value.toList();
 
-        // key will be [<index>]
-        QString indexStr = key.mid(1, key.size() - 2);
-        auto idx = parseArrayIndex(indexStr, list.size());
+        // key will just be the index
+        auto idx = parseArrayIndex(key, list.size());
         if (!idx.has_value())
             return value;
 
@@ -184,9 +193,8 @@ QVariant StructManager::setField(QVariant value, const QStringList &path, const 
     case QMetaType::Type::QVariantList: {
         auto list = value.toList();
 
-        // key will be [<index>]
-        QString indexStr = key.mid(1, key.size() - 2);
-        auto idx = parseArrayIndex(indexStr, list.size());
+        // key will just be the index
+        auto idx = parseArrayIndex(key, list.size());
         if (!idx.has_value())
             return value;
 
@@ -229,7 +237,7 @@ void StructManager::writeStruct(const std::string &typeString, const std::string
 
 std::optional<int> StructManager::parseArrayIndex(const QString &index, const size_t max)
 {
-    // key will be [<index>]
+    // key will just be the index
     bool ok = false;
     int idx = index.toInt(&ok);
 

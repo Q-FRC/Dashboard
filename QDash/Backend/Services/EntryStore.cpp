@@ -13,6 +13,7 @@ void EntryStore::removeEntry(const std::string &topic)
     m_entries.erase(topic);
 
     // remove callbacks
+    // persistent callbacks are not affected by this
     if (const auto it = m_callbackHandles.find(topic); it != m_callbackHandles.end()) {
         m_instance.RemoveListener(it->second);
         m_callbackHandles.erase(it);
@@ -36,13 +37,29 @@ wpi::nt::GenericEntry &EntryStore::getEntry(const std::string &topic, const std:
 void EntryStore::addCallback(const std::string &topic,
                              std::function<void(const wpi::nt::Event &)> callback)
 {
-    if (m_callbackHandles.contains(topic))
+    // remove any previous subscription listener so re-makes don't stack
+    if (const auto it = m_callbackHandles.find(topic); it != m_callbackHandles.end())
+        m_instance.RemoveListener(it->second);
+
+    const auto ntTopic = m_instance.GetTopic(topic);
+    const auto handle =
+        m_instance.AddListener(ntTopic, wpi::nt::EventFlags::VALUE_ALL, std::move(callback));
+
+    m_callbackHandles.emplace(topic, handle);
+}
+
+void EntryStore::addPersistentCallback(const std::string &topic,
+                                       std::function<void(const wpi::nt::Event &)> callback)
+{
+    // dedup so re-registrations don't stack
+    if (m_persistentCallbacks.contains(topic))
         return;
 
     const auto ntTopic = m_instance.GetTopic(topic);
-    const auto handle = m_instance.AddListener(ntTopic, wpi::nt::EventFlags::VALUE_ALL, callback);
+    const auto handle =
+        m_instance.AddListener(ntTopic, wpi::nt::EventFlags::VALUE_ALL, std::move(callback));
 
-    m_callbackHandles.emplace(topic, handle);
+    m_persistentCallbacks.emplace(topic, handle);
 }
 
 void EntryStore::setValue(const std::string &topic, const std::string &typeString,
@@ -60,6 +77,10 @@ void EntryStore::clear()
 {
     for (auto &[_, handle] : m_callbackHandles)
         m_instance.RemoveListener(handle);
+    for (auto &[_, handle] : m_persistentCallbacks)
+        m_instance.RemoveListener(handle);
+
     m_callbackHandles.clear();
+    m_persistentCallbacks.clear();
     m_entries.clear();
 }

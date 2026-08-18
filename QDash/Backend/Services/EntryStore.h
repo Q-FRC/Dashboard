@@ -20,6 +20,10 @@ public:
     void addCallback(const std::string &topic,
                      std::function<void(const wpi::nt::Event &)> callback);
 
+    // always-on callback, only removed by clear()
+    void addPersistentCallback(const std::string &topic,
+                               std::function<void(const wpi::nt::Event &)> callback);
+
     // helpers
     void setValue(const std::string &topic, const std::string &typeString,
                   const wpi::nt::Value &value);
@@ -40,6 +44,9 @@ private:
     // topic str -> GenericEntry
     ankerl::unordered_dense::map<std::string, TrackedEntry> m_entries;
 
-    // topic str -> callback handle
+    // topic str -> subscription callback handle
     ankerl::unordered_dense::map<std::string, NT_Listener> m_callbackHandles;
+
+    // topic str -> always-on callback handle
+    ankerl::unordered_dense::map<std::string, NT_Listener> m_persistentCallbacks;
 };

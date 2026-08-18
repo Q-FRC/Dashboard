@@ -57,7 +57,10 @@ public:
 
     wpi::nt::GenericEntry getRawEntry(const std::string_view &path);
     std::vector<wpi::nt::ConnectionInfo> getConnections() const;
+
     StructStore *structStore() const;
+    StructManager *structManager() const;
+    EntryStore *entryStore() const;
 
     void setServer(const std::string &server);
     void setServerTeam(const int team);

@@ -5,6 +5,7 @@
 
 #include <string_view>
 #include <QObject>
+#include <ankerl/unordered_dense.h>
 #include "Services/Logger.h"
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/util/struct/DynamicStruct.hpp"
@@ -12,6 +13,8 @@
 typedef struct StructNode {
     QString name;
     QString type;
+    QString structType;
+    qsizetype arrayLength = 0;
     QList<StructNode> children;
     bool isArray = false;
 } StructNode;
@@ -31,12 +34,20 @@ public:
     // TODO: Make a better decode/encode API
     QVariant decode(const std::string_view typeString, std::span<const uint8_t> data);
     std::vector<uint8_t> encode(const std::string_view typeString, const QVariant &value);
+
+    // get the array length of a struct
+    qsizetype arrayLength(const std::string_view typeString, std::span<const uint8_t> data);
+
     QList<StructNode> schemaTree(const std::string_view typeString);
+    QList<StructNode> schemaTree(const QString &typeString);
 
 private:
     wpi::util::StructDescriptorDatabase m_database;
     wpi::nt::NetworkTableInstance m_instance;
     Logger *m_logger;
+
+    // schema cache
+    ankerl::unordered_dense::map<std::string, QList<StructNode>> m_treeCache;
 
     // decode helpers
     QVariant decodeStruct(const wpi::util::StructDescriptor *desc, std::span<const uint8_t> data);

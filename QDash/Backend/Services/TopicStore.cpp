@@ -298,6 +298,16 @@ StructStore *TopicStore::structStore() const
     return m_structStore;
 }
 
+StructManager *TopicStore::structManager() const
+{
+    return m_structs;
+}
+
+EntryStore *TopicStore::entryStore() const
+{
+    return m_entries;
+}
+
 // NT Interface //
 wpi::nt::GenericEntry TopicStore::getRawEntry(const std::string_view &path)
 {

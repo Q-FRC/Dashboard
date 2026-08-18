@@ -41,7 +41,13 @@ StructStore::StructStore(wpi::nt::NetworkTableInstance instance, Logger *logger,
                     if (err != "") {
                         m_logger->critical("StructStore", QString::fromStdString(std::format(
                                                               "Failed to parse struct: {}", err)));
+                        return;
                     }
+
+                    // fully clear the entire treecache on schema addition
+                    // this is to ensure the topicListModel does not hit stale cache entries
+                    // while the entire schema set is being rebuilt
+                    m_treeCache.clear();
 
                     m_logger->debug(
                         "StructStore",
@@ -244,6 +250,20 @@ std::vector<uint8_t> StructStore::encode(const std::string_view typeString, cons
     return encodeOne(value);
 }
 
+qsizetype StructStore::arrayLength(const std::string_view typeString, std::span<const uint8_t> data)
+{
+    // strip "struct:" prefix
+    std::string_view name = typeString.substr(7);
+    if (name.ends_with("[]"))
+        name.remove_suffix(2);
+
+    const auto *desc = find(name);
+    if (desc == nullptr || !desc->IsValid())
+        return 0;
+
+    return data.size() / desc->GetSize();
+}
+
 bool StructStore::encodeStruct(const wpi::util::StructDescriptor *desc, const QVariantMap &map,
                                wpi::util::MutableDynamicStruct &ds)
 {
@@ -345,12 +365,26 @@ QList<StructNode> StructStore::schemaTree(const std::string_view typeString)
     // strip struct: prefix
     std::string_view name = typeString.substr(7);
 
+    // strip array suffix
+    if (name.ends_with("[]"))
+        name.remove_suffix(2);
+
+    if (const auto it = m_treeCache.find(std::string{name}); it != m_treeCache.end())
+        return it->second;
+
     const auto *desc = find(name);
 
     if (desc == nullptr || !desc->IsValid())
         return {};
 
-    return fieldTree(desc);
+    auto tree = fieldTree(desc);
+    m_treeCache.emplace(name, tree);
+    return tree;
+}
+
+QList<StructNode> StructStore::schemaTree(const QString &typeString)
+{
+    return schemaTree(typeString.toStdString());
 }
 
 QList<StructNode> StructStore::fieldTree(const wpi::util::StructDescriptor *desc)
@@ -366,7 +400,11 @@ StructNode StructStore::fieldNode(const wpi::util::StructFieldDescriptor *field)
     StructNode node;
     node.name = QString::fromStdString(field->GetName());
     node.type = fieldTypeString(field);
+    node.structType = field->GetType() == wpi::util::StructFieldType::STRUCT
+                          ? QStringLiteral("struct:%1").arg(field->GetStruct()->GetName())
+                          : QString{};
     node.isArray = field->IsArray();
+    node.arrayLength = field->IsArray() ? field->GetArraySize() : 0;
     node.children = field->GetType() == wpi::util::StructFieldType::STRUCT
                         ? fieldTree(field->GetStruct())
                         : QList<StructNode>{};
