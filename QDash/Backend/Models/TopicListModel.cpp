@@ -21,7 +21,7 @@ TopicListModel::TopicListModel(TopicStore *store, QObject *parent)
     connect(m_store, &TopicStore::topicPublished, this, [this](const std::string &topicName) {
         // a newly-published topic (e.g. a struct parent gaining its type)
         // may make previously-unresolvable subfield subscriptions resolvable
-        m_store->reconcile();
+        m_store->queueReconcile();
         add(QString::fromStdString(topicName));
     });
 
@@ -43,7 +43,7 @@ TopicListModel::TopicListModel(TopicStore *store, QObject *parent)
     // and may allow struct arrays to populate if they were missing their schema
     connect(m_store->structStore(), &StructStore::schemaAdded, this,
             [this](const QString &typeName) {
-                m_store->reconcile();
+                m_store->queueReconcile();
 
                 // retry any arrays that couldn't populate without their schema
                 const auto it = m_arraySchemaPending.find(typeName);

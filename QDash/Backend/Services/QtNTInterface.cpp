@@ -23,10 +23,7 @@ QVariant QtNTInterface::toVariant(const wpi::nt::Value &value)
 
     else if (value.IsBooleanArray()) {
         const std::span<const int> a = value.GetBooleanArray();
-        QList<int> newList;
-        newList.reserve(a.size());
-        for (const int i : a)
-            newList << i;
+        QList<int> newList(a.begin(), a.end());
 
         v = QVariant::fromValue(newList);
     } else if (value.IsStringArray()) {
@@ -39,28 +36,16 @@ QVariant QtNTInterface::toVariant(const wpi::nt::Value &value)
         v = QVariant::fromValue(newList);
     } else if (value.IsDoubleArray()) {
         const std::span<const double> a = value.GetDoubleArray();
-        QList<double> newList;
-        newList.reserve(a.size());
-        for (const double d : a)
-            newList << d;
-
+        QList<double> newList(a.begin(), a.end());
         v = QVariant::fromValue(newList);
     } else if (value.IsIntegerArray()) {
         const std::span<const int64_t> a = value.GetIntegerArray();
-        QList<int64_t> newList;
-        newList.reserve(a.size());
-        for (const int64_t i : a)
-            newList << i;
-
+        QList<int64_t> newList(a.begin(), a.end());
         v = QVariant::fromValue(newList);
     } else if (value.IsRaw()) {
         const std::span<const uint8_t> a = value.GetRaw();
-        QString newStr;
-        newStr.reserve(a.size());
-        for (const uint8_t i : a) {
-            newStr = newStr % QChar(i);
-        }
-        v = newStr;
+
+        v = QString::fromLatin1(reinterpret_cast<const char *>(a.data()), a.size());
     }
 
     return v;

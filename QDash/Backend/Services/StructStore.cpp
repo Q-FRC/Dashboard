@@ -445,3 +445,12 @@ QString StructStore::fieldTypeString(const wpi::util::StructFieldDescriptor *fie
 
     return field->IsArray() ? QStringLiteral("%1[%2]").arg(base).arg(field->GetArraySize()) : base;
 }
+
+bool StructStore::isReady(const std::string_view typeString)
+{
+    std::string_view name = typeString.substr(7); // struct:
+    if (name.ends_with("[]"))
+        name.remove_suffix(2);
+    const auto *d = find(name);
+    return d != nullptr && d->IsValid();
+}

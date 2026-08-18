@@ -14,6 +14,9 @@ StructManager::StructManager(wpi::nt::NetworkTableInstance &instance, StructStor
     connect(m_store, &StructStore::schemaAdded, this, [this](const QString &typeName) {
         std::vector<std::string> toErase;
         for (const auto &[topic, pending] : m_pending) {
+            if (!m_store->isReady(pending.typeName))
+                continue;
+
             const auto decoded = m_store->decode(pending.typeName, pending.value.GetRaw());
             if (decoded.isNull() || !decoded.isValid())
                 continue;

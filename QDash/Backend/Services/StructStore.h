@@ -41,6 +41,9 @@ public:
     QList<StructNode> schemaTree(const std::string_view typeString);
     QList<StructNode> schemaTree(const QString &typeString);
 
+    // check if a type is processed and ready to go
+    bool isReady(const std::string_view typeString);
+
 private:
     wpi::util::StructDescriptorDatabase m_database;
     wpi::nt::NetworkTableInstance m_instance;

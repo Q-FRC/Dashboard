@@ -3,15 +3,17 @@
 
 #pragma once
 
+#include <QObject>
 #include <ankerl/unordered_dense.h>
 #include "wpi/nt/GenericEntry.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
 #include "wpi/nt/NetworkTableValue.hpp"
 #include "wpi/nt/ntcore_c.h"
 
-class EntryStore {
+class EntryStore : public QObject {
+    Q_OBJECT
 public:
-    explicit EntryStore(wpi::nt::NetworkTableInstance &instance);
+    explicit EntryStore(wpi::nt::NetworkTableInstance &instance, QObject *parent = nullptr);
 
     // manual map management
     void removeEntry(const std::string &topic);

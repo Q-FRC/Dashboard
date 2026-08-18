@@ -18,10 +18,16 @@
 TopicStore::TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent)
     : QObject(parent), m_logs(logs), m_engine(engine),
       m_instance{wpi::nt::NetworkTableInstance::GetDefault()},
-      m_structStore{new StructStore(m_instance, m_logs)}, m_entries(new EntryStore(m_instance)),
+      m_structStore{new StructStore(m_instance, m_logs, this)},
+      m_entries(new EntryStore(m_instance, this)),
       m_structs{new StructManager(m_instance, m_structStore, m_entries, m_logs, this)}
 {
     m_instance.StartClient(BuildConfig.APPLICATION_NAME.toStdString());
+
+    // Reconcile Queue
+    m_reconcileTimer.setInterval(50);
+    m_reconcileTimer.setSingleShot(true);
+    m_reconcileTimer.callOnTimeout(this, &TopicStore::reconcile);
 
     // Pending Structs //
     connect(
@@ -103,9 +109,24 @@ void TopicStore::callConsumers(const std::string &topic, const QVariant &value)
     if (it == m_subscriptions.end())
         return;
 
+    // cache path values (i.e. multiple widgets subscribed to the same struct subfield)
+    QHash<QString, QVariant> cache;
+
     for (const Subscription &sub : std::as_const(it->second)) {
-        // if this is a subfield, grab it from the struct
-        const QVariant v = sub.path.isEmpty() ? value : m_structs->getField(value, sub.path);
+        QVariant v;
+        if (sub.path.isEmpty()) {
+            v = value;
+        } else {
+            const QString key = sub.rawTopic % "/" % sub.path.join('/');
+            const auto hit = cache.constFind(key);
+            if (hit != cache.cend()) {
+                v = hit.value();
+            } else {
+                v = m_structs->getField(value, sub.path);
+                cache.insert(key, v);
+            }
+        }
+
         sub.func.call({m_engine->toScriptValue(v)});
     }
 }
@@ -128,6 +149,11 @@ void TopicStore::addCallback(const std::string &topic)
         QMetaObject::invokeMethod(
             this, [this, topic, typeString, value] { handleValue(topic, typeString, value); });
     });
+}
+
+void TopicStore::queueReconcile()
+{
+    QMetaObject::invokeMethod(&m_reconcileTimer, qOverload<>(&QTimer::start));
 }
 
 // called from QML
@@ -181,7 +207,7 @@ void TopicStore::reconcile()
 
     m_subscriptions = std::move(migrated);
 
-    // reset callbaks as needed
+    // make callbacks as needed
     for (const auto &[source, subs] : m_subscriptions) {
         if (!subs.isEmpty())
             addCallback(source);

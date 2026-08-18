@@ -10,6 +10,7 @@
 #include <QJSValue>
 #include <QObject>
 #include <QQmlEngine>
+#include <QTimer>
 #include <ankerl/unordered_dense.h>
 
 class EntryStore;
@@ -27,6 +28,9 @@ private:
     StructStore *m_structStore;
     EntryStore *m_entries;
     StructManager *m_structs;
+
+    // reconcile queue
+    QTimer m_reconcileTimer;
 
     // Subscriptions //
 
@@ -49,11 +53,16 @@ private:
     // {re-,}make the callback
     void addCallback(const std::string &topic);
 
-public:
-    TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent = nullptr);
+public slots:
+    // queue structure reconciliation
+    void queueReconcile();
 
+private slots:
     // re-resolve all subscriptions against the current structure
     void reconcile();
+
+public:
+    TopicStore(QQmlEngine *engine, Logger *logs, QObject *parent = nullptr);
 
     wpi::nt::GenericEntry getRawEntry(const std::string_view &path);
     std::vector<wpi::nt::ConnectionInfo> getConnections() const;

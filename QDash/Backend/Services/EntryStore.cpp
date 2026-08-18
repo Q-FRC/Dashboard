@@ -5,7 +5,10 @@
 #include "wpi/nt/GenericEntry.hpp"
 #include "wpi/nt/NetworkTableInstance.hpp"
 
-EntryStore::EntryStore(wpi::nt::NetworkTableInstance &instance) : m_instance{instance} {}
+EntryStore::EntryStore(wpi::nt::NetworkTableInstance &instance, QObject *parent)
+    : QObject(parent), m_instance{instance}
+{
+}
 
 void EntryStore::removeEntry(const std::string &topic)
 {
@@ -37,9 +40,8 @@ wpi::nt::GenericEntry &EntryStore::getEntry(const std::string &topic, const std:
 void EntryStore::addCallback(const std::string &topic,
                              std::function<void(const wpi::nt::Event &)> callback)
 {
-    // remove any previous subscription listener so re-makes don't stack
-    if (const auto it = m_callbackHandles.find(topic); it != m_callbackHandles.end())
-        m_instance.RemoveListener(it->second);
+    if (m_callbackHandles.contains(topic))
+        return;
 
     const auto ntTopic = m_instance.GetTopic(topic);
     const auto handle =
