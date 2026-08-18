@@ -106,8 +106,13 @@ void TabListModel::add(QString title)
 bool TabListModel::remove(int row, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row);
+
+    TabWidgetsModel *model = m_data.at(row).model;
     m_data.remove(row);
+
     endRemoveRows();
+
+    model->deleteLater();
 
     return true;
 }
@@ -228,6 +233,12 @@ void TabListModel::load(const QString &filename)
     }
 
     m_settings->reconnect();
+
+    for (const Tab &t : std::as_const(m_data)) {
+        if (t.model)
+            t.model->deleteLater();
+    }
+
     beginResetModel();
     m_data = tabs;
     endResetModel();
@@ -238,6 +249,12 @@ void TabListModel::load(const QString &filename)
 void TabListModel::clear()
 {
     beginResetModel();
+
+    for (const Tab &t : std::as_const(m_data)) {
+        if (t.model)
+            t.model->deleteLater();
+    }
+
     m_data.clear();
     endResetModel();
 }

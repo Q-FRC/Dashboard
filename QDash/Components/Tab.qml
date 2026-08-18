@@ -230,48 +230,33 @@ Rectangle {
         delegate: WidgetDelegate {}
     }
 
-    Canvas {
-        property int c: tab.cols
-        property real colW: tab.colWidth
-        property int r: tab.rows
-        property real rowH: tab.rowHeight
-
-        enabled: parent.visible
-        renderStrategy: Canvas.Cooperative
+    Item {
         visible: parent.visible
         z: 2
 
-        onColWChanged: requestPaint()
-        onPaint: {
-            let ctx = getContext("2d")
-            ctx.clearRect(0, 0, width, height);
+        // TODO(crueter): make this change based on theme
+        Repeater {
+            model: Math.max(0, tab.cols - 1)
 
-            // TODO(crueter): make this change based on theme
-            ctx.strokeStyle = "gray"
-            ctx.lineWidth = 1
-            ctx.beginPath()
-
-            for (var i = 1; i < c; i++) {
-                let x = Math.round(i * colW)
-                ctx.moveTo(x, 0)
-                ctx.lineTo(x, height)
+            Rectangle {
+                color: "gray"
+                height: tab.height - 2
+                width: 1
+                x: 1 + Math.round((index + 1) * tab.colWidth) - 0.5
+                y: 1
             }
-
-            for (var j = 1; j < r; j++) {
-                let y = Math.round(j * rowH)
-                ctx.moveTo(0, y)
-                ctx.lineTo(width, y)
-            }
-
-            ctx.stroke()
         }
-        onRowHChanged: requestPaint()
-        onVisibleChanged: if (visible)
-            requestPaint()
 
-        anchors {
-            fill: parent
-            margins: 1
+        Repeater {
+            model: Math.max(0, tab.rows - 1)
+
+            Rectangle {
+                color: "gray"
+                width: tab.width - 2
+                height: 1
+                x: 1
+                y: 1 + Math.round((index + 1) * tab.rowHeight) - 0.5
+            }
         }
     }
 }
