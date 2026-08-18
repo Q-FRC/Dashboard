@@ -11,9 +11,10 @@ ScrollView {
 
     WheelHandler {
         target: scroll
+
         onWheel: event => {
             const sensitivity = scroll.sensitivity / 1500
-            scroll.ScrollBar.vertical.position -= event.angleDelta.y * sensitivity
+            scroll.ScrollBar.vertical.position -= event.pixelDelta.y * sensitivity
             scroll.ScrollBar.vertical.position = Math.max(Math.min(scroll.ScrollBar.vertical.position, 1.0 - scroll.ScrollBar.vertical.size), 0.0)
         }
     }

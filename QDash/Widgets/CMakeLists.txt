@@ -15,7 +15,7 @@ qt_add_qml_module(QDashQmlWidgets
         base/ShapeHandler.qml
 
         sendable/Command.qml
-        sendable/FMSInfo.qml
+        sendable/DriverStation.qml
         sendable/Field2d.qml
         sendable/StringChooser.qml
         sendable/PIDController.qml

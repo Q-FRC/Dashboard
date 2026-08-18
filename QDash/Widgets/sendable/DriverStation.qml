@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Carboxyl.Clover
+import QDash.Components
 
 import QDash.Controls
 import QDash.Widgets
+
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
@@ -13,12 +15,12 @@ SendableWidget {
     id: widget
 
     readOnly: true
-    roleString: "FMSInfo"
+    roleString: "DriverStation"
 
     propertyKeys: ["fontSize"]
-    topics: ["MatchNumber", "MatchType", "EventName", "IsRedAlliance", "GameSpecificMessage", "FMSControlData"]
+    topics: ["MatchNumber", "MatchType", "EventName", "IsRedAlliance", "ControlWord", "OpMode"]
 
-    property int fontSize: 18
+    property int fontSize: 16
 
     function update(topic, value) {
         widget.connected = true
@@ -35,7 +37,7 @@ SendableWidget {
             }
         case "EventName":
             {
-                match.eventName = value === "" ? "Event" : value
+                match.eventName = value
                 break
             }
         case "IsRedAlliance":
@@ -43,28 +45,33 @@ SendableWidget {
                 rect.isRedAlliance = value
                 break
             }
-        case "GameSpecificMessage":
+        case "ControlWord":
             {
-                gsm.gameSpecificMessage = value
+                // TODO: fms? ds? estop? probably not
+                stateText.robotMode = stateText.robotModeMap[value.robotMode]
+                stateText.robotEnabled = value.enabled
                 break
             }
-        case "FMSControlData":
+        case "OpMode":
             {
-                let state = QDashApplication.wordToState(value)
-                stateText.state = state
+                opModeText.text = value
                 break
             }
         }
     }
 
     ColumnLayout {
+        spacing: 2
+
         anchors {
             left: parent.left
-            leftMargin: 10
+            leftMargin: 5
+
             right: parent.right
-            rightMargin: 10
+            rightMargin: 5
+
             top: titleField.bottom
-            topMargin: 8
+            topMargin: 4
         }
 
         Rectangle {
@@ -72,51 +79,66 @@ SendableWidget {
 
             property bool isRedAlliance: false
 
-            Layout.fillWidth: true
             color: isRedAlliance ? "red" : "blue"
-            implicitHeight: fontSize * 2
+            implicitHeight: match.contentHeight + 2
+            implicitWidth: match.contentWidth + 8
+            Layout.alignment: Qt.AlignCenter
             radius: 4
 
             Label {
                 id: match
 
-                property string eventName: "Event"
+                property string eventName: ""
                 property int matchNumber: 0
-                property string matchType: "Unknown"
-                property list<string> matchTypeMap: ["Unknown", "Practice", "Quals", "Elims"]
+                property string matchType: ""
+                property list<string> matchTypeMap: ["", "Practice", "Quals", "Elims"]
 
                 anchors.fill: parent
                 enabled: widget.connected
                 font.pixelSize: fontSize
                 horizontalAlignment: Text.AlignHCenter
-                text: eventName + ": " + matchType + " Match " + matchNumber
+                text: {
+                    let eventStr = eventName === "" ? "" : `${eventName}: `
+                    let matchTypeStr = matchType === "" ? "" : `${matchType} `
+                    let matchStr = `Match ${matchNumber}`
+
+                    return `${eventStr}${matchTypeStr}${matchStr}`
+                }
+
                 verticalAlignment: Text.AlignVCenter
             }
         }
 
         Label {
-            id: gsm
+            id: stateText
 
-            property string gameSpecificMessage: ""
+            property string robotMode: ""
+            property string opMode: ""
+            property bool robotEnabled: false
+
+            property list<string> robotModeMap: ["", "Autonomous", "Teleoperated", "Utility"]
 
             Layout.fillWidth: true
             enabled: widget.connected
             font.pixelSize: fontSize
             horizontalAlignment: Text.AlignHCenter
-            text: gameSpecificMessage
-            visible: gameSpecificMessage !== ""
+            text: {
+                let modeStr = robotMode === "" ? "" : `${robotMode} `
+                let enabledStr = robotEnabled ? "Enabled" : "Disabled"
+
+                return `${modeStr}${enabledStr}`
+            }
         }
 
         Label {
-            id: stateText
-
-            property string state: "Unknown"
+            id: opModeText
 
             Layout.fillWidth: true
             enabled: widget.connected
             font.pixelSize: fontSize
             horizontalAlignment: Text.AlignHCenter
-            text: state
+
+            visible: text !== ""
         }
     }
 

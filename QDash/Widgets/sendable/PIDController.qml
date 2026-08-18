@@ -43,6 +43,7 @@ SendableWidget {
         }
     }
 
+    // FIXME: this widget is not draggable or right-clickable because the scroll view eats inputs
     QDashScrollView {
         id: scroll
 
@@ -53,6 +54,7 @@ SendableWidget {
             right: parent.right
             rightMargin: 10
             top: titleField.bottom
+            topMargin: 10
         }
 
         ColumnLayout {
